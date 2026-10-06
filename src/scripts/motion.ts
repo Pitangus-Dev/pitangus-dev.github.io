@@ -156,7 +156,8 @@ function ink(gsap: Gsap, late: boolean) {
 function blink(gsap: Gsap) {
   const lid = document.querySelector('[data-lid]')
   if (!lid) return
-  gsap.set(lid, { scaleY: 0, svgOrigin: '27.5 25.7' })
+  // Scaled from its own 0 0, the top of the eye (Mascot.astro): no origin for GSAP to work out.
+  gsap.set(lid, { scaleY: 0, transformOrigin: '0 0' })
   const once = () => gsap.timeline().to(lid, { scaleY: 1, duration: 0.07, ease: 'sine.in' }).to(lid, { scaleY: 0, duration: 0.13, ease: 'sine.out' })
   const next = () => {
     if (root.classList.contains('still') || !root.contains(lid)) return  // motion was paused: stop blinking

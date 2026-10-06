@@ -62,8 +62,11 @@ const vest = 'M2 64 C3 50 10 42 19 40 C24 44 27 52 27 64 Z'
     <g class="mascot-eye" data-eye>
       <circle cx="27.5" cy="28.5" r="2.4" fill="#1E1433" data-wash />
       <circle cx="28.3" cy="27.7" r=".8" fill="#fff" data-pupil />
-      <!-- The eyelid: closed by scaling it down from the top of the eye; open, it has no height. -->
-      <ellipse cx="27.5" cy="28.5" rx="2.75" ry="2.75" fill="#FFF3DE" data-lid transform="scale(1 0)" style="transform-origin: 27.5px 25.7px" />
+      <!-- The eyelid hangs from the top of the eye (its group's origin), so scaling it from 0 0 closes it; open, it has
+           no height. -->
+      <g transform="translate(27.5 25.75)">
+        <ellipse cx="0" cy="2.75" rx="2.75" ry="2.75" fill="#FFF3DE" data-lid transform="scale(1 0)" />
+      </g>
     </g>
     <ellipse cx="24" cy="35" rx="2.6" ry="1.6" fill="#F9A8D4" opacity=".7" data-wash />
   </g>
