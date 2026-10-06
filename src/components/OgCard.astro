@@ -1,0 +1,54 @@
+---
+// The picture shown when a link to the site is shared (1200 × 630), one per language: src/pages/og/{en,es}.astro hold
+// it and scripts/og.sh turns them into public/og-{en,es}.jpg. Those two pages are only a source: not linked, not indexed.
+import { Font } from 'astro:assets'
+import '../styles/global.css'
+import type { Content } from '../i18n/content'
+import Mascot from './Mascot.astro'
+import Bug from './Bug.astro'
+interface Props { t: Content }
+const { t } = Astro.props
+const h = t.hero
+---
+<!doctype html>
+<html lang={t.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <Font cssVariable="--font-display" preload /><Font cssVariable="--font-body" preload /><Font cssVariable="--font-mono" preload />
+    <style>
+      html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
+      .card { display: grid; grid-template-columns: 470px 1fr; gap: 64px; align-items: center; height: 630px; padding: 0 70px 0 64px; box-sizing: border-box; }
+      .plate { position: relative; aspect-ratio: 1; padding: 11%; border: 1px solid var(--rule); transform: rotate(-1.2deg);
+               background-color: color-mix(in oklab, var(--card-deep) 55%, var(--card)); box-shadow: 0 22px 34px -24px rgb(30 20 51 / 0.5); }
+      .tape { position: absolute; width: 30%; height: 8%; background: rgb(236 222 190 / 0.8); transform: rotate(-38deg); }
+      .tape-tl { top: -3%; left: -8%; } .tape-br { bottom: -3%; right: -8%; }
+      .record { position: absolute; top: 5%; right: 6%; margin: 0; font: 600 11px/1 var(--font-mono), monospace; letter-spacing: 0.12em; color: var(--muted); }
+      .bug-a { position: absolute; right: 9%; bottom: 13%; transform: rotate(24deg); }
+      .kicker { margin: 0 0 22px; font: 400 15px/1 var(--font-mono), monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+      .kicker i { font-family: var(--font-display), serif; text-transform: none; letter-spacing: 0.02em; font-size: 19px; }
+      h1 { margin: 0; font: 400 86px/0.98 var(--font-display), serif; letter-spacing: -0.015em; color: var(--ink); }
+      h1 em { color: var(--violet); }
+      .lead { margin: 30px 0 0; max-width: 30ch; font: 400 22px/1.4 var(--font-body), sans-serif; color: var(--muted); }
+      .url { margin: 26px 0 0; font: 600 18px/1 var(--font-mono), monospace; color: var(--ink); }
+      .stamp { position: absolute; right: 62px; top: 52px; font-size: 22px; padding: 12px 20px; --ink-at: 140px 70px; transform: rotate(-9deg); }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="plate card-paper">
+        <span class="tape tape-tl"></span><span class="tape tape-br"></span>
+        <p class="record">{h.record.toUpperCase()}</p>
+        <Mascot label={h.species} />
+        <span class="bug-a"><Bug size={40} /></span>
+      </div>
+      <div>
+        <p class="kicker">{h.plate} · <i>{h.species}</i></p>
+        <h1>{h.title[0]}<br />{h.title[1]}<br /><em>{h.title[2]}</em></h1>
+        <p class="lead">{t.og}</p>
+        <p class="url">tamandua-appsec.github.io</p>
+      </div>
+      <span class="stamp">{t.ledger.stamp}</span>
+    </main>
+  </body>
+</html>

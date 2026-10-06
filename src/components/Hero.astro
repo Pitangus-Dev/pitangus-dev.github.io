@@ -1,0 +1,93 @@
+---
+import type { Content } from '../i18n/content'
+import { REPO } from '../i18n/content'
+import Mascot from './Mascot.astro'
+import Note from './Note.astro'
+interface Props { t: Content }
+const { t } = Astro.props
+const h = t.hero
+---
+<section class="hero wrap" aria-labelledby="hero-title" data-hero>
+  <p class="vertical hero-vertical" aria-hidden="true">{h.vertical}</p>
+  <div class="grid hero-grid">
+    <div class="hero-text">
+      <p class="kicker hero-plate"><span>{h.plate}</span><span class="dot">·</span><i>{h.species}</i></p>
+      <h1 id="hero-title" class="display hero-title" data-split>
+        {h.title.map((line, index) => <span class="line"><span class:list={['line-inner', index === 2 && 'accent']}>{line}</span></span>)}
+      </h1>
+      <Note text={t.notes.hero} arrow="left" place="right: -6%; top: 31%" tilt={-5} />
+      <p class="lead" data-reveal>{h.lead}</p>
+      <div class="actions" data-reveal>
+        <a class="button primary" href="#install">{h.primary} <span aria-hidden="true">→</span></a>
+        <a class="button ghost" href={REPO}>{h.secondary}</a>
+      </div>
+      <ul class="facts mono" data-reveal>{h.facts.map(fact => <li>{fact}</li>)}</ul>
+    </div>
+    <figure class="hero-figure">
+      <!-- A plate from a case file: the sheet taped in, its record number typed on it, a note in pencil. -->
+      <div class="frame card-paper">
+        <span class="tape tape-tl" aria-hidden="true"></span><span class="tape tape-br" aria-hidden="true"></span>
+        <p class="record mono" aria-hidden="true">{h.record}</p>
+        <Mascot label={h.species} />
+        <svg class="leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M84 27.5 C86 33 84 38.5 80.6 42.2" /><path d="M79.6 39.8 L80.6 42.2 L83 41.2" />
+        </svg>
+        <p class="annotation" aria-hidden="true">{h.snout}</p>
+      </div>
+      <figcaption class="mono muted"><span>Fig. 1 — <i>{h.species}</i> (Linnaeus, 1758)</span><span>{h.habitat}</span>
+        <span class="scale" aria-hidden="true"><i></i>10 cm</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  /* overflow-x: the tape may run off the edge of a phone's screen, never widen the page. */
+  .hero { position: relative; padding-block: clamp(3rem, 8vw, 7rem) clamp(4rem, 9vw, 8rem); overflow-x: clip; }
+  .hero-vertical { position: absolute; left: calc(var(--gutter) * 0.25); top: clamp(4rem, 10vw, 8rem); }
+  .hero-grid { align-items: center; row-gap: 3rem; }
+  .hero-text { grid-column: 1 / span 7; position: relative; }
+  .hero-figure { grid-column: 8 / span 5; margin: 0; }
+  .hero-plate { display: flex; gap: 0.6rem; margin: 0 0 1.5rem; }
+  .hero-plate i { text-transform: none; letter-spacing: 0.02em; font-family: var(--font-display), serif; font-size: 1.05rem; }
+  .hero-title { font-size: clamp(3.2rem, 1.6rem + 6.6vw, 8.6rem); margin-bottom: 2rem; }
+  .line { display: block; overflow: hidden; padding-block: 0.16em; margin-block: -0.16em; }
+  .line-inner { display: inline-block; }
+  .accent { font-style: italic; color: var(--violet); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2.25rem 0 2rem; }
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--muted); }
+  /* The cross is decoration: where the alt-text syntax is understood, it is not read aloud. */
+  .facts li::before { content: '✕ '; content: '✕ ' / ''; color: var(--violet); }
+  .frame {
+    position: relative; aspect-ratio: 1 / 1; padding: 12%; border: 1px solid var(--rule); transform: rotate(-0.6deg);
+    background-color: color-mix(in oklab, var(--card-deep) 55%, var(--card)); box-shadow: 0 18px 30px -24px rgb(30 20 51 / 0.45);
+  }
+  /* Two strips of masking tape holding the sheet, with torn ends. */
+  .tape {
+    position: absolute; z-index: 2; width: 26%; height: 7%; background: rgb(236 222 190 / 0.78);
+    box-shadow: 0 1px 2px rgb(30 20 51 / 0.12);
+    clip-path: polygon(0 8%, 4% 0, 9% 10%, 14% 0, 86% 0, 91% 12%, 96% 0, 100% 9%, 100% 92%, 95% 100%, 90% 88%, 84% 100%, 13% 100%, 8% 90%, 3% 100%, 0 90%);
+  }
+  .tape-tl { top: -2.5%; left: -7%; transform: rotate(-38deg); }
+  .tape-br { bottom: -2.5%; right: -7%; transform: rotate(-38deg); }
+  .record {
+    position: absolute; top: 5%; right: 6%; margin: 0; padding-bottom: 0.2rem; border-bottom: 1px solid var(--rule);
+    font-size: clamp(0.55rem, 0.5rem + 0.2vw, 0.66rem); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+  /* A pencil note pointing at the snout. */
+  .leader { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .leader path { fill: none; stroke: var(--muted); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .annotation {
+    position: absolute; top: 19%; right: 4%; margin: 0; font-family: var(--font-hand), cursive; color: var(--muted);
+    font-size: clamp(0.95rem, 0.8rem + 0.5vw, 1.25rem); transform: rotate(-4deg); white-space: nowrap;
+  }
+  /* A map-style scale bar under the caption. */
+  .scale { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.15rem; }
+  .scale i { width: 5rem; height: 5px; border: 1px solid currentColor; background: repeating-linear-gradient(90deg, currentColor 0 1rem, transparent 1rem 2rem); }
+  :global(html.pending) .hero .line-inner { transform: translateY(130%); }
+  figcaption { display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.9rem; font-size: 0.78rem; }
+  @media (max-width: 60rem) {
+    .hero-text, .hero-figure { grid-column: 1 / -1; }
+    .hero-figure { max-width: 26rem; }
+    .hero-vertical { display: none; }
+  }
+</style>
