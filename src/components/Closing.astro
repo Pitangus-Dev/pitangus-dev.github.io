@@ -2,7 +2,7 @@
 import type { Content } from '../i18n/content'
 import Bug from './Bug.astro'
 import Note from './Note.astro'
-import { DOCS } from '../i18n/content'
+import { DOCS, STEWARD } from '../i18n/content'
 interface Props { t: Content }
 const { t } = Astro.props
 const y = t.yours
@@ -65,6 +65,7 @@ const f = t.footer
       <p class="mono muted">{f.license}</p>
       <ul class="links mono" role="list">{f.links.map(([label, href]) => <li><a href={href}>{label} <span aria-hidden="true">↗</span></a></li>)}</ul>
       <p class="mono muted tiny">{f.credits}</p>
+      <p class="mono muted tiny">© {new Date().getFullYear()} <a href={STEWARD.url}>{STEWARD.name}</a></p>
     </div>
   </div>
 </footer>

@@ -5,6 +5,8 @@ export type Locale = 'en' | 'es'
 
 export const REPO = 'https://github.com/Tamandua-AppSec/tamandua'
 export const DOCS = `${REPO}/tree/main/docs`
+// Who stands behind Tamandua, named once at the foot of the page.
+export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
 export const RELEASE = 'v0.11.0'
 export const ACTION_STEP = `- uses: Tamandua-AppSec/tamandua@${RELEASE}`
