@@ -7,11 +7,11 @@ interface Props { t: Content }
 const { t } = Astro.props
 const h = t.hero
 // Pencil notes on the plate, each with its leader to the field mark it names. Positions are in % of the frame (the
-// drawing fills it from 12% to 88% across and from 12% to 83.6% down; see Mascot.astro's viewBox).
+// drawing fills it from 12% to 88% across and from 12% to 85.4% down; see Mascot.astro's viewBox).
 const marks = [
-  { text: h.marks.bill, place: 'top: 16.5%; right: 3%', line: 'M86 23 C86.8 26.6 81 28.6 73 28.6', tip: 'M75 27.4 L73 28.6 L75.1 29.8' },
-  { text: h.marks.mask, place: 'top: 22.5%; left: 5%', line: 'M16 28.4 C24 28.2 36 28.6 47.4 30.2', tip: 'M45 29.2 L47.4 30.2 L45.3 31.4' },
-  { text: h.marks.breast, place: 'top: 48.5%; left: 71.8%', wide: true, line: 'M72.7 50.4 C71.8 48.8 70.4 48.1 68.6 48.4', tip: 'M70.2 47.2 L68.6 48.4 L70.4 49.4' },
+  { text: h.marks.bill, place: 'top: 13.5%; right: 3%', line: 'M80.5 18.6 C79 21 75.6 21.8 71 21.4', tip: 'M73 20.2 L71 21.4 L73.1 22.5' },
+  { text: h.marks.mask, place: 'top: 17%; left: 5%', line: 'M16 23 C26 22.4 38 21 49.6 19.8', tip: 'M47.4 19.2 L49.6 19.8 L47.7 21' },
+  { text: h.marks.breast, place: 'top: 30.5%; left: 73%', wide: true, line: 'M72.6 33.2 C71 33 69 33.4 66 34.4', tip: 'M67.6 33.2 L66 34.4 L67.8 35.4' },
 ]
 ---
 <section class="hero wrap" aria-labelledby="hero-title" data-hero>
