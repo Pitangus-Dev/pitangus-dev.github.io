@@ -152,7 +152,7 @@ function blink(gsap: Gsap) {
   gsap.delayedCall(3.2, next)
 }
 
-// The eye looks toward the pointer: its catchlight moves up to data-reach (drawing units) from where it rests.
+// The eye looks toward the pointer: its iris and pupil move up to data-reach (drawing units) from where they rest.
 function eyes(gsap: Gsap) {
   const pupil = document.querySelector<SVGElement>('[data-pupil]')
   const eye = document.querySelector<SVGElement>('[data-eye]')

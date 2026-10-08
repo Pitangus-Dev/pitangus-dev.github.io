@@ -3,8 +3,8 @@
 // that scripts/motion.ts brings in one after the other: a pencil underdrawing (the circle of the head, the oval of the
 // body, the line of the pose and the perch; data-pencil), the ink (data-ink-layer, revealed from the top down) and the
 // colour (data-wash). The illustration is traced from a reference into flat brand colours (assets/plate/: the full plate
-// and its ink alone, same viewBox); the eye is drawn on top, so its catchlight (data-pupil) can follow the pointer, up to
-// data-reach drawing units from where it rests, and its lid (data-lid) can blink.
+// and its ink alone, same viewBox); the eye is drawn on top, so its iris and pupil (data-pupil) can look toward the pointer,
+// up to data-reach drawing units from where they rest, and its lid (data-lid) can blink.
 import plate from '../assets/plate/bichofue.svg?url'
 import inkOnly from '../assets/plate/bichofue-ink.svg?url'
 interface Props { class?: string; label: string }
@@ -27,12 +27,18 @@ const eye = { x: 760, y: 163 }
     <img class="mascot-layer" src={inkOnly} alt="" decoding="async" data-ink-layer />
     <img class="mascot-layer" src={plate} alt="" decoding="async" data-wash />
     <svg class="mascot-layer" viewBox={VIEWBOX} aria-hidden="true">
-      <!-- The eye: a pale rim round a dark brown iris, the pupil and a catchlight, set in the black mask. -->
-      <g data-eye data-reach="4">
+      <!-- The eye: a pale rim round a dark brown iris and its pupil, which look toward the pointer (data-pupil) inside
+           the rim; the catchlight stays put, as a reflection of the light does. -->
+      <defs><clipPath id="mascot-eye-rim"><ellipse cx={eye.x} cy={eye.y} rx="22" ry="17.5" /></clipPath></defs>
+      <g data-eye data-reach="5">
         <ellipse cx={eye.x} cy={eye.y} rx="23" ry="18.5" fill={INK} stroke="#7A766C" stroke-width="2.6" data-wash />
-        <circle cx={eye.x + 1} cy={eye.y - 1} r="16" fill="#6B3F1F" data-wash />
-        <circle cx={eye.x + 1.5} cy={eye.y - 1} r="8.5" fill={INK} data-wash />
-        <circle cx={eye.x - 2.5} cy={eye.y - 8} r="4.2" fill={WHITE} data-wash data-pupil />
+        <g clip-path="url(#mascot-eye-rim)">
+          <g data-pupil>
+            <circle cx={eye.x + 1} cy={eye.y - 1} r="16" fill="#6B3F1F" data-wash />
+            <circle cx={eye.x + 1.5} cy={eye.y - 1} r="8.5" fill={INK} data-wash />
+          </g>
+        </g>
+        <circle cx={eye.x - 2.5} cy={eye.y - 8} r="4.2" fill={WHITE} data-wash />
         <!-- The eyelid hangs from the top of the eye (its group's origin), so scaling it from 0 0 closes it; open, it
              has no height. -->
         <g transform={`translate(${eye.x} ${eye.y - 20})`}>
