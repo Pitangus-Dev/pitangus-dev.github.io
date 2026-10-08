@@ -37,7 +37,6 @@ const { t } = Astro.props
   .flight :global(path) { fill: none; stroke: var(--flight); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   /* Over the drawing's frame the line is on lit paper: day ink, in both themes. */
   .flight-front :global(path) { stroke: var(--card-ink); }
-  .flight :global(.lick) { stroke-width: 1.8; }
   .field > :global(section), .field > :global(footer) { position: relative; z-index: 1; }
   .field :global(.critter) { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; will-change: transform; }
   .field :global(.critter-body) { display: block; }

@@ -119,7 +119,7 @@ async function run() {
     cleanups.forEach(cleanup => cleanup())
     media.revert()
     context.revert()
-    document.querySelectorAll('.critter, .lick, .leaf').forEach(element => element.remove())
+    document.querySelectorAll('.critter, .leaf').forEach(element => element.remove())
     clearTongue()
     gsap.ticker.remove(onTick)
     lenis.destroy()
@@ -235,21 +235,7 @@ function tongue(gsap: Gsap, ScrollTrigger: Trigger, swarm: Swarm) {
   ScrollTrigger.create({ trigger: '[data-field]', start: 'top top', end: 'bottom bottom', onUpdate: update, onRefresh: rebuild })
 }
 
-// A kiskadee strikes at one bug at a time: every strike waits its turn, and when several wait it just strikes faster.
-let mouth = Promise.resolve()
-let waiting = 0
-function feed(play: () => GSAPTimeline | null) {
-  waiting += 1
-  mouth = mouth.then(() => new Promise<void>(settled => {
-    const done = () => { waiting -= 1; settled() }
-    const timeline = play()
-    if (!timeline) return done()
-    timeline.eventCallback('onComplete', done)
-    timeline.timeScale(1 + Math.min(waiting - 1, 4) * 0.5)
-  }))
-}
-
-// The flight and the strikes are dashed lines, revealed like solid ones: the dash pattern runs the whole path and ends
+// The flight is a dashed line, revealed like solid ones: the dash pattern runs the whole path and ends
 // in a gap as long as the path, so moving the dash offset from `hidden` (nothing shows) to 0 (all of it) draws the
 // dashes one after another from the start. No masks: they cost frames on a path as tall as the page.
 const DASH = 5, GAP = 8, PERIOD = DASH + GAP
@@ -257,22 +243,6 @@ function dashed(path: SVGPathElement, total: number): number {
   const count = Math.ceil(total / PERIOD) + 1
   path.style.strokeDasharray = `${`${DASH} ${GAP} `.repeat(count - 1)}${DASH} ${GAP + total}`
   return count * PERIOD
-}
-
-// A quick strike from the bill to an element and back: a separate dashed path, drawn out then pulled in.
-function lick(gsap: Gsap, field: HTMLElement, svg: SVGSVGElement, target: Element, start: Point) {
-  const end = centre(target, field.getBoundingClientRect())
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  const bend = (start.y + end.y) / 2 - Math.min(90, Math.abs(start.x - end.x) * 0.18)
-  path.setAttribute('d', `M${start.x} ${start.y} Q${(start.x + end.x) / 2} ${bend} ${end.x} ${end.y}`)
-  path.setAttribute('class', 'lick')
-  svg.appendChild(path)
-  const hidden = dashed(path, path.getTotalLength())
-  gsap.set(path, { strokeDashoffset: hidden })
-  return gsap.timeline({ onComplete: () => path.remove() })
-    .to(path, { strokeDashoffset: 0, duration: 0.28, ease: 'power3.out' })
-    .to(path, { strokeDashoffset: hidden, duration: 0.42, ease: 'power2.in' }, '+=0.12')
-    .set(path, { opacity: 0 })
 }
 
 // Caught and pinned, not eaten: a specimen stays in the collection, with its stamp.
@@ -286,45 +256,72 @@ function pin(gsap: Gsap, item: HTMLElement) {
   return timeline.call(() => { tally.specimens = document.querySelectorAll('[data-specimen].is-caught').length; paintCounter() })
 }
 
-// Phones and tablets: three bugs crawl beside the drawing; when it comes into view the kiskadee strikes from its bill
-// at each, one after another, and swallows it.
+// Phones and tablets: three bugs walk around beside the drawing; touch one (or point at it) and it scurries off, then
+// goes back to walking. No strike line here: from the bill it would read as a tongue, and a kiskadee has none.
 function snack(gsap: Gsap, ScrollTrigger: Trigger) {
   const field = document.querySelector<HTMLElement>('[data-field]')
-  const svg = field?.querySelector<SVGSVGElement>('[data-tongue-front]')
   const frame = document.querySelector<HTMLElement>('.hero .frame')
-  const beak = document.querySelector('[data-tongue="start"]')  // the tip of the bill
-  if (!field || !svg || !frame || !beak) return () => {}
-  const fit = () => svg.setAttribute('viewBox', `0 0 ${field.offsetWidth} ${field.offsetHeight}`)
-  fit()
-  const spots = [{ u: 0.9, v: 0.66 }, { u: 0.62, v: 0.86 }, { u: 0.88, v: 0.9 }]
+  if (!field || !frame) return () => {}
+  const spots = [{ u: 0.86, v: 0.7 }, { u: 0.6, v: 0.88 }, { u: 0.9, v: 0.92 }]
   const bugs = spots.map(() => critter(field))
+  const homes: Point[] = spots.map(() => ({ x: 0, y: 0 }))
   const layout = () => {
     const box = field.getBoundingClientRect(), frameBox = frame.getBoundingClientRect()
-    bugs.forEach((bug, index) => gsap.set(bug, { left: frameBox.left - box.left + spots[index].u * frameBox.width - 13,
-                                                   top: frameBox.top - box.top + spots[index].v * frameBox.height - 11 }))
-    fit()
+    spots.forEach((spot, index) => {
+      homes[index] = { x: frameBox.left - box.left + spot.u * frameBox.width, y: frameBox.top - box.top + spot.v * frameBox.height }
+      gsap.set(bugs[index], { left: homes[index].x - 13, top: homes[index].y - 11 })
+    })
   }
   layout()
   ScrollTrigger.addEventListener('refreshInit', layout)
+
+  const walks: (GSAPTimeline | undefined)[] = []
+  // Never off the screen's edges: the offsets are clamped so the whole bug stays inside the page.
+  const inside = (index: number, to: Point): Point => ({ x: clamp(to.x, 18 - homes[index].x, field.offsetWidth - 18 - homes[index].x), y: to.y })
+  const heading = (dx: number, dy: number) => (Math.atan2(dy, dx) * 180) / Math.PI + 90
+  // Turn towards a nearby point, walk there at a bug's pace, pause, and pick the next one.
+  const walk = (index: number) => {
+    const bug = bugs[index]
+    const from = { x: Number(gsap.getProperty(bug, 'x')), y: Number(gsap.getProperty(bug, 'y')) }
+    const to = inside(index, { x: gsap.utils.random(-44, 44), y: gsap.utils.random(-28, 28) })
+    const dx = to.x - from.x, dy = to.y - from.y
+    walks[index] = gsap.timeline({ onComplete: () => walk(index) })
+      .to(bug, { rotation: heading(dx, dy), duration: 0.3, ease: 'power1.inOut' })
+      .to(bug, { x: to.x, y: to.y, duration: Math.max(0.6, Math.hypot(dx, dy) / 26), ease: 'none' })
+      .to({}, { duration: gsap.utils.random(0.4, 1.6) })
+  }
   bugs.forEach((bug, index) => {
-    gsap.fromTo(bug, { opacity: 0, scale: 0.5, rotation: index * 120 }, { opacity: 1, scale: 1, duration: 0.6, delay: 1.4 + index * 0.15, ease: 'back.out(1.8)' })
-    gsap.to(bug.querySelector('.critter-body'), { x: 'random(-8, 8)', y: 'random(-6, 6)', rotation: 'random(-30, 30)',
-      duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
+    gsap.fromTo(bug, { opacity: 0, scale: 0.5, rotation: index * 120 },
+      { opacity: 1, scale: 1, duration: 0.6, delay: 1.4 + index * 0.15, ease: 'back.out(1.8)', onComplete: () => walk(index) })
+    // The legs: a quick wobble while it walks.
+    gsap.to(bug.querySelector('.critter-body'), { rotation: 'random(-7, 7)', duration: 0.11, ease: 'none', repeat: -1, yoyo: true, repeatRefresh: true })
   })
-  ScrollTrigger.create({ trigger: frame, start: 'center 70%', once: true, onEnter: () => bugs.forEach(bug => feed(() => {
-    const beakTip = centre(beak, field.getBoundingClientRect())
-    const at = centre(bug, field.getBoundingClientRect())
-    const flick = lick(gsap, field, svg, bug, beakTip)
-    return gsap.timeline()
-      .add(flick)
-      .to(bug, { x: `+=${beakTip.x - at.x}`, y: `+=${beakTip.y - at.y}`, scale: 0.2, duration: 0.42, ease: 'power2.in' }, 0.3)
-      .to(bug, { opacity: 0, duration: 0.12 }, 0.62)
-      .call(() => { tally.page += 1; paintCounter() }, [], 0.62)
-  })) })
+
+  // A finger (or a pointer) close by: it runs straight away from it, then calms down and walks again.
+  const scare = (event: PointerEvent) => {
+    const box = field.getBoundingClientRect()
+    const pointer = { x: event.clientX - box.left, y: event.clientY - box.top }
+    bugs.forEach((bug, index) => {
+      const at = { x: homes[index].x + Number(gsap.getProperty(bug, 'x')), y: homes[index].y + Number(gsap.getProperty(bug, 'y')) }
+      const dx = at.x - pointer.x, dy = at.y - pointer.y, distance = Math.hypot(dx, dy) || 1
+      if (distance > 80) return
+      walks[index]?.kill()
+      const to = inside(index, { x: clamp(Number(gsap.getProperty(bug, 'x')) + (dx / distance) * 70, -70, 70),
+                                 y: clamp(Number(gsap.getProperty(bug, 'y')) + (dy / distance) * 70, -50, 50) })
+      walks[index] = gsap.timeline({ onComplete: () => walk(index) })
+        .to(bug, { rotation: heading(dx, dy), duration: 0.08 })
+        .to(bug, { x: to.x, y: to.y, duration: 0.35, ease: 'power3.out' })
+        .to({}, { duration: 0.9 })
+    })
+  }
+  addEventListener('pointerdown', scare, { passive: true })
+  addEventListener('pointermove', scare, { passive: true })
   return () => {
     ScrollTrigger.removeEventListener('refreshInit', layout)
+    removeEventListener('pointerdown', scare)
+    removeEventListener('pointermove', scare)
+    walks.forEach(timeline => timeline?.kill())
     bugs.forEach(bug => bug.remove())
-    document.querySelectorAll('.lick').forEach(element => element.remove())
   }
 }
 
