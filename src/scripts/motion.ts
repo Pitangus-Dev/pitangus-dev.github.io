@@ -121,7 +121,8 @@ function ink(gsap: Gsap, late: boolean) {
     const strokes = mascot.querySelectorAll('[data-ink]')
     const washes = mascot.querySelectorAll('[data-wash]')
     gsap.set(strokes, { drawSVG: '0%' })
-    gsap.timeline({ delay: 0.2 })
+    // It only starts blinking once it is drawn: a lid closing over an eye not yet painted is a black blot.
+    gsap.timeline({ delay: 0.2, onComplete: () => blink(gsap) })
       .from(pencil, { opacity: 0, duration: 0.6, stagger: 0.08, ease: 'sine.out' })
       .to(strokes, { drawSVG: '100%', duration: 1.5, stagger: 0.14, ease: 'sine.inOut' }, '-=0.3')
       .from(washes, { opacity: 0, duration: 0.9, stagger: 0.05, ease: 'sine.out' }, '-=0.5')
@@ -131,9 +132,9 @@ function ink(gsap: Gsap, late: boolean) {
     gsap.from('.hero [data-reveal]', { y: 18, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.1, delay: 0.5 })
   }
   // Alive, quietly: it breathes on its perch (from the feet) and its head turns a little on its neck.
-  gsap.to('.mascot-body', { scaleY: 1.012, svgOrigin: '27 42', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
-  gsap.to('.mascot-head', { rotation: 1.6, svgOrigin: '27 22', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4 })
-  blink(gsap)
+  gsap.to('.mascot-body', { scaleY: 1.012, svgOrigin: '30 39.5', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
+  gsap.to('.mascot-head', { rotation: 1.6, svgOrigin: '30.5 17', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4 })
+  if (late) blink(gsap)
 }
 
 // A real blink: the lid comes down fast, rises a bit slower, at uneven intervals, now and then twice.
