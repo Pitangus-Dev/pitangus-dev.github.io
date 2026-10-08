@@ -29,6 +29,7 @@ const h = t.hero
       .kicker i { font-family: var(--font-display), serif; text-transform: none; letter-spacing: 0.02em; font-size: 19px; }
       h1 { margin: 0; font: 400 86px/0.98 var(--font-display), serif; letter-spacing: -0.015em; color: var(--ink); }
       h1 em { color: var(--accent); }
+      h1.long { font-size: 70px; }
       .lead { margin: 30px 0 0; max-width: 30ch; font: 400 22px/1.4 var(--font-body), sans-serif; color: var(--muted); }
       .url { margin: 26px 0 0; font: 600 18px/1 var(--font-mono), monospace; color: var(--ink); }
       .stamp { position: absolute; right: 62px; top: 52px; font-size: 22px; padding: 12px 20px; --ink-at: 140px 70px; transform: rotate(-9deg); }
@@ -44,7 +45,7 @@ const h = t.hero
       </div>
       <div>
         <p class="kicker">{h.plate} · <i>{h.species}</i></p>
-        <h1>{h.title[0]}<br />{h.title[1]}<br /><em>{h.title[2]}</em></h1>
+        <h1 class:list={[h.title.length > 3 && 'long']}>{h.title.map((line, index) => index === h.title.length - 1 ? <em>{line}</em> : <>{line}<br /></>)}</h1>
         <p class="lead">{t.og}</p>
         <p class="url">tamandua-appsec.github.io</p>
       </div>
