@@ -8,11 +8,13 @@ import Sources from './Sources.astro'
 import Ticket from './Ticket.astro'
 import Closing from './Closing.astro'
 import Bug from './Bug.astro'
+import Flyer from './Flyer.astro'
 interface Props { t: Content }
 const { t } = Astro.props
 ---
 <main id="content" class="field" data-field>
   <template data-bug-template><span class="critter"><span class="critter-body"><Bug size={26} /></span></span></template>
+  <template data-flyer-template><span class="flyer"><Flyer /></span></template>
   <Hero t={t} />
   <Specimens t={t} />
   <Change t={t} />
@@ -28,4 +30,7 @@ const { t } = Astro.props
   .field > :global(section), .field > :global(footer) { position: relative; z-index: 1; }
   .field :global(.critter) { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; will-change: transform; }
   .field :global(.critter-body) { display: block; }
+  /* The kiskadee on a sally: fixed to the screen, so it reaches its bug wherever the page has scrolled to. */
+  :global(.flyer) { position: fixed; left: 0; top: 0; z-index: 60; width: 52px; height: 36px; pointer-events: none; will-change: transform; }
+  :global(.flyer svg) { display: block; overflow: visible; }
 </style>
