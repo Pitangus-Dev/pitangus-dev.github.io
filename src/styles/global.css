@@ -13,8 +13,6 @@
   /* What reads on the ink-coloured surfaces (a primary button under the pointer). */
   --on-ink: #f2c230;
   --rule: color-mix(in oklab, var(--ink) 16%, transparent);
-  /* The kiskadee's flight across the page: ink on paper, cream on the dark desk. */
-  --flight: var(--ink);
   /* The margin notes are written on the page, even when they belong to a card: the page's accent, resolved here so a
      card's own accent doesn't reach them. */
   --note: var(--accent);
@@ -103,7 +101,7 @@ html.no-js :is([data-theme-toggle], [data-motion-toggle], [data-copy]) { display
 .grid > * { min-width: 0; }
 .plate { position: relative; padding-block: clamp(5rem, 12vw, 10rem); border-top: 1px solid var(--rule); }
 .plate > .wrap { position: relative; }
-/* Plates held still while something plays (scripts/motion.ts) are opaque paper, so the flight line stays behind them. */
+/* Plates held still while something plays (scripts/motion.ts) are opaque paper, so the bugs stay behind them. */
 .plate[data-held] { background-color: var(--paper); }
 .plate-head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 1rem; margin-bottom: clamp(2rem, 5vw, 4rem); }
 .plate-num {
@@ -184,6 +182,5 @@ html.pending .note { opacity: 0; }
 @media (forced-colors: active) {
   .stamp { border-color: CanvasText; outline-color: CanvasText; color: CanvasText; -webkit-mask: none; mask: none; mix-blend-mode: normal; }
   .plate-num { -webkit-text-stroke: 1px CanvasText; }
-  [data-tongue-svg] path { stroke: Highlight; }
   .button { border-color: ButtonText; }
 }

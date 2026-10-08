@@ -26,7 +26,7 @@ const k = t.ticket
             {k.card.sections.map(([term, value], index) => (<div><dt class="mono">{term}</dt><dd class:list={[index === 2 && 'mono code']}>{value}</dd></div>))}
           </dl>
         </div>
-        <div class="face back card-paper" data-tongue="stop">
+        <div class="face back card-paper">
           <span class="stamp">{t.ledger.stamp}</span>
           <p>{k.card.back}</p>
         </div>

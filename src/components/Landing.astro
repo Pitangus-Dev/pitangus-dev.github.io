@@ -12,14 +12,6 @@ interface Props { t: Content }
 const { t } = Astro.props
 ---
 <main id="content" class="field" data-field>
-  <!-- The kiskadee's flight (scripts/motion.ts), decorative: a dashed ink line out of the bill, through every bug it
-       catches. It runs behind the page's content; a twin drawn on top, clipped to the drawing's frame, shows it leaving
-       the bill, and the quick strikes at what it catches are drawn on top too. -->
-  <svg class="flight" aria-hidden="true" data-tongue-svg><path data-tongue-path /></svg>
-  <svg class="flight flight-front" aria-hidden="true" data-tongue-front>
-    <clipPath id="flight-frame"><rect data-tongue-clip /></clipPath>
-    <path data-tongue-twin clip-path="url(#flight-frame)" />
-  </svg>
   <template data-bug-template><span class="critter"><span class="critter-body"><Bug size={26} /></span></span></template>
   <Hero t={t} />
   <Specimens t={t} />
@@ -32,11 +24,7 @@ const { t } = Astro.props
 
 <style>
   .field { position: relative; }
-  .flight { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
-  .flight-front { z-index: 5; }
-  .flight :global(path) { fill: none; stroke: var(--flight); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   /* Over the drawing's frame the line is on lit paper: day ink, in both themes. */
-  .flight-front :global(path) { stroke: var(--card-ink); }
   .field > :global(section), .field > :global(footer) { position: relative; z-index: 1; }
   .field :global(.critter) { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; will-change: transform; }
   .field :global(.critter-body) { display: block; }

@@ -2,8 +2,7 @@
 // The kiskadee (Pitangus sulphuratus) of the logo, perched on a branch and drawn like a naturalist's plate: a pencil
 // underdrawing (the circle of the head, the oval of the body, the line of the pose; data-pencil), the flat colour
 // (data-wash), pen hatching in the shadows and brush strokes in the plumage (data-wash too), and the ink outlines on
-// top (data-ink, pathLength 1), sketched first by scripts/motion.ts. The tip of the bill carries data-tongue="start":
-// the flight line is drawn from there. The eye's catchlight (data-pupil) follows the pointer, up to data-reach
+// top (data-ink, pathLength 1), sketched first by scripts/motion.ts. The eye's catchlight (data-pupil) follows the pointer, up to data-reach
 // from where it rests. All of it is plain SVG: no filters, nothing recomputed while it breathes.
 interface Props { class?: string; label: string }
 const { class: className = '', label } = Astro.props
@@ -163,7 +162,6 @@ const eye = { x: 31.4, y: 13.5, r: 1.85 }
     <ellipse cx="38.1" cy="14.4" rx=".45" ry=".24" fill="#4A463C" data-wash />
     <path d={billLine} {...ink} />
     <path d="M36.6 15.7 C40 16 44 16.5 47.9 17.25" {...ink} stroke-width=".3" />
-    <circle cx="48" cy="17.2" r=".5" fill="none" data-tongue="start" />
   </g>
 </svg>
 

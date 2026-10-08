@@ -24,7 +24,7 @@ const workflow = `- uses: actions/checkout@v4\n  with: { fetch-depth: 0 }\n${ACT
         <p class="muted small">{c.actionNote}</p>
       </div>
     </div>
-    <figure class="terminal" data-terminal data-tongue="stop">
+    <figure class="terminal" data-terminal>
       <div class="terminal-bar" aria-hidden="true"><span></span><span></span><span></span></div>
       <pre class="mono terminal-body"><code><span class="prompt">$ </span><span data-type data-command={c.command}>{c.command}</span>
 {c.output.map(line => <span class:list={['out', `tone-${line.tone}`]} data-out>{line.text || ' '}</span>)}</code></pre>

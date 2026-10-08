@@ -23,7 +23,7 @@ const s = t.specimens
     <ol class="specimens" role="list">
       {s.items.map((item, index) => (
         <li class="specimen card-paper" data-specimen style={`--tilt: ${[-1.2, 0.8, -0.6, 1.1][index]}deg`}>
-          <span class="pin" data-tongue="stop" aria-hidden="true"></span>
+          <span class="pin" aria-hidden="true"></span>
           <div class="specimen-top">
             <span class="mono specimen-no">№ {String(index + 1).padStart(2, '0')}</span>
             <span class="mono specimen-kind">{item.kind}</span>

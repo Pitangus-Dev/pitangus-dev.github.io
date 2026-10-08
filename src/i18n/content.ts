@@ -19,7 +19,7 @@ export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Tamandu
 const en = {
   lang: 'en',
   meta: {
-    title: 'Pitangus · Catches your bugs, and proves they are gone',
+    title: 'Pitangus · Catches your bugs mid-flight, and proves they are gone',
     description: 'Self-hosted, open-source application security for small teams: scans your code, verifies every fix and keeps the evidence. In English and Spanish.',
   },
   nav: { label: 'Sections', specimens: 'Specimens', change: 'Your change', ledger: 'Ledger', install: 'Install', code: 'Code', other: 'Español', otherHref: '/es/' },
@@ -34,11 +34,11 @@ const en = {
     habitat: 'Habitat: your repositories. Diet: bugs.',
     record: 'Specimen Nº 001 · Tyrannidae',
     marks: { bill: 'heavy bill', mask: 'black mask', breast: 'sulphur-yellow breast' },
-    title: ['I see you, bug.', 'Then I prove', 'you’re gone.'],
+    title: ['Catches your bugs', 'mid-flight.', 'And proves', 'they’re gone.'],
     lead: 'Self-hosted application security for small teams. Pitangus scans your code, dependencies and secrets, tells you what each change introduces and what it fixes, and keeps the evidence an auditor can check.',
     primary: 'Install in 5 minutes',
     secondary: 'Read the code',
-    vertical: 'NOTHING HIDES FROM PITANGUS',
+    vertical: 'CATCHES YOUR BUGS MID-FLIGHT',
     facts: ['Open source · AGPL-3.0', 'Runs on your server', 'No telemetry'],
   },
   specimens: {
@@ -165,7 +165,7 @@ const en = {
 const es: typeof en = {
   lang: 'es',
   meta: {
-    title: 'Pitangus · Se traga tus bugs, y demuestra que ya no están',
+    title: 'Pitangus · Atrapa tus bugs al vuelo, y demuestra que ya no están',
     description: 'Seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños: analiza tu código, verifica cada corrección y guarda la evidencia. En español y en inglés.',
   },
   nav: { label: 'Secciones', specimens: 'Especímenes', change: 'Tu cambio', ledger: 'Registro', install: 'Instalar', code: 'Código', other: 'English', otherHref: '/' },
@@ -180,11 +180,11 @@ const es: typeof en = {
     habitat: 'Hábitat: tus repositorios. Dieta: bugs.',
     record: 'Ejemplar Nº 001 · Tyrannidae',
     marks: { bill: 'pico robusto', mask: 'antifaz negro', breast: 'pecho amarillo azufre' },
-    title: ['Bien te veo, bug.', 'Y demuestro', 'que ya no estás.'],
+    title: ['Atrapa tus bugs', 'al vuelo.', 'Y demuestra', 'que ya no están.'],
     lead: 'Seguridad de aplicaciones autoalojada para equipos pequeños. Pitangus analiza tu código, tus dependencias y tus secretos, te dice qué introduce y qué corrige cada cambio, y guarda la evidencia que un auditor puede comprobar.',
     primary: 'Instálalo en 5 minutos',
     secondary: 'Ver el código',
-    vertical: 'SE TRAGA TUS BUGS',
+    vertical: 'ATRAPA TUS BUGS AL VUELO',
     facts: ['Código abierto · AGPL-3.0', 'Corre en tu servidor', 'Sin telemetría'],
   },
   specimens: {
