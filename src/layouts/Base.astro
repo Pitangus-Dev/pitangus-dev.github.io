@@ -3,7 +3,7 @@ import { Font } from 'astro:assets'
 import 'lenis/dist/lenis.css'
 import '../styles/global.css'
 import type { Content } from '../i18n/content'
-import { REPO } from '../i18n/content'
+import { BRAND, REPO } from '../i18n/content'
 import Bug from '../components/Bug.astro'
 import { withBase } from '../paths'
 import paperTooth from '../assets/paper/paper-tooth.webp'
@@ -40,13 +40,13 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     </>}
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#fff3de" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1e1433" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbf5e6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     {!notFound && <meta property="og:url" content={canonical} />}
-    <meta property="og:site_name" content="Tamandua" />
+    <meta property="og:site_name" content={BRAND} />
     <meta property="og:locale" content={locale[t.lang]} />
     <meta property="og:locale:alternate" content={locale[other]} />
     <meta property="og:image" content={new URL(withBase(`/og-${t.lang}.jpg`), Astro.site)} />
@@ -62,26 +62,25 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     <Font cssVariable="--font-hand" preload />
     <!-- Every font and the paper are asked for up front: a page (above all one reached by changing language, mid page
          turn) must not paint first with a fallback font or flat paper and then swap them in, which reads as a flicker.
-         The cards are paper in both themes (the 404 has none: there the paper is only the day page); the desk tiles only
-         matter at night. -->
-    <link rel="preload" as="image" href={paperTooth.src} type="image/webp" media={notFound ? '(prefers-color-scheme: light)' : undefined} />
-    <link rel="preload" as="image" href={paperCloud.src} type="image/webp" media={notFound ? '(prefers-color-scheme: light)' : undefined} />
+         The cards are paper in both themes (the 404's drawing is on one too); the desk tiles only matter at night. -->
+    <link rel="preload" as="image" href={paperTooth.src} type="image/webp" />
+    <link rel="preload" as="image" href={paperCloud.src} type="image/webp" />
     <link rel="preload" as="image" href={deskTooth.src} type="image/webp" media="(prefers-color-scheme: dark)" />
     <link rel="preload" as="image" href={deskCloud.src} type="image/webp" media="(prefers-color-scheme: dark)" />
     <script is:inline>
       // Before paint: JS is here, and whether this visitor turned motion off (a convenience; it may be unavailable).
       document.documentElement.classList.replace('no-js', 'js')
       try {
-        if (localStorage.getItem('tamandua-motion') === 'off') document.documentElement.classList.add('still')
+        if (localStorage.getItem('pitangus-motion') === 'off') document.documentElement.classList.add('still')
         // Arriving from the other language, the page turns (a view transition): it must already be complete, not blank
         // waiting for its entrance, or the turn shows an empty page that then fills in.
-        const turned = sessionStorage.getItem('tamandua-turn') === '1'
-        sessionStorage.removeItem('tamandua-turn')
+        const turned = sessionStorage.getItem('pitangus-turn') === '1'
+        sessionStorage.removeItem('pitangus-turn')
         if (!turned && !document.documentElement.classList.contains('still') && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
           document.documentElement.classList.add('pending')
           setTimeout(() => document.documentElement.classList.remove('pending'), 1500)  // the script never came: show everything
         }
-        const theme = localStorage.getItem('tamandua-theme')
+        const theme = localStorage.getItem('pitangus-theme')
         if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
       } catch {}
     </script>
@@ -90,9 +89,11 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     <a class="skip" href="#content">{t.skip}</a>
     <header class="top">
       <div class="wrap top-row">
-        <a class="brand" href={home} aria-label="Tamandua">
-          <img src={withBase('/favicon.svg')} alt="" width="28" height="28" />
-          <span>Tamandua</span>
+        <!-- The logo on paper; at night, the icon (the same head on its paper tile): a black head would sink into the desk. -->
+        <a class="brand" href={home} aria-label={BRAND}>
+          <img class="brand-day" src={withBase('/logo.svg')} alt="" width="34" height="34" />
+          <img class="brand-night" src={withBase('/favicon.svg')} alt="" width="32" height="32" />
+          <span class="brand-word">{BRAND}</span>
         </a>
         <nav aria-label={t.nav.label} class="nav">
           <a href={section('specimens')}>{t.nav.specimens}</a>
@@ -139,8 +140,12 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     border-bottom: 1px solid var(--rule);
   }
   .top-row { display: flex; align-items: center; gap: 1.5rem; min-height: 4rem; }
-  .brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; text-decoration: none; letter-spacing: -0.01em; }
-  .brand img { border-radius: 7px; }
+  .brand { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+  .brand-word { font-family: var(--font-display), Georgia, serif; font-size: 1.7rem; line-height: 1; letter-spacing: -0.005em; }
+  .brand-night { display: none; border-radius: 7px; }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .brand-night { display: block; } :global(:root:not([data-theme="light"])) .brand-day { display: none; } }
+  :global(:root[data-theme="dark"]) .brand-night { display: block; }
+  :global(:root[data-theme="dark"]) .brand-day { display: none; }
   .nav { display: flex; gap: 1.5rem; margin-inline: auto; font-size: 0.95rem; }
   .nav a { text-decoration: none; }
   .tools { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; }
@@ -151,7 +156,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     background: none; border: 0; padding: 0.4rem 0; color: var(--muted); cursor: pointer; font-size: 0.8rem;
     text-decoration: underline; text-underline-offset: 0.2em; min-height: 44px;
   }
-  .motion-toggle:hover { color: var(--violet); }
+  .motion-toggle:hover { color: var(--accent); }
   .motion-toggle { display: inline-flex; align-items: center; gap: 0.4rem; }
   .motion-icon .play { display: none; }
   :global(html.still) .motion-icon .pause { display: none; }
@@ -159,7 +164,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
   /* With reduced motion nothing moves anyway: nothing to pause. */
   @media (prefers-reduced-motion: reduce) { .motion-toggle { display: none; } }
   .theme-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: none; color: var(--ink); cursor: pointer; border-radius: 50%; }
-  .theme-toggle:hover { color: var(--violet); }
+  .theme-toggle:hover { color: var(--accent); }
   .theme-toggle .moon { display: none; }
   @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .theme-toggle .moon { display: block; } :global(:root:not([data-theme="light"])) .theme-toggle .sun { display: none; } }
   :global(:root[data-theme="dark"]) .theme-toggle .moon { display: block; }
@@ -175,6 +180,6 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
   @media (max-width: 40rem) {
     .code { display: none; }
     .tools { gap: 0.5rem; }
-    .brand span { display: none; }
+    .brand-word { display: none; }
   }
 </style>

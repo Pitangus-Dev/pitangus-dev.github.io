@@ -24,7 +24,7 @@ const workflow = `- uses: actions/checkout@v4\n  with: { fetch-depth: 0 }\n${ACT
         <p class="muted small">{c.actionNote}</p>
       </div>
     </div>
-    <figure class="terminal" data-terminal data-tongue="stop">
+    <figure class="terminal" data-terminal>
       <div class="terminal-bar" aria-hidden="true"><span></span><span></span><span></span></div>
       <pre class="mono terminal-body"><code><span class="prompt">$ </span><span data-type data-command={c.command}>{c.command}</span>
 {c.output.map(line => <span class:list={['out', `tone-${line.tone}`]} data-out>{line.text || ' '}</span>)}</code></pre>
@@ -36,15 +36,15 @@ const workflow = `- uses: actions/checkout@v4\n  with: { fetch-depth: 0 }\n${ACT
 <style>
   .copy { grid-column: 1 / span 5; }
   .terminal { grid-column: 7 / span 6; margin: 0; align-self: start; background: var(--slab); color: var(--on-slab); border-radius: 0.6rem; overflow: hidden;
-              box-shadow: 0 30px 60px -35px rgb(30 20 51 / 0.6); transform: rotate(0.6deg); }
-  .terminal-bar { display: flex; gap: 0.4rem; padding: 0.8rem 1rem; border-bottom: 1px solid rgb(255 243 222 / 0.12); }
-  .terminal-bar span { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: 1px solid rgb(255 243 222 / 0.45); }
+              box-shadow: 0 30px 60px -35px rgb(28 26 22 / 0.6); transform: rotate(0.6deg); }
+  .terminal-bar { display: flex; gap: 0.4rem; padding: 0.8rem 1rem; border-bottom: 1px solid rgb(255 248 232 / 0.12); }
+  .terminal-bar span { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: 1px solid rgb(255 248 232 / 0.45); }
   .terminal-body { margin: 0; padding: 1.25rem 1.4rem 1.6rem; font-size: clamp(0.72rem, 0.66rem + 0.25vw, 0.86rem); line-height: 1.7; white-space: pre-wrap; }
-  .prompt { color: var(--lilac); }
+  .prompt { color: var(--slab-second); }
   .out { display: block; }
-  .tone-muted { color: rgb(255 243 222 / 0.62); }
+  .tone-muted { color: rgb(255 248 232 / 0.62); }
   .tone-ok { color: var(--bug); }
-  .tone-strong { color: var(--lilac); font-weight: 600; }
+  .tone-strong { color: var(--slab-accent); font-weight: 600; }
   .workflow { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--rule); }
   .workflow pre { margin: 0.75rem 0; padding: 1rem 1.1rem; background: color-mix(in oklab, var(--paper-deep) 70%, transparent); border: 1px solid var(--rule);
                   font-size: 0.82rem; overflow-x: auto; }

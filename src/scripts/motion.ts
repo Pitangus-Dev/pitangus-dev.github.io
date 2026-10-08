@@ -3,10 +3,10 @@
 // 1.5-second safety net), and with reduced motion or the "pause motion" button it stays still.
 //
 // The story, in order:
-//   1. The tamandua is sketched in ink, then washed with colour; its eye follows the pointer.
-//   2. Wide screens: bugs crawl all over the page and run from the pointer. As you scroll, one tongue winds out of the
-//      snout through every bug, eating each one its tip reaches. Phones and tablets get a lighter version: the mascot
-//      snacks on the bugs beside it. Everywhere, the specimens (already caught) are stamped as they scroll in.
+//   1. The kiskadee is sketched in ink, then washed with colour; its eye follows the pointer.
+//   2. Bugs walk about: on wide screens all over the page, on phones and tablets beside the drawing. They run from
+//      the pointer (or a finger) and go back to their business. Everywhere, the specimens (already caught) are
+//      stamped as they scroll in.
 //   3. The terminal types itself, the ledger gets its hanko, the tags ride a conveyor, the Jira card turns over, the
 //      naturalist's notes write themselves and, on wide screens, each plate is uncovered like a turning page.
 
@@ -14,20 +14,21 @@ type Gsap = typeof import('gsap').gsap
 type Trigger = typeof import('gsap/ScrollTrigger').ScrollTrigger
 type Point = { x: number; y: number }
 
-const STORAGE = 'tamandua-motion'
+const STORAGE = 'pitangus-motion'
 const root = document.documentElement
 const WIDE = '(min-width: 64rem)'
-// Everything below animates the landing. Elsewhere (the 404) the tamandua only sniffs, in CSS, which html.still stops.
+// Everything below animates the landing. Elsewhere (the 404) the kiskadee only bobs on its perch, in CSS, which
+// html.still stops.
 const landing = document.querySelector('[data-field]') !== null
 let teardown: (() => void) | null = null
 
-// The counter in the header: bugs eaten around the page, and specimens caught.
+// The counter in the header: bugs caught around the page, and specimens.
 const tally = { page: 0, specimens: 0 }
 
 export function start() {
   // Changing language turns the page: the next one comes in complete (see the inline script in Base.astro).
   document.querySelectorAll('[data-turn]').forEach(link => link.addEventListener('click', () => {
-    try { sessionStorage.setItem('tamandua-turn', '1') } catch { /* then it just plays its entrance */ }
+    try { sessionStorage.setItem('pitangus-turn', '1') } catch { /* then it just plays its entrance */ }
   }))
   wireCopyButtons()
   wireMotionToggle()
@@ -38,8 +39,7 @@ export function start() {
   else settle()
 }
 
-// The final state, without animation: specimens caught, the tongue drawn (on wide screens only: phones never get the
-// tongue across the page), nothing hidden.
+// The final state, without animation: specimens caught, nothing hidden.
 function settle() {
   root.classList.remove('pending')
   document.querySelectorAll<HTMLElement>('[data-type]').forEach(element => { element.textContent = element.dataset.command ?? element.textContent })
@@ -47,18 +47,6 @@ function settle() {
   caught.forEach(item => item.classList.add('is-caught'))
   Object.assign(tally, { page: 0, specimens: caught.length })
   paintCounter()
-  clearTongue()
-  const built = matchMedia(WIDE).matches ? buildTongue([]) : null
-  if (built) built.paths.forEach(path => { path.style.strokeDashoffset = '0' })
-}
-
-// No tongue on the page: before a phone's lighter motion, and whenever motion stops or restarts.
-function clearTongue() {
-  document.querySelectorAll<SVGPathElement>('[data-tongue-path], [data-tongue-twin]').forEach(path => {
-    path.removeAttribute('d')
-    path.style.removeProperty('stroke-dasharray')
-    path.style.removeProperty('stroke-dashoffset')
-  })
 }
 
 async function run() {
@@ -86,21 +74,18 @@ async function run() {
   const context = gsap.context(() => {
     ink(gsap, late)
     cleanups.push(eyes(gsap))
-    // The big set pieces (the tongue across the page, the turning pages) are for wide screens. On phones and
-    // tablets the mascot just snacks on the bugs beside it and the specimens are stamped as they scroll in: lighter,
-    // and nothing fights with touch scrolling.
+    // The big set pieces (bugs all over the page, the turning pages) are for wide screens. On phones and tablets a
+    // few bugs walk beside the drawing and the specimens are stamped as they scroll in: lighter, and nothing fights
+    // with touch scrolling.
     media.add({ wide: WIDE, narrow: `not all and ${WIDE}` }, matched => {
       Object.assign(tally, { page: 0, specimens: 0 })
       paintCounter()
       stamps(gsap, ScrollTrigger)
-      clearTongue()
       if (!matched.conditions?.wide) return snack(gsap, ScrollTrigger)
       const bugsOnPage = swarm(gsap, ScrollTrigger)
-      tongue(gsap, ScrollTrigger, bugsOnPage)
       pages(gsap)
       return () => {
-        bugsOnPage.cleanup()
-        clearTongue()
+        bugsOnPage()
         document.querySelectorAll('.leaf').forEach(element => element.remove())
       }
     })
@@ -117,8 +102,7 @@ async function run() {
     cleanups.forEach(cleanup => cleanup())
     media.revert()
     context.revert()
-    document.querySelectorAll('.critter, .lick, .leaf').forEach(element => element.remove())
-    clearTongue()
+    document.querySelectorAll('.critter, .leaf').forEach(element => element.remove())
     gsap.ticker.remove(onTick)
     lenis.destroy()
   }
@@ -134,22 +118,22 @@ function ink(gsap: Gsap, late: boolean) {
   if (!late) {
     // Pencil first, then the ink over it, then colour and shading, each to its own opacity.
     const pencil = mascot.querySelectorAll('[data-pencil]')
-    const strokes = mascot.querySelectorAll('[data-ink]')
+    const inkLayer = mascot.querySelector('[data-ink-layer]')
     const washes = mascot.querySelectorAll('[data-wash]')
-    gsap.set(strokes, { drawSVG: '0%' })
-    gsap.timeline({ delay: 0.2 })
+    // It only starts blinking once it is drawn: a lid closing over an eye not yet painted is a black blot.
+    const timeline = gsap.timeline({ delay: 0.2, onComplete: () => blink(gsap) })
       .from(pencil, { opacity: 0, duration: 0.6, stagger: 0.08, ease: 'sine.out' })
-      .to(strokes, { drawSVG: '100%', duration: 1.5, stagger: 0.14, ease: 'sine.inOut' }, '-=0.3')
-      .from(washes, { opacity: 0, duration: 0.9, stagger: 0.05, ease: 'sine.out' }, '-=0.5')
+    // The ink goes down from the crown to the tail, as if drawn, then the colour washes over it.
+    if (inkLayer) timeline.fromTo(inkLayer, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.8, ease: 'sine.inOut' }, '-=0.2')
+    timeline.from(washes, { opacity: 0, duration: 1, stagger: 0.12, ease: 'sine.out' }, '-=0.4')
     // The lines of the title rise into place.
     // y: 0 as well: while the page loaded, CSS held them down, and GSAP would otherwise keep that offset in pixels.
     gsap.fromTo('.hero .line-inner', { y: 0, yPercent: 130 }, { y: 0, yPercent: 0, duration: 1.2, stagger: 0.1, ease: 'expo.out' })
     gsap.from('.hero [data-reveal]', { y: 18, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.1, delay: 0.5 })
   }
-  // Alive, quietly: it breathes and its head sways a little.
-  gsap.to('.mascot-body', { scaleY: 1.012, svgOrigin: '22 64', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
-  gsap.to('.mascot-head', { rotation: 1.6, svgOrigin: '24 40', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4 })
-  blink(gsap)
+  // Alive, quietly: it breathes on its perch, from the feet.
+  gsap.to('.mascot-figure', { scaleY: 1.008, transformOrigin: '50% 80%', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
+  if (late) blink(gsap)
 }
 
 // A real blink: the lid comes down fast, rises a bit slower, at uneven intervals, now and then twice.
@@ -168,97 +152,26 @@ function blink(gsap: Gsap) {
   gsap.delayedCall(3.2, next)
 }
 
-// The pupil looks toward the pointer.
+// The eye looks toward the pointer: its iris and pupil move up to data-reach (drawing units) from where they rest.
 function eyes(gsap: Gsap) {
   const pupil = document.querySelector<SVGElement>('[data-pupil]')
   const eye = document.querySelector<SVGElement>('[data-eye]')
   if (!pupil || !eye) return () => {}
+  const reach = Number(eye.dataset.reach ?? 0.9)
   const moveX = gsap.quickTo(pupil, 'x', { duration: 0.35, ease: 'power3.out' })
   const moveY = gsap.quickTo(pupil, 'y', { duration: 0.35, ease: 'power3.out' })
   const look = (event: PointerEvent) => {
     const box = eye.getBoundingClientRect()
     const dx = event.clientX - (box.left + box.width / 2), dy = event.clientY - (box.top + box.height / 2)
     const distance = Math.hypot(dx, dy) || 1
-    moveX((dx / distance) * 0.9)
-    moveY((dy / distance) * 0.9)
+    moveX((dx / distance) * reach)
+    moveY((dy / distance) * reach)
   }
   addEventListener('pointermove', look, { passive: true })
   return () => removeEventListener('pointermove', look)
 }
 
-// --- 2. the tongue -------------------------------------------------------------------------------------------------------
-
-// One tongue, out of the snout and across the whole page: it winds through every bug and its tip eats each one it
-// reaches. The cover's bugs go first, as soon as the reader starts scrolling; after that, the scroll draws it on.
-function tongue(gsap: Gsap, ScrollTrigger: Trigger, swarm: Swarm) {
-  let built: Built | null = null
-  let reached = 0, goal = 0, intro = 0, started = false, introduced = false, catching = false
-  const paint = () => {
-    if (!built) return
-    built.paths.forEach(path => { path.style.strokeDashoffset = String(built!.total - reached) })
-    built.visits.forEach(visit => { if (reached >= visit.length) swarm.eat(visit.id) })
-  }
-  // Once the cover's bugs are eaten, the tip eases over to wherever the scroll has got to.
-  const catchUp = () => {
-    catching = true
-    const state = { length: reached }
-    gsap.to(state, { length: () => goal, duration: 0.3, ease: 'power2.out', onUpdate: () => { reached = state.length; paint() },
-                     onComplete: () => { catching = false; reached = goal; paint() } })
-  }
-
-  // The cover's part plays by itself once the drawing is done (or as soon as the reader scrolls).
-  const begin = () => {
-    if (started) return
-    started = true
-    const state = { length: 0 }
-    gsap.to(state, { length: () => built?.head ?? 0, duration: 1 + swarm.cover * 0.25, ease: 'sine.inOut',
-                     onUpdate: () => { intro = state.length; update() },
-                     onComplete: () => { introduced = true; catching = true; update(); catchUp() } })
-  }
-  gsap.delayedCall(2.2, begin)
-
-  const update = () => {
-    if (!built) return
-    if (!started && scrollY > 24) begin()
-    const target = scrollY + innerHeight * 0.62 - built.offset
-    goal = !started ? 0 : introduced ? Math.max(built.head, lengthAtY(built, target)) : intro
-    if (!catching) { reached = goal; paint() }
-  }
-
-  const rebuild = () => { built = buildTongue(swarm.visits()); update(); paint() }
-  rebuild()
-  ScrollTrigger.create({ trigger: '[data-field]', start: 'top top', end: 'bottom bottom', onUpdate: update, onRefresh: rebuild })
-}
-
-// A tamandua has one tongue: every lick (bugs and specimens) waits its turn, and when several wait it just eats faster.
-let mouth = Promise.resolve()
-let waiting = 0
-function feed(play: () => GSAPTimeline | null) {
-  waiting += 1
-  mouth = mouth.then(() => new Promise<void>(settled => {
-    const done = () => { waiting -= 1; settled() }
-    const timeline = play()
-    if (!timeline) return done()
-    timeline.eventCallback('onComplete', done)
-    timeline.timeScale(1 + Math.min(waiting - 1, 4) * 0.5)
-  }))
-}
-
-// A quick flick of the tongue's tip (or from `from`) to an element and back: a separate path, drawn out then pulled in.
-function lick(gsap: Gsap, field: HTMLElement, svg: SVGSVGElement, target: Element, start: Point) {
-  const end = centre(target, field.getBoundingClientRect())
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  const bend = (start.y + end.y) / 2 - Math.min(90, Math.abs(start.x - end.x) * 0.18)
-  path.setAttribute('d', `M${start.x} ${start.y} Q${(start.x + end.x) / 2} ${bend} ${end.x} ${end.y}`)
-  path.setAttribute('class', 'lick')
-  svg.appendChild(path)
-  const total = path.getTotalLength()
-  gsap.set(path, { strokeDasharray: total, strokeDashoffset: total })
-  return gsap.timeline({ onComplete: () => path.remove() })
-    .to(path, { strokeDashoffset: 0, duration: 0.28, ease: 'power3.out' })
-    .to(path, { strokeDashoffset: total, duration: 0.42, ease: 'power2.in' }, '+=0.12')
-    .set(path, { opacity: 0 })
-}
+// --- 2. the bugs ------------------------------------------------------------------------------------------------------
 
 // Caught and pinned, not eaten: a specimen stays in the collection, with its stamp.
 function pin(gsap: Gsap, item: HTMLElement) {
@@ -271,45 +184,72 @@ function pin(gsap: Gsap, item: HTMLElement) {
   return timeline.call(() => { tally.specimens = document.querySelectorAll('[data-specimen].is-caught').length; paintCounter() })
 }
 
-// Phones and tablets: three bugs crawl beside the drawing; when it comes into view the tongue flicks out of the snout
-// for each, one after another.
+// Phones and tablets: three bugs walk around beside the drawing; touch one (or point at it) and it scurries off, then
+// goes back to walking.
 function snack(gsap: Gsap, ScrollTrigger: Trigger) {
   const field = document.querySelector<HTMLElement>('[data-field]')
-  const svg = field?.querySelector<SVGSVGElement>('[data-tongue-front]')
   const frame = document.querySelector<HTMLElement>('.hero .frame')
-  const snout = document.querySelector('[data-tongue="start"]')
-  if (!field || !svg || !frame || !snout) return () => {}
-  const fit = () => svg.setAttribute('viewBox', `0 0 ${field.offsetWidth} ${field.offsetHeight}`)
-  fit()
-  const spots = [{ u: 0.9, v: 0.66 }, { u: 0.62, v: 0.86 }, { u: 0.88, v: 0.9 }]
+  if (!field || !frame) return () => {}
+  const spots = [{ u: 0.86, v: 0.7 }, { u: 0.6, v: 0.88 }, { u: 0.9, v: 0.92 }]
   const bugs = spots.map(() => critter(field))
+  const homes: Point[] = spots.map(() => ({ x: 0, y: 0 }))
   const layout = () => {
     const box = field.getBoundingClientRect(), frameBox = frame.getBoundingClientRect()
-    bugs.forEach((bug, index) => gsap.set(bug, { left: frameBox.left - box.left + spots[index].u * frameBox.width - 13,
-                                                   top: frameBox.top - box.top + spots[index].v * frameBox.height - 11 }))
-    fit()
+    spots.forEach((spot, index) => {
+      homes[index] = { x: frameBox.left - box.left + spot.u * frameBox.width, y: frameBox.top - box.top + spot.v * frameBox.height }
+      gsap.set(bugs[index], { left: homes[index].x - 13, top: homes[index].y - 11 })
+    })
   }
   layout()
   ScrollTrigger.addEventListener('refreshInit', layout)
+
+  const walks: (GSAPTimeline | undefined)[] = []
+  // Never off the screen's edges: the offsets are clamped so the whole bug stays inside the page.
+  const inside = (index: number, to: Point): Point => ({ x: clamp(to.x, 18 - homes[index].x, field.offsetWidth - 18 - homes[index].x), y: to.y })
+  const heading = (dx: number, dy: number) => (Math.atan2(dy, dx) * 180) / Math.PI + 90
+  // Turn towards a nearby point, walk there at a bug's pace, pause, and pick the next one.
+  const walk = (index: number) => {
+    const bug = bugs[index]
+    const from = { x: Number(gsap.getProperty(bug, 'x')), y: Number(gsap.getProperty(bug, 'y')) }
+    const to = inside(index, { x: gsap.utils.random(-44, 44), y: gsap.utils.random(-28, 28) })
+    const dx = to.x - from.x, dy = to.y - from.y
+    walks[index] = gsap.timeline({ onComplete: () => walk(index) })
+      .to(bug, { rotation: heading(dx, dy), duration: 0.3, ease: 'power1.inOut' })
+      .to(bug, { x: to.x, y: to.y, duration: Math.max(0.6, Math.hypot(dx, dy) / 26), ease: 'none' })
+      .to({}, { duration: gsap.utils.random(0.4, 1.6) })
+  }
   bugs.forEach((bug, index) => {
-    gsap.fromTo(bug, { opacity: 0, scale: 0.5, rotation: index * 120 }, { opacity: 1, scale: 1, duration: 0.6, delay: 1.4 + index * 0.15, ease: 'back.out(1.8)' })
-    gsap.to(bug.querySelector('.critter-body'), { x: 'random(-8, 8)', y: 'random(-6, 6)', rotation: 'random(-30, 30)',
-      duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
+    gsap.fromTo(bug, { opacity: 0, scale: 0.5, rotation: index * 120 },
+      { opacity: 1, scale: 1, duration: 0.6, delay: 1.4 + index * 0.15, ease: 'back.out(1.8)', onComplete: () => walk(index) })
+    // The legs: a quick wobble while it walks.
+    gsap.to(bug.querySelector('.critter-body'), { rotation: 'random(-7, 7)', duration: 0.11, ease: 'none', repeat: -1, yoyo: true, repeatRefresh: true })
   })
-  ScrollTrigger.create({ trigger: frame, start: 'center 70%', once: true, onEnter: () => bugs.forEach(bug => feed(() => {
-    const nose = centre(snout, field.getBoundingClientRect())
-    const at = centre(bug, field.getBoundingClientRect())
-    const flick = lick(gsap, field, svg, bug, nose)
-    return gsap.timeline()
-      .add(flick)
-      .to(bug, { x: `+=${nose.x - at.x}`, y: `+=${nose.y - at.y}`, scale: 0.2, duration: 0.42, ease: 'power2.in' }, 0.3)
-      .to(bug, { opacity: 0, duration: 0.12 }, 0.62)
-      .call(() => { tally.page += 1; paintCounter() }, [], 0.62)
-  })) })
+
+  // A finger (or a pointer) close by: it runs straight away from it, then calms down and walks again.
+  const scare = (event: PointerEvent) => {
+    const box = field.getBoundingClientRect()
+    const pointer = { x: event.clientX - box.left, y: event.clientY - box.top }
+    bugs.forEach((bug, index) => {
+      const at = { x: homes[index].x + Number(gsap.getProperty(bug, 'x')), y: homes[index].y + Number(gsap.getProperty(bug, 'y')) }
+      const dx = at.x - pointer.x, dy = at.y - pointer.y, distance = Math.hypot(dx, dy) || 1
+      if (distance > 80) return
+      walks[index]?.kill()
+      const to = inside(index, { x: clamp(Number(gsap.getProperty(bug, 'x')) + (dx / distance) * 70, -70, 70),
+                                 y: clamp(Number(gsap.getProperty(bug, 'y')) + (dy / distance) * 70, -50, 50) })
+      walks[index] = gsap.timeline({ onComplete: () => walk(index) })
+        .to(bug, { rotation: heading(dx, dy), duration: 0.08 })
+        .to(bug, { x: to.x, y: to.y, duration: 0.35, ease: 'power3.out' })
+        .to({}, { duration: 0.9 })
+    })
+  }
+  addEventListener('pointerdown', scare, { passive: true })
+  addEventListener('pointermove', scare, { passive: true })
   return () => {
     ScrollTrigger.removeEventListener('refreshInit', layout)
+    removeEventListener('pointerdown', scare)
+    removeEventListener('pointermove', scare)
+    walks.forEach(timeline => timeline?.kill())
     bugs.forEach(bug => bug.remove())
-    document.querySelectorAll('.lick').forEach(element => element.remove())
   }
 }
 
@@ -468,39 +408,35 @@ const polygon = (points: Point[]) => points.length < 3 ? 'polygon(0 0, 0 0, 0 0)
 
 // --- bugs all over the page ----------------------------------------------------------------------------------------
 
-// A few over the cover's title and two on every plate. They crawl in place, run from the pointer on a desktop, and
-// are eaten when the tongue's tip passes over them (its path is drawn through each one).
-type Visit = { id: number; at: Point; cover: boolean }
-type Swarm = { visits: () => Visit[]; eat: (id: number) => void; cover: number; cleanup: () => void }
-
-function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
+// A few beside the cover's title and two on every plate. They crawl in place and run from the pointer on a desktop.
+function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
   const field = document.querySelector<HTMLElement>('[data-field]')
   const title = document.querySelector<HTMLElement>('.hero-title')
-  if (!field || !title) return { visits: () => [], eat: () => {}, cover: 0, cleanup: () => {} }
-  // None among the specimens (already caught) or on the plates held still over the tongue.
+  if (!field || !title) return () => {}
+  // None among the specimens (already caught) or on the plates held still while scrolling.
   const plates = gsap.utils.toArray<HTMLElement>('.plate').filter(plate => plate.id !== 'specimens' && !plate.hasAttribute('data-held'))
   const random = mulberry(11)
-  type Wild = { el: HTMLElement; home: Point; pos: Point; eaten: boolean; cover: boolean; crawl?: gsap.core.Tween }
+  type Wild = { el: HTMLElement; home: Point; pos: Point; cover: boolean }
   const spots = [
     ...Array.from({ length: 3 }, () => ({ plate: -1, u: random(), v: random() })),
     ...plates.flatMap((_, index) => [{ plate: index, u: 0.55 + random() * 0.35, v: 0.08 + random() * 0.12 },
                                       { plate: index, u: 0.02 + random() * 0.08, v: 0.45 + random() * 0.3 }]),
   ]
-  const wild: Wild[] = spots.map(spot => ({ el: critter(field), home: { x: 0, y: 0 }, pos: { x: 0, y: 0 }, eaten: false, cover: spot.plate < 0 }))
+  const wild: Wild[] = spots.map(spot => ({ el: critter(field), home: { x: 0, y: 0 }, pos: { x: 0, y: 0 }, cover: spot.plate < 0 }))
   const lines = gsap.utils.toArray<HTMLElement>('.line-inner', title)
   const layout = () => {
     const box = field.getBoundingClientRect()
     wild.forEach((bug, index) => {
       const spot = spots[index]
       if (spot.plate < 0) {
-        // At the end of each line of the cover's title, so the tongue fetches them without crossing the words.
+        // At the end of each line of the cover's title, clear of the words.
         const line = lines[index % lines.length], row = line.parentElement!.getBoundingClientRect()
         bug.home = { x: line.getBoundingClientRect().right - box.left + 20 + spot.u * 14, y: row.top - box.top + row.height * (0.45 + spot.v * 0.15) }
       } else {
         const plate = plates[spot.plate].getBoundingClientRect()
         bug.home = { x: 20 + spot.u * (field.offsetWidth - 40), y: plate.top - box.top + spot.v * plate.height }
       }
-      if (!bug.eaten) gsap.set(bug.el, { left: bug.home.x - 13, top: bug.home.y - 11 })
+      gsap.set(bug.el, { left: bug.home.x - 13, top: bug.home.y - 11 })
     })
   }
   layout()
@@ -508,25 +444,11 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
   wild.forEach((bug, index) => {
     gsap.set(bug.el, { rotation: random() * 360 })
     gsap.fromTo(bug.el, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, delay: bug.cover ? 1.4 + index * 0.12 : 0, ease: 'back.out(1.8)' })
-    bug.crawl = gsap.to(bug.el.querySelector('.critter-body'), { x: 'random(-14, 14)', y: 'random(-10, 10)', rotation: 'random(-30, 30)',
+    gsap.to(bug.el.querySelector('.critter-body'), { x: 'random(-14, 14)', y: 'random(-10, 10)', rotation: 'random(-30, 30)',
       duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
   })
 
-  // Eaten: back onto the tongue where it passes, a last wriggle, gone.
-  const eat = (id: number) => {
-    const bug = wild[id]
-    if (!bug || bug.eaten) return
-    bug.eaten = true
-    bug.crawl?.kill()
-    const body = bug.el.querySelector('.critter-body')
-    gsap.timeline()
-      .to(bug.el, { x: 0, y: 0, duration: 0.2, ease: 'power2.out', overwrite: true })
-      .to(body, { x: 0, y: 0, keyframes: [{ rotation: '+=24', duration: 0.07 }, { rotation: '-=40', duration: 0.07 }, { rotation: '+=16', duration: 0.07 }] }, 0)
-      .to(bug.el, { scale: 0, opacity: 0, duration: 0.28, ease: 'back.in(2)' }, 0.2)
-      .call(() => { tally.page += 1; paintCounter() })
-  }
-
-  // On a desktop, they run from the pointer (not far: the tongue still knows where they live).
+  // On a desktop, they run from the pointer (not far: they stay around their spot).
   let frame = 0
   const onMove = (event: PointerEvent) => {
     cancelAnimationFrame(frame)
@@ -534,7 +456,6 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
       const box = field.getBoundingClientRect()
       const pointer = { x: event.clientX - box.left, y: event.clientY - box.top }
       wild.forEach(bug => {
-        if (bug.eaten) return
         const at = { x: bug.home.x + bug.pos.x, y: bug.home.y + bug.pos.y }
         const dx = at.x - pointer.x, dy = at.y - pointer.y, distance = Math.hypot(dx, dy) || 1
         if (distance < 130) {
@@ -547,139 +468,13 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
   }
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches
   if (fine) addEventListener('pointermove', onMove, { passive: true })
-  return {
-    visits: () => wild.map((bug, id) => ({ id, at: bug.home, cover: bug.cover })),
-    eat,
-    cover: wild.filter(bug => bug.cover).length,
-    cleanup: () => {
-      ScrollTrigger.removeEventListener('refreshInit', layout)
-      if (fine) removeEventListener('pointermove', onMove)
-      cancelAnimationFrame(frame)
-      wild.forEach(bug => bug.el.remove())
-    },
+  return () => {
+    ScrollTrigger.removeEventListener('refreshInit', layout)
+    if (fine) removeEventListener('pointermove', onMove)
+    cancelAnimationFrame(frame)
+    wild.forEach(bug => bug.el.remove())
   }
 }
-
-// --- the spine's path ---------------------------------------------------------------------------------------------
-
-type Sample = { length: number; x: number; y: number; top: number }
-// `path` is the tongue behind the content; `paths`, it and its twin on top.
-type Built = { path: SVGPathElement; paths: SVGPathElement[]; total: number; offset: number; spineX: number;
-               samples: Sample[]; head: number; headTop: number; visits: { id: number; length: number }[] }
-
-function centre(element: Element, box: DOMRect): Point {
-  const rect = element.getBoundingClientRect()
-  return { x: rect.left + rect.width / 2 - box.left, y: rect.top + rect.height / 2 - box.top }
-}
-
-// A smooth curve through the points (Catmull-Rom turned into cubic Béziers), and points along it every few pixels,
-// measured here: asking the browser (getPointAtLength) thousands of times on a long path takes over a second.
-function spline(points: Point[]): { d: string; samples: Sample[] } {
-  if (points.length < 2) return { d: '', samples: [] }
-  let d = `M${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`
-  const samples: Sample[] = [{ length: 0, ...points[0], top: points[0].y }]
-  let length = 0
-  for (let index = 0; index < points.length - 1; index++) {
-    const p0 = points[index - 1] ?? points[index], p1 = points[index], p2 = points[index + 1], p3 = points[index + 2] ?? p2
-    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 }
-    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 }
-    d += ` C${c1.x.toFixed(1)} ${c1.y.toFixed(1)} ${c2.x.toFixed(1)} ${c2.y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
-    const steps = Math.max(4, Math.ceil((Math.hypot(c1.x - p1.x, c1.y - p1.y) + Math.hypot(c2.x - c1.x, c2.y - c1.y) + Math.hypot(p2.x - c2.x, p2.y - c2.y)) / 6))
-    for (let step = 1; step <= steps; step++) {
-      const t = step / steps, u = 1 - t
-      const x = u * u * u * p1.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * p2.x
-      const y = u * u * u * p1.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * p2.y
-      const last = samples[samples.length - 1]
-      length += Math.hypot(x - last.x, y - last.y)
-      samples.push({ length, x, y, top: y })
-    }
-  }
-  return { d, samples }
-}
-
-// From the snout through the cover's bugs, then down the page through every other bug, winding a
-// little between them, to the end of the page.
-function buildTongue(visits: Visit[]): Built | null {
-  const field = document.querySelector<HTMLElement>('[data-field]')
-  const back = field?.querySelector<SVGSVGElement>('[data-tongue-svg]')
-  const path = back?.querySelector<SVGPathElement>('[data-tongue-path]')
-  const svg = field?.querySelector<SVGSVGElement>('[data-tongue-front]')
-  const twin = svg?.querySelector<SVGPathElement>('[data-tongue-twin]')
-  const clip = svg?.querySelector<SVGRectElement>('[data-tongue-clip]')
-  const frame = field?.querySelector('.hero .frame')
-  const snout = field?.querySelector('[data-tongue="start"]')
-  if (!field || !back || !path || !svg || !twin || !clip || !snout) return null
-  const box = field.getBoundingClientRect()
-  const width = field.offsetWidth, height = field.offsetHeight
-  const gutter = parseFloat(getComputedStyle(document.querySelector('.wrap') ?? field).paddingRight) || 24
-  const spineX = width - Math.max(10, gutter * 0.45)
-  const nose = centre(snout, box)
-
-  // The cover's bugs first, bottom up (it reaches the title from below), then the rest top to bottom.
-  const order = [...visits.filter(visit => visit.cover).sort((a, b) => b.at.y - a.at.y),
-                 ...visits.filter(visit => !visit.cover).sort((a, b) => a.at.y - b.at.y)]
-  const heads = order.filter(visit => visit.cover).length
-
-  // Inside the drawing's frame (drawn on top there) it goes out of the snout, down the free side and along the empty
-  // strip under the body, and leaves by the frame's left edge, never across the mascot. It ends before the dark
-  // install plate, where it couldn't be seen behind.
-  const frameBox = (frame ?? snout).getBoundingClientRect()
-  const left = frameBox.left - box.left, right = frameBox.right - box.left, top = frameBox.top - box.top, bottom = frameBox.bottom - box.top
-  const drawing = snout.closest('svg')?.getBoundingClientRect()
-  const strip = drawing ? (drawing.bottom - box.top + bottom) / 2 : bottom - 24
-  const route = frame ? [{ x: Math.min(nose.x + 36, right - 18), y: nose.y + 14 }, { x: right - 34, y: (nose.y + strip) / 2 },
-                         { x: right - 70, y: strip }, { x: left + 50, y: strip }, { x: left - 36, y: strip - 40 }] : []
-  const slab = field.querySelector('.install')
-  const end = slab ? slab.getBoundingClientRect().top - box.top - 60 : height - 40
-  const stops = [nose, ...route, ...order.map(visit => visit.at), { x: spineX, y: end }]
-  const points: Point[] = [stops[0]]
-  // Down the page, a gentle bend halfway between two stops, alternating sides, so it winds instead of running straight.
-  stops.slice(1).forEach((stop, index) => {
-    const from = stops[index], dx = stop.x - from.x, dy = stop.y - from.y, distance = Math.hypot(dx, dy)
-    if (index >= route.length + heads && distance > 220) {
-      const bend = Math.min(110, distance * 0.14) * (index % 2 ? 1 : -1)
-      points.push({ x: clamp((from.x + stop.x) / 2 - (dy / distance) * bend, 12, width - 12), y: (from.y + stop.y) / 2 + (dx / distance) * bend })
-    }
-    points.push(stop)
-  })
-  const { d, samples } = spline(points)
-  for (const layer of [back, svg]) layer.setAttribute('viewBox', `0 0 ${width} ${height}`)
-  for (const layer of [path, twin]) layer.setAttribute('d', d)
-  Object.entries({ x: left, y: top, width: right - left, height: bottom - top })
-    .forEach(([name, value]) => clip.setAttribute(name, String(value)))
-  // The browser's own length, for the dash; ours is scaled to it.
-  const total = path.getTotalLength()
-  const scale = total / (samples[samples.length - 1]?.length || 1)
-  for (const sample of samples) sample.length *= scale
-
-  // Where the path passes through each bug, in order along it.
-  let cursor = 0
-  const placed = order.map(visit => {
-    let best = cursor
-    for (let index = cursor; index < samples.length; index++) {
-      const distance = Math.hypot(samples[index].x - visit.at.x, samples[index].y - visit.at.y)
-      if (distance < Math.hypot(samples[best].x - visit.at.x, samples[best].y - visit.at.y)) best = index
-      if (distance < 6) break
-    }
-    cursor = best
-    return { id: visit.id, length: samples[best].length, index: best }
-  })
-  // After the cover, the scroll drives the tip by height: each sample remembers the lowest point reached so far.
-  const headIndex = heads ? placed[heads - 1].index : 0
-  for (let index = headIndex, top = -Infinity; index < samples.length; index++) top = samples[index].top = Math.max(top, samples[index].y)
-  for (const layer of [path, twin]) Object.assign(layer.style, { strokeDasharray: String(total), strokeDashoffset: String(total) })
-  return { path, paths: [path, twin], total, offset: box.top + scrollY, spineX, samples, head: samples[headIndex].length,
-           headTop: samples[headIndex].top, visits: placed.map(({ id, length }) => ({ id, length })) }
-}
-
-// How much tongue is out when the scroll line is at a given height (never less than the cover's part).
-function lengthAtY(built: Built, y: number): number {
-  if (y <= built.headTop) return 0
-  const sample = built.samples.find(item => item.length >= built.head && item.top >= y)
-  return sample ? sample.length : built.total
-}
-
-// --- small things -------------------------------------------------------------------------------------------------
 
 function critter(parent: HTMLElement): HTMLElement {
   const template = document.querySelector<HTMLTemplateElement>('[data-bug-template]')
@@ -754,6 +549,6 @@ function wireThemeToggle() {
   button.addEventListener('click', () => {
     const night = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
     root.dataset.theme = night ? 'light' : 'dark'
-    try { localStorage.setItem('tamandua-theme', root.dataset.theme) } catch { /* a convenience only */ }
+    try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
   })
 }

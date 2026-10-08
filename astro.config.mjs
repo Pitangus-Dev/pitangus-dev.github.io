@@ -7,7 +7,7 @@ const env = loadEnv('production', '.', '')
 // Where it's published (GitHub Pages, at the root of the organization's site). Both can be overridden from the
 // environment, e.g. to serve it under a path.
 export default defineConfig({
-  site: env.SITE_URL ?? 'https://tamandua-appsec.github.io',
+  site: env.SITE_URL ?? 'https://pitangus-dev.github.io',
   base: env.BASE_PATH ?? '/',
   output: 'static',
   trailingSlash: 'ignore',

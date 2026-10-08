@@ -45,7 +45,7 @@ const f = t.footer
         <div class="snippet"><pre class="mono"><code>{i.shell}</code></pre>
           <button type="button" class="copy mono" data-copy={i.shell} data-copied={i.copied} aria-label={i.copyShell}>{i.copy}</button></div>
       </li>
-      <li data-reveal data-tongue="end">
+      <li data-reveal>
         <p><span class="mono step-no">3</span>{i.steps[2]}</p>
         <div class="snippet"><pre class="mono"><code>{i.action}</code></pre>
           <button type="button" class="copy mono" data-copy={i.action} data-copied={i.copied} aria-label={i.copyAction}>{i.copy}</button></div>
@@ -75,23 +75,23 @@ const f = t.footer
   .traits li { border-top: 2px solid var(--ink); padding-top: 1rem; }
   .traits h3 { font-size: clamp(1.6rem, 1.3rem + 1vw, 2.3rem); margin: 0.4rem 0 0.6rem; }
   .traits p { margin: 0; color: var(--muted); }
-  .trait-no, .step-no { font-size: 0.8rem; color: var(--violet); }
-  .install { background: var(--slab); color: var(--on-slab); border-top: 0; --rule: rgb(255 243 222 / 0.16); }
+  .trait-no, .step-no { font-size: 0.8rem; color: var(--accent); }
+  .install { background: var(--slab); color: var(--on-slab); border-top: 0; --rule: rgb(255 248 232 / 0.16); }
   .install .plate-num { -webkit-text-stroke-color: var(--slab-accent); }
-  .install .kicker, .install .muted { color: rgb(255 243 222 / 0.68); }
+  .install .kicker, .install .muted { color: rgb(255 248 232 / 0.68); }
   .steps { grid-column: 1 / span 9; list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .steps p { margin: 0 0 0.75rem; font-size: 1.15rem; display: flex; gap: 1rem; align-items: baseline; }
-  .step-no { color: var(--lilac); min-width: 1.5rem; }
+  .step-no { color: var(--slab-accent); min-width: 1.5rem; }
   .snippet { position: relative; margin-left: 2.5rem; }
-  .snippet pre { margin: 0; padding: 1.1rem 6rem 1.1rem 1.25rem; border: 1px solid rgb(255 243 222 / 0.25); border-radius: 0.4rem; overflow-x: auto; font-size: 0.9rem; line-height: 1.7; }
-  .copy { position: absolute; top: 0.6rem; right: 0.6rem; min-height: 36px; padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--lilac);
-          background: transparent; color: var(--lilac); cursor: pointer; font-size: 0.75rem; }
-  .copy:hover { background: var(--lilac); color: var(--ink); }
+  .snippet pre { margin: 0; padding: 1.1rem 6rem 1.1rem 1.25rem; border: 1px solid rgb(255 248 232 / 0.25); border-radius: 0.4rem; overflow-x: auto; font-size: 0.9rem; line-height: 1.7; }
+  .copy { position: absolute; top: 0.6rem; right: 0.6rem; min-height: 36px; padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--slab-accent);
+          background: transparent; color: var(--slab-accent); cursor: pointer; font-size: 0.75rem; }
+  .copy:hover { background: var(--slab-accent); color: #1c1a16; }
   .install a.button.ghost { border-color: var(--on-slab); color: var(--on-slab); }
   .step-two { position: relative; }
   .install :global(.note) { color: var(--slab-accent); }
-  .install a.button.ghost:hover { border-color: var(--lilac); color: var(--lilac); }
-  .install :focus-visible { outline-color: var(--lilac); }
+  .install a.button.ghost:hover { border-color: var(--slab-accent); color: var(--slab-accent); }
+  .install :focus-visible { outline-color: var(--slab-accent); }
   .install-foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin: 3rem 0 0; }
   .small { font-size: 0.88rem; } .tiny { font-size: 0.72rem; }
   .footer { padding-block: clamp(3rem, 7vw, 6rem); border-top: 1px solid var(--rule); }

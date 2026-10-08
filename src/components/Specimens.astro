@@ -23,7 +23,7 @@ const s = t.specimens
     <ol class="specimens" role="list">
       {s.items.map((item, index) => (
         <li class="specimen card-paper" data-specimen style={`--tilt: ${[-1.2, 0.8, -0.6, 1.1][index]}deg`}>
-          <span class="pin" data-tongue="stop" aria-hidden="true"></span>
+          <span class="pin" aria-hidden="true"></span>
           <div class="specimen-top">
             <span class="mono specimen-no">№ {String(index + 1).padStart(2, '0')}</span>
             <span class="mono specimen-kind">{item.kind}</span>
@@ -49,13 +49,13 @@ const s = t.specimens
   .specimens { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 2.25rem); list-style: none; padding: 0; margin: 0; }
   .specimen {
     position: relative; padding: 1.25rem 1.25rem 1.5rem; background-color: color-mix(in oklab, var(--card-deep) 45%, var(--card));
-    border: 1px solid var(--rule); transform: rotate(var(--tilt)); box-shadow: 0 1px 0 var(--rule), 0 18px 30px -24px rgb(30 20 51 / 0.35);
+    border: 1px solid var(--rule); transform: rotate(var(--tilt)); box-shadow: 0 1px 0 var(--rule), 0 18px 30px -24px rgb(28 26 22 / 0.35);
   }
   .specimen:nth-child(even) { margin-top: clamp(2rem, 5vw, 4rem); }
-  .pin { position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--violet); box-shadow: 0 2px 0 rgb(30 20 51 / 0.3); }
+  .pin { position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 0 rgb(28 26 22 / 0.3); }
   .specimen-top { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); }
   .specimen-art { display: grid; place-items: center start; padding-left: 0.75rem; height: 7.5rem; border-bottom: 1px dashed var(--rule); margin-bottom: 1rem; }
-  .specimen-id { font-size: 0.78rem; color: var(--violet); margin: 0 0 0.25rem; }
+  .specimen-id { font-size: 0.78rem; color: var(--accent); margin: 0 0 0.25rem; }
   .specimen-name { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); margin-bottom: 0.4rem; }
   .specimen-where { font-size: 0.78rem; color: var(--muted); margin: 0 0 0.75rem; word-break: break-all; }
   .specimen-note { font-size: 0.95rem; margin: 0; }
