@@ -144,7 +144,7 @@ const en = {
     note: 'Free and open source (AGPL-3.0). It runs on your server: no account, no telemetry.',
   },
   footer: {
-    colophon: 'Field notes on Pitangus sulphuratus, the great kiskadee: it hunts bugs of every kind, in the air or on the ground, and boldly takes on hawks far bigger than itself.',
+    colophon: 'Field notes in the spirit of José Celestino Mutis’s Royal Botanical Expedition to New Granada (1783–1816). The specimen: the bichofué, Colombia’s great kiskadee, which keeps watch from its branch and takes on hawks far bigger than itself.',
     made: 'Made in Colombia.',
     license: 'Pitangus is free software under AGPL-3.0.',
     links: [['Code', REPO], ['Docs', DOCS], ['Security', `${REPO}/blob/main/.github/SECURITY.md`]],
@@ -291,7 +291,7 @@ const es: typeof en = {
     note: 'Libre y de código abierto (AGPL-3.0). Corre en tu servidor: sin cuenta y sin telemetría.',
   },
   footer: {
-    colophon: 'Notas de campo sobre Pitangus sulphuratus, el bichofué: caza bichos de todo tipo, en el aire o en el suelo, y enfrenta sin miedo a gavilanes mucho más grandes que él.',
+    colophon: 'Notas de campo en el espíritu de la Real Expedición Botánica del Nuevo Reino de Granada, de José Celestino Mutis (1783–1816). El ejemplar: el bichofué, que vigila desde su rama y enfrenta sin miedo a gavilanes mucho más grandes que él.',
     made: 'Hecho en Colombia.',
     license: 'Pitangus es software libre bajo AGPL-3.0.',
     links: [['Código', REPO], ['Documentación', DOCS], ['Seguridad', `${REPO}/blob/main/.github/SECURITY.es.md`]],
