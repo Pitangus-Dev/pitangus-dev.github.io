@@ -71,16 +71,16 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
       // Before paint: JS is here, and whether this visitor turned motion off (a convenience; it may be unavailable).
       document.documentElement.classList.replace('no-js', 'js')
       try {
-        if (localStorage.getItem('tamandua-motion') === 'off') document.documentElement.classList.add('still')
+        if (localStorage.getItem('pitangus-motion') === 'off') document.documentElement.classList.add('still')
         // Arriving from the other language, the page turns (a view transition): it must already be complete, not blank
         // waiting for its entrance, or the turn shows an empty page that then fills in.
-        const turned = sessionStorage.getItem('tamandua-turn') === '1'
-        sessionStorage.removeItem('tamandua-turn')
+        const turned = sessionStorage.getItem('pitangus-turn') === '1'
+        sessionStorage.removeItem('pitangus-turn')
         if (!turned && !document.documentElement.classList.contains('still') && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
           document.documentElement.classList.add('pending')
           setTimeout(() => document.documentElement.classList.remove('pending'), 1500)  // the script never came: show everything
         }
-        const theme = localStorage.getItem('tamandua-theme')
+        const theme = localStorage.getItem('pitangus-theme')
         if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
       } catch {}
     </script>

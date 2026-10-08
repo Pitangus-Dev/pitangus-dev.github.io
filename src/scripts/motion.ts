@@ -14,7 +14,7 @@ type Gsap = typeof import('gsap').gsap
 type Trigger = typeof import('gsap/ScrollTrigger').ScrollTrigger
 type Point = { x: number; y: number }
 
-const STORAGE = 'tamandua-motion'
+const STORAGE = 'pitangus-motion'
 const root = document.documentElement
 const WIDE = '(min-width: 64rem)'
 // Everything below animates the landing. Elsewhere (the 404) the kiskadee only bobs on its perch, in CSS, which
@@ -28,7 +28,7 @@ const tally = { page: 0, specimens: 0 }
 export function start() {
   // Changing language turns the page: the next one comes in complete (see the inline script in Base.astro).
   document.querySelectorAll('[data-turn]').forEach(link => link.addEventListener('click', () => {
-    try { sessionStorage.setItem('tamandua-turn', '1') } catch { /* then it just plays its entrance */ }
+    try { sessionStorage.setItem('pitangus-turn', '1') } catch { /* then it just plays its entrance */ }
   }))
   wireCopyButtons()
   wireMotionToggle()
@@ -549,6 +549,6 @@ function wireThemeToggle() {
   button.addEventListener('click', () => {
     const night = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
     root.dataset.theme = night ? 'light' : 'dark'
-    try { localStorage.setItem('tamandua-theme', root.dataset.theme) } catch { /* a convenience only */ }
+    try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
   })
 }

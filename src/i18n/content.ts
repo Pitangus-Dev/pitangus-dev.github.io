@@ -6,15 +6,15 @@ export type Locale = 'en' | 'es'
 // The name the page shows. The repository, the images, the CLI and the Action keep their current names until the
 // product itself is renamed: the commands below must keep working as written.
 export const BRAND = 'Pitangus'
-export const REPO = 'https://github.com/Tamandua-AppSec/tamandua'
+export const REPO = 'https://github.com/pitangus-dev/pitangus'
 export const DOCS = `${REPO}/tree/main/docs`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
-export const RELEASE = 'v0.11.0'
-export const ACTION_STEP = `- uses: Tamandua-AppSec/tamandua@${RELEASE}`
+export const RELEASE = 'v0.12.0'
+export const ACTION_STEP = `- uses: pitangus-dev/pitangus@${RELEASE}`
 // The published release with its published images: a clone of main could ask for images not released yet.
-export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Tamandua-AppSec/tamandua.git\ncd tamandua\nmake setup PREBUILT=1\nmake up`
+export const INSTALL = `git clone --branch ${RELEASE} https://github.com/pitangus-dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
 
 const en = {
   lang: 'en',
@@ -61,9 +61,9 @@ const en = {
     kicker: 'Pull requests',
     title: 'Only what your change brings. And what it fixes.',
     lead: 'In CI, Pitangus scans the starting point and your change with the same engines, so a pull request is judged only by what it adds. It also says what the change fixed, and credits it only when both scans finished and the file really changed.',
-    command: 'tamandua scan --base main',
+    command: 'pitangus scan --base main',
     output: [
-      { tone: 'muted', text: 'Tamandua · api · changes since main (merge-base 4f2a9c1e, 1 file)' },
+      { tone: 'muted', text: 'Pitangus · api · changes since main (merge-base 4f2a9c1e, 1 file)' },
       { tone: 'plain', text: '' },
       { tone: 'plain', text: 'No new findings.' },
       { tone: 'plain', text: '' },
@@ -208,9 +208,9 @@ const es: typeof en = {
     kicker: 'Pull requests',
     title: 'Solo lo que trae tu cambio. Y lo que corrige.',
     lead: 'En CI, Pitangus analiza el punto de partida y tu cambio con los mismos motores, así que una pull request se juzga solo por lo que añade. También dice qué corrigió, y solo se lo atribuye si los dos análisis terminaron y el archivo cambió de verdad.',
-    command: 'tamandua scan --base main',
+    command: 'pitangus scan --base main',
     output: [
-      { tone: 'muted', text: 'Tamandua · api · cambios respecto a main (merge-base 4f2a9c1e, 1 archivo)' },
+      { tone: 'muted', text: 'Pitangus · api · cambios respecto a main (merge-base 4f2a9c1e, 1 archivo)' },
       { tone: 'plain', text: '' },
       { tone: 'plain', text: 'Sin hallazgos nuevos.' },
       { tone: 'plain', text: '' },
