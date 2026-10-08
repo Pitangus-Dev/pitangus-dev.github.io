@@ -1,6 +1,6 @@
 # Pitangus · landing
 
-The website of [Pitangus](https://github.com/pitangus-dev/pitangus), in English (`/`) and Spanish (`/es/`). The
+The website of [Pitangus](https://github.com/Pitangus-Dev/pitangus), in English (`/`) and Spanish (`/es/`). The
 repository, the images, the CLI and the Action keep their current names for now; only the page shows the new one.
 
 A field notebook: bugs are catalogued like specimens, the kiskadee (*Pitangus sulphuratus*) sets off from its perch and

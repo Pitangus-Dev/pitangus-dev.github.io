@@ -6,15 +6,15 @@ export type Locale = 'en' | 'es'
 // The name the page shows. The repository, the images, the CLI and the Action keep their current names until the
 // product itself is renamed: the commands below must keep working as written.
 export const BRAND = 'Pitangus'
-export const REPO = 'https://github.com/pitangus-dev/pitangus'
+export const REPO = 'https://github.com/Pitangus-Dev/pitangus'
 export const DOCS = `${REPO}/tree/main/docs`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
 export const RELEASE = 'v0.12.0'
-export const ACTION_STEP = `- uses: pitangus-dev/pitangus@${RELEASE}`
+export const ACTION_STEP = `- uses: Pitangus-Dev/pitangus@${RELEASE}`
 // The published release with its published images: a clone of main could ask for images not released yet.
-export const INSTALL = `git clone --branch ${RELEASE} https://github.com/pitangus-dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
+export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Pitangus-Dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
 
 const en = {
   lang: 'en',
