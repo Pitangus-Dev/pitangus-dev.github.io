@@ -45,7 +45,7 @@ const h = t.hero
       </div>
       <div>
         <p class="kicker">{h.plate} · <i>{h.species}</i></p>
-        <h1 class:list={[h.title.length > 3 && 'long']}>{h.title.map((line, index) => index === h.title.length - 1 ? <em>{line}</em> : <>{line}<br /></>)}</h1>
+        <h1 class:list={[h.title.length > 3 && 'long']}>{h.title.map((line, index) => <>{index >= h.accent ? <em>{line}</em> : line}{index < h.title.length - 1 && <br />}</>)}</h1>
         <p class="lead">{t.og}</p>
         <p class="url">tamandua-appsec.github.io</p>
       </div>

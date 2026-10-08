@@ -20,9 +20,9 @@ const marks = [
     <div class="hero-text">
       <p class="kicker hero-plate"><span>{h.plate}</span><span class="dot">·</span><i>{h.species}</i></p>
       <h1 id="hero-title" class="display hero-title" data-split>
-        {h.title.map((line, index) => <span class="line"><span class:list={['line-inner', index === h.title.length - 1 && 'accent']}>{line}</span></span>)}
+        {h.title.map((line, index) => <span class="line"><span class:list={['line-inner', index >= h.accent && 'accent']}>{line}</span></span>)}
       </h1>
-      <Note text={t.notes.hero} arrow="left" place="right: -6%; top: 31%" tilt={-5} />
+      <Note text={t.notes.hero} arrow="left" place="right: 6%; top: 29%" tilt={-5} />
       <p class="lead" data-reveal>{h.lead}</p>
       <div class="actions" data-reveal>
         <a class="button primary" href="#install">{h.primary} <span aria-hidden="true">→</span></a>
@@ -88,7 +88,7 @@ const marks = [
     font-size: clamp(0.95rem, 0.8rem + 0.5vw, 1.25rem); transform: rotate(-4deg); white-space: nowrap;
   }
   .annotation-wide { white-space: normal; width: 6.5em; transform: rotate(-3deg); }
-  /* On phones and tablets the bird strikes at the bugs beside its breast (scripts/motion.ts): that note gives way. */
+  /* On phones and tablets the bugs walk beside its breast (scripts/motion.ts): that note gives way. */
   @media (max-width: 63.99rem) { .annotation-wide, .leader-wide { display: none; } }
   /* A map-style scale bar under the caption. */
   .scale { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.15rem; }
