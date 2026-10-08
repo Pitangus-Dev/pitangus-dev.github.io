@@ -6,6 +6,13 @@ import Note from './Note.astro'
 interface Props { t: Content }
 const { t } = Astro.props
 const h = t.hero
+// Pencil notes on the plate, each with its leader to the field mark it names. Positions are in % of the frame (the
+// drawing fills it from 12% to 88% across and from 12% to 83.6% down; see Mascot.astro's viewBox).
+const marks = [
+  { text: h.marks.bill, place: 'top: 16.5%; right: 3%', line: 'M86 23 C87 27.5 83 31 76 32.6', tip: 'M77.6 30.8 L76 32.6 L78.3 33.4' },
+  { text: h.marks.mask, place: 'top: 22.5%; left: 5%', line: 'M16 28.4 C24 28.6 34 30.6 42.4 34.2', tip: 'M40 34.1 L42.4 34.2 L41 32.3' },
+  { text: h.marks.breast, place: 'top: 48.5%; left: 71.8%', wide: true, line: 'M72.7 50.4 C71.8 48.8 70.4 48.1 68.6 48.4', tip: 'M70.2 47.2 L68.6 48.4 L70.4 49.4' },
+]
 ---
 <section class="hero wrap" aria-labelledby="hero-title" data-hero>
   <p class="vertical hero-vertical" aria-hidden="true">{h.vertical}</p>
@@ -28,14 +35,14 @@ const h = t.hero
       <div class="frame card-paper">
         <span class="tape tape-tl" aria-hidden="true"></span><span class="tape tape-br" aria-hidden="true"></span>
         <p class="record mono" aria-hidden="true">{h.record}</p>
-        <Mascot label={h.species} />
+        <Mascot label={h.drawing} />
         <svg class="leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M84 27.5 C86 33 84 38.5 80.6 42.2" /><path d="M79.6 39.8 L80.6 42.2 L83 41.2" />
+          {marks.map(mark => <g class:list={[mark.wide && 'leader-wide']}><path d={mark.line} /><path d={mark.tip} /></g>)}
         </svg>
-        <p class="annotation" aria-hidden="true">{h.snout}</p>
+        {marks.map(mark => <p class:list={['annotation', mark.wide && 'annotation-wide']} style={mark.place} aria-hidden="true">{mark.text}</p>)}
       </div>
-      <figcaption class="mono muted"><span>Fig. 1 — <i>{h.species}</i> (Linnaeus, 1758)</span><span>{h.habitat}</span>
-        <span class="scale" aria-hidden="true"><i></i>10 cm</span></figcaption>
+      <figcaption class="mono muted"><span>Fig. 1 — <i>{h.species}</i> (Linnaeus, 1766)</span><span>{h.habitat}</span>
+        <span class="scale" aria-hidden="true"><i></i>5 cm</span></figcaption>
     </figure>
   </div>
 </section>
@@ -52,19 +59,19 @@ const h = t.hero
   .hero-title { font-size: clamp(3.2rem, 1.6rem + 6.6vw, 8.6rem); margin-bottom: 2rem; }
   .line { display: block; overflow: hidden; padding-block: 0.16em; margin-block: -0.16em; }
   .line-inner { display: inline-block; }
-  .accent { font-style: italic; color: var(--violet); }
+  .accent { font-style: italic; color: var(--accent); }
   .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2.25rem 0 2rem; }
   .facts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--muted); }
   /* The cross is decoration: where the alt-text syntax is understood, it is not read aloud. */
-  .facts li::before { content: '✕ '; content: '✕ ' / ''; color: var(--violet); }
+  .facts li::before { content: '✕ '; content: '✕ ' / ''; color: var(--accent); }
   .frame {
     position: relative; aspect-ratio: 1 / 1; padding: 12%; border: 1px solid var(--rule); transform: rotate(-0.6deg);
-    background-color: color-mix(in oklab, var(--card-deep) 55%, var(--card)); box-shadow: 0 18px 30px -24px rgb(30 20 51 / 0.45);
+    background-color: color-mix(in oklab, var(--card-deep) 55%, var(--card)); box-shadow: 0 18px 30px -24px rgb(28 26 22 / 0.45);
   }
   /* Two strips of masking tape holding the sheet, with torn ends. */
   .tape {
     position: absolute; z-index: 2; width: 26%; height: 7%; background: rgb(236 222 190 / 0.78);
-    box-shadow: 0 1px 2px rgb(30 20 51 / 0.12);
+    box-shadow: 0 1px 2px rgb(28 26 22 / 0.12);
     clip-path: polygon(0 8%, 4% 0, 9% 10%, 14% 0, 86% 0, 91% 12%, 96% 0, 100% 9%, 100% 92%, 95% 100%, 90% 88%, 84% 100%, 13% 100%, 8% 90%, 3% 100%, 0 90%);
   }
   .tape-tl { top: -2.5%; left: -7%; transform: rotate(-38deg); }
@@ -73,13 +80,16 @@ const h = t.hero
     position: absolute; top: 5%; right: 6%; margin: 0; padding-bottom: 0.2rem; border-bottom: 1px solid var(--rule);
     font-size: clamp(0.55rem, 0.5rem + 0.2vw, 0.66rem); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
   }
-  /* A pencil note pointing at the snout. */
+  /* Pencil notes pointing at the field marks. */
   .leader { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .leader path { fill: none; stroke: var(--muted); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
   .annotation {
-    position: absolute; top: 19%; right: 4%; margin: 0; font-family: var(--font-hand), cursive; color: var(--muted);
+    position: absolute; margin: 0; font-family: var(--font-hand), cursive; color: var(--muted); line-height: 1;
     font-size: clamp(0.95rem, 0.8rem + 0.5vw, 1.25rem); transform: rotate(-4deg); white-space: nowrap;
   }
+  .annotation-wide { white-space: normal; width: 6.5em; transform: rotate(-3deg); }
+  /* On phones and tablets the bird strikes at the bugs beside its breast (scripts/motion.ts): that note gives way. */
+  @media (max-width: 63.99rem) { .annotation-wide, .leader-wide { display: none; } }
   /* A map-style scale bar under the caption. */
   .scale { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.15rem; }
   .scale i { width: 5rem; height: 5px; border: 1px solid currentColor; background: repeating-linear-gradient(90deg, currentColor 0 1rem, transparent 1rem 2rem); }

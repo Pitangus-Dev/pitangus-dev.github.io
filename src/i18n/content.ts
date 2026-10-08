@@ -1,11 +1,14 @@
 // The landing's words. Each language is written for its own readers (Latin American Spanish, tú), not translated.
-// Only what Tamandua does today: no numbers we can't back, no "AI-powered".
+// Only what Pitangus does today: no numbers we can't back, no "AI-powered".
 
 export type Locale = 'en' | 'es'
 
+// The name the page shows. The repository, the images, the CLI and the Action keep their current names until the
+// product itself is renamed: the commands below must keep working as written.
+export const BRAND = 'Pitangus'
 export const REPO = 'https://github.com/Tamandua-AppSec/tamandua'
 export const DOCS = `${REPO}/tree/main/docs`
-// Who stands behind Tamandua, named once at the foot of the page.
+// Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
 export const RELEASE = 'v0.11.0'
@@ -16,32 +19,33 @@ export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Tamandu
 const en = {
   lang: 'en',
   meta: {
-    title: 'Tamandua · Eats your bugs, and proves they are gone',
+    title: 'Pitangus · Catches your bugs, and proves they are gone',
     description: 'Self-hosted, open-source application security for small teams: scans your code, verifies every fix and keeps the evidence. In English and Spanish.',
   },
   nav: { label: 'Sections', specimens: 'Specimens', change: 'Your change', ledger: 'Ledger', install: 'Install', code: 'Code', other: 'Español', otherHref: '/es/' },
   motion: { pause: 'Pause motion', play: 'Play motion' },
   theme: { label: 'Switch between day and night notebook' },
   skip: 'Skip to content',
-  counter: { label: 'bugs eaten', one: 'bug eaten', aria: 'Bugs caught while you read' },
+  counter: { label: 'bugs caught', one: 'bug caught', aria: 'Bugs caught while you read' },
   hero: {
     plate: 'Plate I',
-    species: 'Tamandua tetradactyla',
+    species: 'Pitangus sulphuratus',
+    drawing: 'Pitangus sulphuratus, the great kiskadee, perched on a branch: a naturalist’s plate in pencil, ink and watercolour',
     habitat: 'Habitat: your repositories. Diet: bugs.',
-    record: 'Specimen Nº 001 · Myrmecophagidae',
-    snout: 'tubular snout',
-    title: ['Eats your bugs.', 'Proves', 'they are gone.'],
-    lead: 'Self-hosted application security for small teams. Tamandua scans your code, dependencies and secrets, tells you what each change introduces and what it fixes, and keeps the evidence an auditor can check.',
+    record: 'Specimen Nº 001 · Tyrannidae',
+    marks: { bill: 'heavy bill', mask: 'black mask', breast: 'sulphur-yellow breast' },
+    title: ['I see you, bug.', 'Then I prove', 'you’re gone.'],
+    lead: 'Self-hosted application security for small teams. Pitangus scans your code, dependencies and secrets, tells you what each change introduces and what it fixes, and keeps the evidence an auditor can check.',
     primary: 'Install in 5 minutes',
     secondary: 'Read the code',
-    vertical: 'EATS YOUR BUGS',
+    vertical: 'NOTHING HIDES FROM PITANGUS',
     facts: ['Open source · AGPL-3.0', 'Runs on your server', 'No telemetry'],
   },
   specimens: {
     number: '01',
     kicker: 'Field guide',
     title: 'Every bug, catalogued like a specimen.',
-    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Tamandua merges what they find, removes duplicates and files each finding with where it lives and how to fix it.',
+    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Pitangus merges what they find, removes duplicates and files each finding with where it lives and how to fix it.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
     items: [
       { id: 'CWE-89', name: 'SQL injection', where: 'app/db.py:14', kind: 'Code', note: 'Request input reaches a query built as text.' },
@@ -55,7 +59,7 @@ const en = {
     number: '02',
     kicker: 'Pull requests',
     title: 'Only what your change brings. And what it fixes.',
-    lead: 'In CI, Tamandua scans the starting point and your change with the same engines, so a pull request is judged only by what it adds. It also says what the change fixed, and credits it only when both scans finished and the file really changed.',
+    lead: 'In CI, Pitangus scans the starting point and your change with the same engines, so a pull request is judged only by what it adds. It also says what the change fixed, and credits it only when both scans finished and the file really changed.',
     command: 'tamandua scan --base main',
     output: [
       { tone: 'muted', text: 'Tamandua · api · changes since main (merge-base 4f2a9c1e, 1 file)' },
@@ -100,7 +104,7 @@ const en = {
     number: '05',
     kicker: 'Jira',
     title: 'Tickets a developer can act on.',
-    lead: 'Issues go to the right project for each repository, with your custom fields. They say what is wrong, where, how to fix it, how to verify it and by when. When the fix is verified, Tamandua comments on the issue.',
+    lead: 'Issues go to the right project for each repository, with your custom fields. They say what is wrong, where, how to fix it, how to verify it and by when. When the fix is verified, Pitangus comments on the issue.',
     card: {
       key: 'SEC-142',
       title: 'High: update lodash 4.17.15 to 4.18.0 (6 vulnerabilities)',
@@ -110,7 +114,7 @@ const en = {
         ['How to fix it', 'npm install lodash@4.18.0'],
         ['Due date', 'Oct 30, from your security policy'],
       ],
-      back: 'Verified as fixed by Tamandua in scan 9f3c… on Oct 2.',
+      back: 'Verified as fixed by Pitangus in scan 9f3c… on Oct 2.',
     },
   },
   yours: {
@@ -139,9 +143,9 @@ const en = {
     note: 'Free and open source (AGPL-3.0). It runs on your server: no account, no telemetry.',
   },
   footer: {
-    colophon: 'Field notes on Tamandua tetradactyla, the small anteater of Colombia that eats bugs where nobody looks.',
+    colophon: 'Field notes on Pitangus sulphuratus, the great kiskadee: it hunts bugs of every kind, in the air or on the ground, and boldly takes on hawks far bigger than itself.',
     made: 'Made in Colombia.',
-    license: 'Tamandua is free software under AGPL-3.0.',
+    license: 'Pitangus is free software under AGPL-3.0.',
     links: [['Code', REPO], ['Docs', DOCS], ['Security', `${REPO}/blob/main/.github/SECURITY.md`]],
     credits: 'Animations by GSAP (Standard “no charge” license).',
   },
@@ -155,38 +159,39 @@ const en = {
     install: 'really: five minutes',
   },
   og: 'Self-hosted, open source application security for small teams.',
-  notFound: { title: 'Nothing to eat here.', body: 'This page wandered off. The tamandua is still sniffing around.', back: 'Back to the field guide' },
+  notFound: { title: 'Nothing to catch here.', body: 'This page flew off. The kiskadee is still watching from its branch.', back: 'Back to the field guide' },
 }
 
 const es: typeof en = {
   lang: 'es',
   meta: {
-    title: 'Tamandua · Se come tus bugs, y demuestra que ya no están',
+    title: 'Pitangus · Se traga tus bugs, y demuestra que ya no están',
     description: 'Seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños: analiza tu código, verifica cada corrección y guarda la evidencia. En español y en inglés.',
   },
   nav: { label: 'Secciones', specimens: 'Especímenes', change: 'Tu cambio', ledger: 'Registro', install: 'Instalar', code: 'Código', other: 'English', otherHref: '/' },
   motion: { pause: 'Pausar animaciones', play: 'Activar animaciones' },
   theme: { label: 'Cambiar entre el cuaderno de día y el de noche' },
   skip: 'Ir al contenido',
-  counter: { label: 'bugs comidos', one: 'bug comido', aria: 'Bugs atrapados mientras lees' },
+  counter: { label: 'bugs atrapados', one: 'bug atrapado', aria: 'Bugs atrapados mientras lees' },
   hero: {
     plate: 'Lámina I',
-    species: 'Tamandua tetradactyla',
+    species: 'Pitangus sulphuratus',
+    drawing: 'Pitangus sulphuratus, el bichofué, posado en una rama: lámina de naturalista a lápiz, tinta y acuarela',
     habitat: 'Hábitat: tus repositorios. Dieta: bugs.',
-    record: 'Ejemplar Nº 001 · Myrmecophagidae',
-    snout: 'hocico tubular',
-    title: ['Se come tus bugs.', 'Y demuestra', 'que ya no están.'],
-    lead: 'Seguridad de aplicaciones autoalojada para equipos pequeños. Tamandua analiza tu código, tus dependencias y tus secretos, te dice qué introduce y qué corrige cada cambio, y guarda la evidencia que un auditor puede comprobar.',
+    record: 'Ejemplar Nº 001 · Tyrannidae',
+    marks: { bill: 'pico robusto', mask: 'antifaz negro', breast: 'pecho amarillo azufre' },
+    title: ['Bien te veo, bug.', 'Y demuestro', 'que ya no estás.'],
+    lead: 'Seguridad de aplicaciones autoalojada para equipos pequeños. Pitangus analiza tu código, tus dependencias y tus secretos, te dice qué introduce y qué corrige cada cambio, y guarda la evidencia que un auditor puede comprobar.',
     primary: 'Instálalo en 5 minutos',
     secondary: 'Ver el código',
-    vertical: 'SE COME TUS BUGS',
+    vertical: 'SE TRAGA TUS BUGS',
     facts: ['Código abierto · AGPL-3.0', 'Corre en tu servidor', 'Sin telemetría'],
   },
   specimens: {
     number: '01',
     kicker: 'Guía de campo',
     title: 'Cada bug, catalogado como un espécimen.',
-    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Tamandua junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive y cómo corregirlo.',
+    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Pitangus junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive y cómo corregirlo.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
     items: [
       { id: 'CWE-89', name: 'Inyección SQL', where: 'app/db.py:14', kind: 'Código', note: 'La entrada de la petición llega a una consulta armada con texto.' },
@@ -200,7 +205,7 @@ const es: typeof en = {
     number: '02',
     kicker: 'Pull requests',
     title: 'Solo lo que trae tu cambio. Y lo que corrige.',
-    lead: 'En CI, Tamandua analiza el punto de partida y tu cambio con los mismos motores, así que una pull request se juzga solo por lo que añade. También dice qué corrigió, y solo se lo atribuye si los dos análisis terminaron y el archivo cambió de verdad.',
+    lead: 'En CI, Pitangus analiza el punto de partida y tu cambio con los mismos motores, así que una pull request se juzga solo por lo que añade. También dice qué corrigió, y solo se lo atribuye si los dos análisis terminaron y el archivo cambió de verdad.',
     command: 'tamandua scan --base main',
     output: [
       { tone: 'muted', text: 'Tamandua · api · cambios respecto a main (merge-base 4f2a9c1e, 1 archivo)' },
@@ -245,7 +250,7 @@ const es: typeof en = {
     number: '05',
     kicker: 'Jira',
     title: 'Incidencias con las que un desarrollador puede trabajar.',
-    lead: 'Cada repositorio manda sus incidencias al proyecto que le toca, con tus campos personalizados. Dicen qué pasa, dónde, cómo corregirlo, cómo comprobarlo y para cuándo. Cuando la corrección se verifica, Tamandua lo comenta en la incidencia.',
+    lead: 'Cada repositorio manda sus incidencias al proyecto que le toca, con tus campos personalizados. Dicen qué pasa, dónde, cómo corregirlo, cómo comprobarlo y para cuándo. Cuando la corrección se verifica, Pitangus lo comenta en la incidencia.',
     card: {
       key: 'SEC-142',
       title: 'Alta: actualizar lodash 4.17.15 a 4.18.0 (6 vulnerabilidades)',
@@ -255,7 +260,7 @@ const es: typeof en = {
         ['Cómo corregirlo', 'npm install lodash@4.18.0'],
         ['Plazo de corrección', '30 oct, según tu política de seguridad'],
       ],
-      back: 'Tamandua verificó la corrección en el análisis 9f3c… del 2 oct.',
+      back: 'Pitangus verificó la corrección en el análisis 9f3c… del 2 oct.',
     },
   },
   yours: {
@@ -284,9 +289,9 @@ const es: typeof en = {
     note: 'Libre y de código abierto (AGPL-3.0). Corre en tu servidor: sin cuenta y sin telemetría.',
   },
   footer: {
-    colophon: 'Notas de campo sobre Tamandua tetradactyla, el pequeño oso hormiguero de Colombia que se come los bugs donde nadie mira.',
+    colophon: 'Notas de campo sobre Pitangus sulphuratus, el bichofué: caza bichos de todo tipo, en el aire o en el suelo, y enfrenta sin miedo a gavilanes mucho más grandes que él.',
     made: 'Hecho en Colombia.',
-    license: 'Tamandua es software libre bajo AGPL-3.0.',
+    license: 'Pitangus es software libre bajo AGPL-3.0.',
     links: [['Código', REPO], ['Documentación', DOCS], ['Seguridad', `${REPO}/blob/main/.github/SECURITY.es.md`]],
     credits: 'Animaciones con GSAP (licencia estándar «no charge»).',
   },
@@ -300,7 +305,7 @@ const es: typeof en = {
     install: 'de verdad: cinco minutos',
   },
   og: 'Seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños.',
-  notFound: { title: 'Aquí no hay nada que comer.', body: 'Esta página se perdió. El tamandua sigue olfateando.', back: 'Volver a la guía de campo' },
+  notFound: { title: 'Aquí no hay nada que atrapar.', body: 'Esta página se fue volando. El bichofué sigue vigilando desde su rama.', back: 'Volver a la guía de campo' },
 }
 
 export const content = { en, es }

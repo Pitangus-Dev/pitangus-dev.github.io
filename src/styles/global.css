@@ -1,15 +1,23 @@
-/* Field notebook: paper, ink and one violet stamp. Flat colour, no gradients. At night the page is the dark desk and
-   the cards (figures, specimens, ledger, tickets, tags) stay lit paper, as under a lamp. Contrast (WCAG AA) checked:
-   day   ink/paper 15.9 · violet/paper 5.6 · muted/paper 6.4
-   night cream/night 15.9 · lilac/night 8.3 · muted/night 9.3 · card ink/card 14.2 · card violet/card 4.9 */
+/* Field notebook: paper, ink, the kiskadee's sulphur yellow and one rufous stamp. Flat colour, no gradients. At night
+   the page is the dark desk and the cards (figures, specimens, ledger, tickets, tags) stay lit paper, as under a lamp.
+   Sulphur is for fills and marks on paper, never for text there. Contrast (WCAG AA) checked:
+   day   ink/paper 16.0 · rufous/paper 5.7 · muted (olive)/paper 7.1 · ink/sulphur 10.4 · sulphur/slab 10.4
+   night cream/night 17.4 · sulphur/night 12.0 · muted/night 10.7 · card ink/card 14.5 · card rufous/card 5.1 */
 :root {
-  --paper: #fff3de;
-  --paper-deep: #f6e7c8;
-  --ink: #1e1433;
-  --muted: #5e5470;
-  --violet: #7342d3;
+  --paper: #fbf5e6;
+  --paper-deep: #f1e6cc;
+  --ink: #1c1a16;
+  --muted: #5e5233;
+  --accent: #9c4a1e;
+  --sulphur: #f2c230;
+  /* What reads on the ink-coloured surfaces (a primary button under the pointer). */
+  --on-ink: #f2c230;
   --rule: color-mix(in oklab, var(--ink) 16%, transparent);
-  --tongue: #e879a8;
+  /* The kiskadee's flight across the page: ink on paper, cream on the dark desk. */
+  --flight: var(--ink);
+  /* The margin notes are written on the page, even when they belong to a card: the page's accent, resolved here so a
+     card's own accent doesn't reach them. */
+  --note: var(--accent);
   /* Paper: the tooth (raised fibres lit from the top left) and slow clouds of pulp with a few specks, baked once into
      small tiles (src/assets/paper) that only need tiling: no filters or blending at paint time. At night the page is
      a dark desk and gets its own, fainter pair; the cards are lit paper in both themes. */
@@ -18,17 +26,17 @@
   --page-tooth: var(--paper-tooth);
   --page-cloud: var(--paper-cloud);
   /* Cards are paper in both themes. */
-  --card: #fff3de;
-  --card-deep: #f6e7c8;
-  --card-ink: #1e1433;
-  --card-muted: #5e5470;
-  --card-violet: #7342d3;
-  --card-rule: rgb(30 20 51 / 0.16);
+  --card: #fbf5e6;
+  --card-deep: #f1e6cc;
+  --card-ink: #1c1a16;
+  --card-muted: #5e5233;
+  --card-accent: #9c4a1e;
+  --card-rule: rgb(28 26 22 / 0.16);
   /* Dark slabs: the terminal and the install plate. */
-  --slab: #1e1433;
-  --on-slab: #fff3de;
-  --slab-accent: #bba5ff;
-  --lilac: #bba5ff;
+  --slab: #1c1a16;
+  --on-slab: #fff8e8;
+  --slab-accent: #f2c230;
+  --slab-second: #e39a62;
   --bug: #fcd34d;
   --gutter: clamp(1rem, 4vw, 3.5rem);
   --measure: 34rem;
@@ -39,13 +47,15 @@
 :root[data-theme="dark"] { --theme: night; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #1e1433; --paper-deep: #271b42; --ink: #fff3de; --muted: #c4b8da; --violet: #bba5ff; --tongue: #f39ac2;
-    --card: #f4e6cc; --card-deep: #ead9b8; --slab: #2b1e4a; color-scheme: dark; --page-tooth: url('../assets/paper/desk-tooth.webp'); --page-cloud: url('../assets/paper/desk-cloud.webp');
+    --paper: #16140f; --paper-deep: #211e16; --ink: #fff8e8; --muted: #cfc5ac; --accent: #f5cd4a; --sulphur: #f5cd4a; --on-ink: #1c1a16;
+    --card: #f3ead3; --card-deep: #e8dcbf; --slab: #262219; --slab-accent: #f5cd4a; color-scheme: dark;
+    --page-tooth: url('../assets/paper/desk-tooth.webp'); --page-cloud: url('../assets/paper/desk-cloud.webp');
   }
 }
 :root[data-theme="dark"] {
-  --paper: #1e1433; --paper-deep: #271b42; --ink: #fff3de; --muted: #c4b8da; --violet: #bba5ff; --tongue: #f39ac2;
-  --card: #f4e6cc; --card-deep: #ead9b8; --slab: #2b1e4a; color-scheme: dark; --page-tooth: url('../assets/paper/desk-tooth.webp'); --page-cloud: url('../assets/paper/desk-cloud.webp');
+  --paper: #16140f; --paper-deep: #211e16; --ink: #fff8e8; --muted: #cfc5ac; --accent: #f5cd4a; --sulphur: #f5cd4a; --on-ink: #1c1a16;
+  --card: #f3ead3; --card-deep: #e8dcbf; --slab: #262219; --slab-accent: #f5cd4a; color-scheme: dark;
+  --page-tooth: url('../assets/paper/desk-tooth.webp'); --page-cloud: url('../assets/paper/desk-cloud.webp');
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -65,9 +75,9 @@ body {
 }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
-a:hover { color: var(--violet); }
-:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: 2px; }
-::selection { background: var(--violet); color: var(--paper); }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+::selection { background: var(--accent); color: var(--paper); }
 
 .skip {
   position: absolute; left: var(--gutter); top: -4rem; z-index: 50; padding: 0.5rem 0.9rem;
@@ -80,7 +90,7 @@ html.no-js :is([data-theme-toggle], [data-motion-toggle], [data-copy]) { display
 
 /* Type */
 .display { font-family: var(--font-display), Georgia, serif; font-weight: 400; letter-spacing: -0.01em; line-height: 0.98; margin: 0; }
-.display em { font-style: italic; color: var(--violet); }
+.display em { font-style: italic; color: var(--accent); }
 .kicker, .mono { font-family: var(--font-mono), ui-monospace, monospace; }
 .kicker { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 .lead { font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem); max-width: var(--measure); color: color-mix(in oklab, var(--ink) 88%, var(--paper)); }
@@ -93,7 +103,7 @@ html.no-js :is([data-theme-toggle], [data-motion-toggle], [data-copy]) { display
 .grid > * { min-width: 0; }
 .plate { position: relative; padding-block: clamp(5rem, 12vw, 10rem); border-top: 1px solid var(--rule); }
 .plate > .wrap { position: relative; }
-/* Plates held still while something plays (scripts/motion.ts) are opaque paper, so the tongue stays behind them. */
+/* Plates held still while something plays (scripts/motion.ts) are opaque paper, so the flight line stays behind them. */
 .plate[data-held] { background-color: var(--paper); }
 .plate-head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 1rem; margin-bottom: clamp(2rem, 5vw, 4rem); }
 .plate-num {
@@ -108,11 +118,11 @@ html.no-js :is([data-theme-toggle], [data-motion-toggle], [data-copy]) { display
   letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
 }
 
-/* The violet hanko. */
+/* The rufous hanko. */
 .stamp {
-  display: inline-grid; place-items: center; padding: 0.6rem 1.05rem; border: 3px solid var(--violet); border-radius: 0.45rem;
-  outline: 1.5px solid var(--violet); outline-offset: -7px;  /* the inner rule of an office stamp */
-  color: var(--violet); font-family: var(--font-mono), monospace; font-weight: 600; letter-spacing: 0.18em;
+  display: inline-grid; place-items: center; padding: 0.6rem 1.05rem; border: 3px solid var(--accent); border-radius: 0.45rem;
+  outline: 1.5px solid var(--accent); outline-offset: -7px;  /* the inner rule of an office stamp */
+  color: var(--accent); font-family: var(--font-mono), monospace; font-weight: 600; letter-spacing: 0.18em;
   transform: rotate(-8deg); text-transform: uppercase;
   /* Rubber-stamp ink: uneven pressure, worn patches and pores where the ink didn't take (a baked mask, cheap to
      paint), soaking into the paper rather than covering it. Each stamp is pressed from another part of the pad. */
@@ -126,9 +136,11 @@ html.no-js :is([data-theme-toggle], [data-motion-toggle], [data-copy]) { display
   font-weight: 600; text-decoration: none; border: 1.5px solid var(--ink); transition: transform 0.35s var(--ease), background 0.25s, color 0.25s;
   min-height: 44px;
 }
-.button.primary { background: var(--ink); color: var(--paper); }
-.button.primary:hover { background: var(--violet); border-color: var(--violet); color: var(--paper); transform: translateY(-2px); }
-.button.ghost:hover { color: var(--violet); border-color: var(--violet); transform: translateY(-2px); }
+.button.primary { background: var(--sulphur); border-color: var(--sulphur); color: #1c1a16; }
+:root:not([data-theme="dark"]) .button.primary { border-color: var(--ink); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .button.primary { border-color: var(--sulphur); } }
+.button.primary:hover { background: var(--ink); border-color: var(--ink); color: var(--on-ink); transform: translateY(-2px); }
+.button.ghost:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
 
 /* What scripts animate starts visible: if JS never runs (or motion is reduced), nothing stays hidden. */
 html.motion [data-reveal] { will-change: transform, opacity; }
@@ -143,7 +155,7 @@ html.motion [data-reveal] { will-change: transform, opacity; }
 .leaf { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
 .leaf-cover { position: absolute; inset: 0; background-color: var(--paper); }
 /* The flap's shadow is its own shape, offset: a filter would be recomputed over the whole plate on every frame. */
-.leaf-shade { position: absolute; inset: 0; background: rgb(30 20 51 / 0.12); }
+.leaf-shade { position: absolute; inset: 0; background: rgb(28 26 22 / 0.12); }
 .leaf-flap {
   position: absolute; inset: 0;
   background: linear-gradient(45deg, var(--paper-deep), color-mix(in oklab, var(--paper) 70%, var(--paper-deep)) 55%, var(--paper-deep));
@@ -166,7 +178,7 @@ html.pending .note { opacity: 0; }
 }
 
 /* Inside a paper card, the ink and the stamp are always the day ones. */
-.card-paper { background-color: var(--card); color: var(--card-ink); --ink: var(--card-ink); --violet: var(--card-violet); --muted: var(--card-muted); --rule: var(--card-rule); }
+.card-paper { background-color: var(--card); color: var(--card-ink); --ink: var(--card-ink); --accent: var(--card-accent); --muted: var(--card-muted); --rule: var(--card-rule); }
 
 /* Windows High Contrast and other forced colours: what colour alone said gets a border or the system colours. */
 @media (forced-colors: active) {

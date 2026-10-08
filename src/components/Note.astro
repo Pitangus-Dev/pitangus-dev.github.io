@@ -16,7 +16,7 @@ const { text, arrow = 'left', place = '', tilt = -4 } = Astro.props
 <style>
   .note {
     position: absolute; z-index: 4; margin: 0; display: flex; align-items: flex-end; gap: 0.25rem; width: max-content; max-width: 15rem;
-    font-family: var(--font-hand), cursive; font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.7rem); line-height: 1.05; color: var(--violet);
+    font-family: var(--font-hand), cursive; font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.7rem); line-height: 1.05; color: var(--note);
     transform: rotate(var(--tilt)); pointer-events: none;
   }
   .note-arrow { width: 3.4rem; height: auto; flex: none; overflow: visible; }
@@ -33,7 +33,8 @@ const { text, arrow = 'left', place = '', tilt = -4 } = Astro.props
   .arrow-down-right { flex-direction: column-reverse; align-items: flex-end; }
   .arrow-down-right .note-arrow { transform: scaleX(-1); }
   @media (max-width: 64rem) {
-    .note { position: static; inset: auto !important; margin: 1rem 0 0 0.5rem; max-width: none; }
+    /* In the flow it sits where it is placed (inside a card, on the card's paper): that place's accent. */
+    .note { position: static; inset: auto !important; margin: 1rem 0 0 0.5rem; max-width: none; color: var(--accent); }
     .note-arrow { width: 2.4rem; }
   }
 </style>

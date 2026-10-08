@@ -3,10 +3,11 @@
 // 1.5-second safety net), and with reduced motion or the "pause motion" button it stays still.
 //
 // The story, in order:
-//   1. The tamandua is sketched in ink, then washed with colour; its eye follows the pointer.
-//   2. Wide screens: bugs crawl all over the page and run from the pointer. As you scroll, one tongue winds out of the
-//      snout through every bug, eating each one its tip reaches. Phones and tablets get a lighter version: the mascot
-//      snacks on the bugs beside it. Everywhere, the specimens (already caught) are stamped as they scroll in.
+//   1. The kiskadee is sketched in ink, then washed with colour; its eye follows the pointer.
+//   2. Wide screens: bugs crawl all over the page and run from the pointer. As you scroll, the kiskadee's flight, a
+//      dashed ink line, sets off from its bill and swoops through every bug, catching each one its tip reaches. Phones
+//      and tablets get a lighter version: the bird snaps up the bugs beside it. Everywhere, the specimens (already
+//      caught) are stamped as they scroll in.
 //   3. The terminal types itself, the ledger gets its hanko, the tags ride a conveyor, the Jira card turns over, the
 //      naturalist's notes write themselves and, on wide screens, each plate is uncovered like a turning page.
 
@@ -17,11 +18,12 @@ type Point = { x: number; y: number }
 const STORAGE = 'tamandua-motion'
 const root = document.documentElement
 const WIDE = '(min-width: 64rem)'
-// Everything below animates the landing. Elsewhere (the 404) the tamandua only sniffs, in CSS, which html.still stops.
+// Everything below animates the landing. Elsewhere (the 404) the kiskadee only bobs on its perch, in CSS, which
+// html.still stops.
 const landing = document.querySelector('[data-field]') !== null
 let teardown: (() => void) | null = null
 
-// The counter in the header: bugs eaten around the page, and specimens caught.
+// The counter in the header: bugs caught around the page, and specimens.
 const tally = { page: 0, specimens: 0 }
 
 export function start() {
@@ -38,8 +40,8 @@ export function start() {
   else settle()
 }
 
-// The final state, without animation: specimens caught, the tongue drawn (on wide screens only: phones never get the
-// tongue across the page), nothing hidden.
+// The final state, without animation: specimens caught, the flight drawn (on wide screens only: phones never get the
+// flight across the page), nothing hidden.
 function settle() {
   root.classList.remove('pending')
   document.querySelectorAll<HTMLElement>('[data-type]').forEach(element => { element.textContent = element.dataset.command ?? element.textContent })
@@ -52,7 +54,7 @@ function settle() {
   if (built) built.paths.forEach(path => { path.style.strokeDashoffset = '0' })
 }
 
-// No tongue on the page: before a phone's lighter motion, and whenever motion stops or restarts.
+// No flight on the page: before a phone's lighter motion, and whenever motion stops or restarts.
 function clearTongue() {
   document.querySelectorAll<SVGPathElement>('[data-tongue-path], [data-tongue-twin]').forEach(path => {
     path.removeAttribute('d')
@@ -86,8 +88,8 @@ async function run() {
   const context = gsap.context(() => {
     ink(gsap, late)
     cleanups.push(eyes(gsap))
-    // The big set pieces (the tongue across the page, the turning pages) are for wide screens. On phones and
-    // tablets the mascot just snacks on the bugs beside it and the specimens are stamped as they scroll in: lighter,
+    // The big set pieces (the flight across the page, the turning pages) are for wide screens. On phones and
+    // tablets the bird just snaps up the bugs beside it and the specimens are stamped as they scroll in: lighter,
     // and nothing fights with touch scrolling.
     media.add({ wide: WIDE, narrow: `not all and ${WIDE}` }, matched => {
       Object.assign(tally, { page: 0, specimens: 0 })
@@ -146,9 +148,9 @@ function ink(gsap: Gsap, late: boolean) {
     gsap.fromTo('.hero .line-inner', { y: 0, yPercent: 130 }, { y: 0, yPercent: 0, duration: 1.2, stagger: 0.1, ease: 'expo.out' })
     gsap.from('.hero [data-reveal]', { y: 18, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.1, delay: 0.5 })
   }
-  // Alive, quietly: it breathes and its head sways a little.
-  gsap.to('.mascot-body', { scaleY: 1.012, svgOrigin: '22 64', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
-  gsap.to('.mascot-head', { rotation: 1.6, svgOrigin: '24 40', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4 })
+  // Alive, quietly: it breathes on its perch (from the feet) and its head turns a little on its neck.
+  gsap.to('.mascot-body', { scaleY: 1.012, svgOrigin: '27 42', duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 })
+  gsap.to('.mascot-head', { rotation: 1.6, svgOrigin: '27 22', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.4 })
   blink(gsap)
 }
 
@@ -168,34 +170,37 @@ function blink(gsap: Gsap) {
   gsap.delayedCall(3.2, next)
 }
 
-// The pupil looks toward the pointer.
+// The eye looks toward the pointer: its catchlight moves up to data-reach (drawing units) from where it rests.
 function eyes(gsap: Gsap) {
   const pupil = document.querySelector<SVGElement>('[data-pupil]')
   const eye = document.querySelector<SVGElement>('[data-eye]')
   if (!pupil || !eye) return () => {}
+  const reach = Number(eye.dataset.reach ?? 0.9)
   const moveX = gsap.quickTo(pupil, 'x', { duration: 0.35, ease: 'power3.out' })
   const moveY = gsap.quickTo(pupil, 'y', { duration: 0.35, ease: 'power3.out' })
   const look = (event: PointerEvent) => {
     const box = eye.getBoundingClientRect()
     const dx = event.clientX - (box.left + box.width / 2), dy = event.clientY - (box.top + box.height / 2)
     const distance = Math.hypot(dx, dy) || 1
-    moveX((dx / distance) * 0.9)
-    moveY((dy / distance) * 0.9)
+    moveX((dx / distance) * reach)
+    moveY((dy / distance) * reach)
   }
   addEventListener('pointermove', look, { passive: true })
   return () => removeEventListener('pointermove', look)
 }
 
-// --- 2. the tongue -------------------------------------------------------------------------------------------------------
+// --- 2. the flight -------------------------------------------------------------------------------------------------------
 
-// One tongue, out of the snout and across the whole page: it winds through every bug and its tip eats each one it
+// One flight, out of the bill and across the whole page: it swoops through every bug and its tip catches each one it
 // reaches. The cover's bugs go first, as soon as the reader starts scrolling; after that, the scroll draws it on.
 function tongue(gsap: Gsap, ScrollTrigger: Trigger, swarm: Swarm) {
   let built: Built | null = null
   let reached = 0, goal = 0, intro = 0, started = false, introduced = false, catching = false
   const paint = () => {
     if (!built) return
-    built.paths.forEach(path => { path.style.strokeDashoffset = String(built!.total - reached) })
+    // Dash by dash: the tip shows whole dashes only, so they stay put on the path as it grows.
+    const shown = Math.min(Math.ceil(reached / PERIOD) * PERIOD, built.hidden)
+    built.paths.forEach(path => { path.style.strokeDashoffset = String(built!.hidden - shown) })
     built.visits.forEach(visit => { if (reached >= visit.length) swarm.eat(visit.id) })
   }
   // Once the cover's bugs are eaten, the tip eases over to wherever the scroll has got to.
@@ -230,7 +235,7 @@ function tongue(gsap: Gsap, ScrollTrigger: Trigger, swarm: Swarm) {
   ScrollTrigger.create({ trigger: '[data-field]', start: 'top top', end: 'bottom bottom', onUpdate: update, onRefresh: rebuild })
 }
 
-// A tamandua has one tongue: every lick (bugs and specimens) waits its turn, and when several wait it just eats faster.
+// A kiskadee strikes at one bug at a time: every strike waits its turn, and when several wait it just strikes faster.
 let mouth = Promise.resolve()
 let waiting = 0
 function feed(play: () => GSAPTimeline | null) {
@@ -244,7 +249,17 @@ function feed(play: () => GSAPTimeline | null) {
   }))
 }
 
-// A quick flick of the tongue's tip (or from `from`) to an element and back: a separate path, drawn out then pulled in.
+// The flight and the strikes are dashed lines, revealed like solid ones: the dash pattern runs the whole path and ends
+// in a gap as long as the path, so moving the dash offset from `hidden` (nothing shows) to 0 (all of it) draws the
+// dashes one after another from the start. No masks: they cost frames on a path as tall as the page.
+const DASH = 5, GAP = 8, PERIOD = DASH + GAP
+function dashed(path: SVGPathElement, total: number): number {
+  const count = Math.ceil(total / PERIOD) + 1
+  path.style.strokeDasharray = `${`${DASH} ${GAP} `.repeat(count - 1)}${DASH} ${GAP + total}`
+  return count * PERIOD
+}
+
+// A quick strike from the bill to an element and back: a separate dashed path, drawn out then pulled in.
 function lick(gsap: Gsap, field: HTMLElement, svg: SVGSVGElement, target: Element, start: Point) {
   const end = centre(target, field.getBoundingClientRect())
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
@@ -252,11 +267,11 @@ function lick(gsap: Gsap, field: HTMLElement, svg: SVGSVGElement, target: Elemen
   path.setAttribute('d', `M${start.x} ${start.y} Q${(start.x + end.x) / 2} ${bend} ${end.x} ${end.y}`)
   path.setAttribute('class', 'lick')
   svg.appendChild(path)
-  const total = path.getTotalLength()
-  gsap.set(path, { strokeDasharray: total, strokeDashoffset: total })
+  const hidden = dashed(path, path.getTotalLength())
+  gsap.set(path, { strokeDashoffset: hidden })
   return gsap.timeline({ onComplete: () => path.remove() })
     .to(path, { strokeDashoffset: 0, duration: 0.28, ease: 'power3.out' })
-    .to(path, { strokeDashoffset: total, duration: 0.42, ease: 'power2.in' }, '+=0.12')
+    .to(path, { strokeDashoffset: hidden, duration: 0.42, ease: 'power2.in' }, '+=0.12')
     .set(path, { opacity: 0 })
 }
 
@@ -271,14 +286,14 @@ function pin(gsap: Gsap, item: HTMLElement) {
   return timeline.call(() => { tally.specimens = document.querySelectorAll('[data-specimen].is-caught').length; paintCounter() })
 }
 
-// Phones and tablets: three bugs crawl beside the drawing; when it comes into view the tongue flicks out of the snout
-// for each, one after another.
+// Phones and tablets: three bugs crawl beside the drawing; when it comes into view the kiskadee strikes from its bill
+// at each, one after another, and swallows it.
 function snack(gsap: Gsap, ScrollTrigger: Trigger) {
   const field = document.querySelector<HTMLElement>('[data-field]')
   const svg = field?.querySelector<SVGSVGElement>('[data-tongue-front]')
   const frame = document.querySelector<HTMLElement>('.hero .frame')
-  const snout = document.querySelector('[data-tongue="start"]')
-  if (!field || !svg || !frame || !snout) return () => {}
+  const beak = document.querySelector('[data-tongue="start"]')  // the tip of the bill
+  if (!field || !svg || !frame || !beak) return () => {}
   const fit = () => svg.setAttribute('viewBox', `0 0 ${field.offsetWidth} ${field.offsetHeight}`)
   fit()
   const spots = [{ u: 0.9, v: 0.66 }, { u: 0.62, v: 0.86 }, { u: 0.88, v: 0.9 }]
@@ -297,12 +312,12 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
       duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
   })
   ScrollTrigger.create({ trigger: frame, start: 'center 70%', once: true, onEnter: () => bugs.forEach(bug => feed(() => {
-    const nose = centre(snout, field.getBoundingClientRect())
+    const beakTip = centre(beak, field.getBoundingClientRect())
     const at = centre(bug, field.getBoundingClientRect())
-    const flick = lick(gsap, field, svg, bug, nose)
+    const flick = lick(gsap, field, svg, bug, beakTip)
     return gsap.timeline()
       .add(flick)
-      .to(bug, { x: `+=${nose.x - at.x}`, y: `+=${nose.y - at.y}`, scale: 0.2, duration: 0.42, ease: 'power2.in' }, 0.3)
+      .to(bug, { x: `+=${beakTip.x - at.x}`, y: `+=${beakTip.y - at.y}`, scale: 0.2, duration: 0.42, ease: 'power2.in' }, 0.3)
       .to(bug, { opacity: 0, duration: 0.12 }, 0.62)
       .call(() => { tally.page += 1; paintCounter() }, [], 0.62)
   })) })
@@ -469,7 +484,7 @@ const polygon = (points: Point[]) => points.length < 3 ? 'polygon(0 0, 0 0, 0 0)
 // --- bugs all over the page ----------------------------------------------------------------------------------------
 
 // A few over the cover's title and two on every plate. They crawl in place, run from the pointer on a desktop, and
-// are eaten when the tongue's tip passes over them (its path is drawn through each one).
+// are caught when the flight's tip passes over them (its path is drawn through each one).
 type Visit = { id: number; at: Point; cover: boolean }
 type Swarm = { visits: () => Visit[]; eat: (id: number) => void; cover: number; cleanup: () => void }
 
@@ -477,7 +492,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
   const field = document.querySelector<HTMLElement>('[data-field]')
   const title = document.querySelector<HTMLElement>('.hero-title')
   if (!field || !title) return { visits: () => [], eat: () => {}, cover: 0, cleanup: () => {} }
-  // None among the specimens (already caught) or on the plates held still over the tongue.
+  // None among the specimens (already caught) or on the plates held still over the flight.
   const plates = gsap.utils.toArray<HTMLElement>('.plate').filter(plate => plate.id !== 'specimens' && !plate.hasAttribute('data-held'))
   const random = mulberry(11)
   type Wild = { el: HTMLElement; home: Point; pos: Point; eaten: boolean; cover: boolean; crawl?: gsap.core.Tween }
@@ -493,7 +508,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
     wild.forEach((bug, index) => {
       const spot = spots[index]
       if (spot.plate < 0) {
-        // At the end of each line of the cover's title, so the tongue fetches them without crossing the words.
+        // At the end of each line of the cover's title, so the flight fetches them without crossing the words.
         const line = lines[index % lines.length], row = line.parentElement!.getBoundingClientRect()
         bug.home = { x: line.getBoundingClientRect().right - box.left + 20 + spot.u * 14, y: row.top - box.top + row.height * (0.45 + spot.v * 0.15) }
       } else {
@@ -512,7 +527,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
       duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
   })
 
-  // Eaten: back onto the tongue where it passes, a last wriggle, gone.
+  // Caught: back onto the flight line where it passes, a last wriggle, gone.
   const eat = (id: number) => {
     const bug = wild[id]
     if (!bug || bug.eaten) return
@@ -526,7 +541,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
       .call(() => { tally.page += 1; paintCounter() })
   }
 
-  // On a desktop, they run from the pointer (not far: the tongue still knows where they live).
+  // On a desktop, they run from the pointer (not far: the bird still knows where they live).
   let frame = 0
   const onMove = (event: PointerEvent) => {
     cancelAnimationFrame(frame)
@@ -563,8 +578,8 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): Swarm {
 // --- the spine's path ---------------------------------------------------------------------------------------------
 
 type Sample = { length: number; x: number; y: number; top: number }
-// `path` is the tongue behind the content; `paths`, it and its twin on top.
-type Built = { path: SVGPathElement; paths: SVGPathElement[]; total: number; offset: number; spineX: number;
+// `path` is the flight behind the content; `paths`, it and its twin on top.
+type Built = { path: SVGPathElement; paths: SVGPathElement[]; total: number; hidden: number; offset: number; spineX: number;
                samples: Sample[]; head: number; headTop: number; visits: { id: number; length: number }[] }
 
 function centre(element: Element, box: DOMRect): Point {
@@ -597,7 +612,7 @@ function spline(points: Point[]): { d: string; samples: Sample[] } {
   return { d, samples }
 }
 
-// From the snout through the cover's bugs, then down the page through every other bug, winding a
+// From the bill through the cover's bugs, then down the page through every other bug, swooping a
 // little between them, to the end of the page.
 function buildTongue(visits: Visit[]): Built | null {
   const field = document.querySelector<HTMLElement>('[data-field]')
@@ -607,31 +622,31 @@ function buildTongue(visits: Visit[]): Built | null {
   const twin = svg?.querySelector<SVGPathElement>('[data-tongue-twin]')
   const clip = svg?.querySelector<SVGRectElement>('[data-tongue-clip]')
   const frame = field?.querySelector('.hero .frame')
-  const snout = field?.querySelector('[data-tongue="start"]')
-  if (!field || !back || !path || !svg || !twin || !clip || !snout) return null
+  const beak = field?.querySelector('[data-tongue="start"]')
+  if (!field || !back || !path || !svg || !twin || !clip || !beak) return null
   const box = field.getBoundingClientRect()
   const width = field.offsetWidth, height = field.offsetHeight
   const gutter = parseFloat(getComputedStyle(document.querySelector('.wrap') ?? field).paddingRight) || 24
   const spineX = width - Math.max(10, gutter * 0.45)
-  const nose = centre(snout, box)
+  const beakTip = centre(beak, box)
 
   // The cover's bugs first, bottom up (it reaches the title from below), then the rest top to bottom.
   const order = [...visits.filter(visit => visit.cover).sort((a, b) => b.at.y - a.at.y),
                  ...visits.filter(visit => !visit.cover).sort((a, b) => a.at.y - b.at.y)]
   const heads = order.filter(visit => visit.cover).length
 
-  // Inside the drawing's frame (drawn on top there) it goes out of the snout, down the free side and along the empty
-  // strip under the body, and leaves by the frame's left edge, never across the mascot. It ends before the dark
-  // install plate, where it couldn't be seen behind.
-  const frameBox = (frame ?? snout).getBoundingClientRect()
+  // Inside the drawing's frame (drawn on top there) it leaves the bill, dives down the free side in front of the
+  // breast and along the empty strip under the perch, and leaves by the frame's left edge, never across the bird. It
+  // ends before the dark install plate, where it couldn't be seen behind.
+  const frameBox = (frame ?? beak).getBoundingClientRect()
   const left = frameBox.left - box.left, right = frameBox.right - box.left, top = frameBox.top - box.top, bottom = frameBox.bottom - box.top
-  const drawing = snout.closest('svg')?.getBoundingClientRect()
+  const drawing = beak.closest('svg')?.getBoundingClientRect()
   const strip = drawing ? (drawing.bottom - box.top + bottom) / 2 : bottom - 24
-  const route = frame ? [{ x: Math.min(nose.x + 36, right - 18), y: nose.y + 14 }, { x: right - 34, y: (nose.y + strip) / 2 },
+  const route = frame ? [{ x: Math.min(beakTip.x + 36, right - 18), y: beakTip.y + 14 }, { x: right - 34, y: (beakTip.y + strip) / 2 },
                          { x: right - 70, y: strip }, { x: left + 50, y: strip }, { x: left - 36, y: strip - 40 }] : []
   const slab = field.querySelector('.install')
   const end = slab ? slab.getBoundingClientRect().top - box.top - 60 : height - 40
-  const stops = [nose, ...route, ...order.map(visit => visit.at), { x: spineX, y: end }]
+  const stops = [beakTip, ...route, ...order.map(visit => visit.at), { x: spineX, y: end }]
   const points: Point[] = [stops[0]]
   // Down the page, a gentle bend halfway between two stops, alternating sides, so it winds instead of running straight.
   stops.slice(1).forEach((stop, index) => {
@@ -667,12 +682,13 @@ function buildTongue(visits: Visit[]): Built | null {
   // After the cover, the scroll drives the tip by height: each sample remembers the lowest point reached so far.
   const headIndex = heads ? placed[heads - 1].index : 0
   for (let index = headIndex, top = -Infinity; index < samples.length; index++) top = samples[index].top = Math.max(top, samples[index].y)
-  for (const layer of [path, twin]) Object.assign(layer.style, { strokeDasharray: String(total), strokeDashoffset: String(total) })
-  return { path, paths: [path, twin], total, offset: box.top + scrollY, spineX, samples, head: samples[headIndex].length,
+  let hidden = 0
+  for (const layer of [path, twin]) { hidden = dashed(layer, total); layer.style.strokeDashoffset = String(hidden) }
+  return { path, paths: [path, twin], total, hidden, offset: box.top + scrollY, spineX, samples, head: samples[headIndex].length,
            headTop: samples[headIndex].top, visits: placed.map(({ id, length }) => ({ id, length })) }
 }
 
-// How much tongue is out when the scroll line is at a given height (never less than the cover's part).
+// How much of the flight is drawn when the scroll line is at a given height (never less than the cover's part).
 function lengthAtY(built: Built, y: number): number {
   if (y <= built.headTop) return 0
   const sample = built.samples.find(item => item.length >= built.head && item.top >= y)

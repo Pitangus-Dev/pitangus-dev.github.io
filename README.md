@@ -1,10 +1,12 @@
-# Tamandua · landing
+# Pitangus · landing
 
-The website of [Tamandua](https://github.com/Tamandua-AppSec/tamandua), in English (`/`) and Spanish (`/es/`).
+The website of [Pitangus](https://github.com/Tamandua-AppSec/tamandua), in English (`/`) and Spanish (`/es/`). The
+repository, the images, the CLI and the Action keep their current names for now; only the page shows the new one.
 
-A field notebook: bugs are catalogued like specimens, the tamandua's tongue winds out of its snout and down the page as
-you read, eating every bug it reaches, and a violet hanko stamps what has been verified. Flat colour, editorial grid,
-numbered plates, handwritten notes in the margin. Phones get a lighter version of the motion.
+A field notebook: bugs are catalogued like specimens, the kiskadee (*Pitangus sulphuratus*) sets off from its perch and
+its dashed flight swoops down the page as you read, catching every bug it reaches, and a rufous hanko stamps what has
+been verified. Paper, ink and sulphur yellow, editorial grid, numbered plates, handwritten notes in the margin. Phones
+get a lighter version of the motion.
 
 ## Run it
 
@@ -39,10 +41,10 @@ serve the build and run `CHROME=/path/to/chrome-headless-shell scripts/og.sh`.
 
 ## License
 
-The site's code is under the [MIT license](LICENSE). Tamandua itself is a separate project, under AGPL-3.0.
+The site's code is under the [MIT license](LICENSE). Pitangus itself is a separate project, under AGPL-3.0.
 
-**Not covered by the MIT license:** the Tamandua name, the logo, the tamandua mascot and the beetle drawings, the favicon
-(`public/favicon.svg`) and the share pictures (`public/og-*.jpg`). They identify the project; please don't reuse them
+**Not covered by the MIT license:** the Pitangus name, the logo (`public/logo.svg`), the kiskadee drawing and the beetle
+drawings, the favicon (`public/favicon.svg`) and the share pictures (`public/og-*.jpg`). They identify the project; please don't reuse them
 for something else.
 
 **Third-party code and fonts keep their own licenses:** GSAP is free to use, including commercially, under its own
