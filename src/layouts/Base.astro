@@ -102,7 +102,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
           <a href={section('install')}>{t.nav.install}</a>
         </nav>
         <div class="tools">
-          <p class="counter mono">
+          <p class="counter mono" title={t.counter.hint}>
             <span class="visually-hidden">{t.counter.aria}:</span> <Bug size={18} /> <span data-counter>0</span> <span class="counter-label" data-counter-label data-one={t.counter.one} data-other={t.counter.label}>{t.counter.label}</span>
           </p>
           <button class="theme-toggle" type="button" data-theme-toggle aria-label={t.theme.label} title={t.theme.label}>

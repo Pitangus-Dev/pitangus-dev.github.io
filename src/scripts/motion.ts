@@ -5,8 +5,9 @@
 // The story, in order:
 //   1. The kiskadee is sketched in ink, then washed with colour; its eye follows the pointer.
 //   2. Bugs walk about: on wide screens all over the page, on phones and tablets beside the drawing. They run from
-//      the pointer (or a finger) and go back to their business. Everywhere, the specimens (already caught) are
-//      stamped as they scroll in.
+//      the pointer (or a finger) and go back to their business; a click or a tap next to one sends the kiskadee out
+//      from its perch (the counter) to take it on the wing, as it hunts. Everywhere, the specimens (already caught)
+//      are stamped as they scroll in.
 //   3. The terminal types itself, the ledger gets its hanko, the tags ride a conveyor, the Jira card turns over, the
 //      naturalist's notes write themselves and, on wide screens, each plate is uncovered like a turning page.
 
@@ -225,11 +226,36 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
     gsap.to(bug.querySelector('.critter-body'), { rotation: 'random(-7, 7)', duration: 0.11, ease: 'none', repeat: -1, yoyo: true, repeatRefresh: true })
   })
 
+  // A tap right next to a bug: the kiskadee takes it, and a while later another walks in at its spot.
+  const caught = new Set<number>()
+  const take = (event: PointerEvent): boolean => {
+    if (event.type !== 'pointerdown' || !onPage(event)) return false
+    const index = bugs.findIndex((bug, at) => {
+      if (caught.has(at)) return false
+      const box = bug.getBoundingClientRect()
+      return Math.hypot(box.left + box.width / 2 - event.clientX, box.top + box.height / 2 - event.clientY) < 60
+    })
+    if (index < 0) return false
+    caught.add(index)
+    walks[index]?.kill()
+    const sent = sally(gsap, bugs[index], () => {
+      tally.page += 1
+      paintCounter()
+      gsap.set(bugs[index], { x: 0, y: 0, delay: 0.2 })
+      gsap.fromTo(bugs[index], { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, delay: 8, ease: 'back.out(1.8)',
+        onComplete: () => { caught.delete(index); walk(index) } })
+    })
+    if (!sent) { caught.delete(index); walk(index) }
+    return sent
+  }
+
   // A finger (or a pointer) close by: it runs straight away from it, then calms down and walks again.
   const scare = (event: PointerEvent) => {
+    if (take(event)) return
     const box = field.getBoundingClientRect()
     const pointer = { x: event.clientX - box.left, y: event.clientY - box.top }
     bugs.forEach((bug, index) => {
+      if (caught.has(index)) return
       const at = { x: homes[index].x + Number(gsap.getProperty(bug, 'x')), y: homes[index].y + Number(gsap.getProperty(bug, 'y')) }
       const dx = at.x - pointer.x, dy = at.y - pointer.y, distance = Math.hypot(dx, dy) || 1
       if (distance > 80) return
@@ -416,13 +442,13 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
   // None among the specimens (already caught) or on the plates held still while scrolling.
   const plates = gsap.utils.toArray<HTMLElement>('.plate').filter(plate => plate.id !== 'specimens' && !plate.hasAttribute('data-held'))
   const random = mulberry(11)
-  type Wild = { el: HTMLElement; home: Point; pos: Point; cover: boolean }
+  type Wild = { el: HTMLElement; home: Point; pos: Point; cover: boolean; caught: boolean }
   const spots = [
     ...Array.from({ length: 3 }, () => ({ plate: -1, u: random(), v: random() })),
     ...plates.flatMap((_, index) => [{ plate: index, u: 0.55 + random() * 0.35, v: 0.08 + random() * 0.12 },
                                       { plate: index, u: 0.02 + random() * 0.08, v: 0.45 + random() * 0.3 }]),
   ]
-  const wild: Wild[] = spots.map(spot => ({ el: critter(field), home: { x: 0, y: 0 }, pos: { x: 0, y: 0 }, cover: spot.plate < 0 }))
+  const wild: Wild[] = spots.map(spot => ({ el: critter(field), home: { x: 0, y: 0 }, pos: { x: 0, y: 0 }, cover: spot.plate < 0, caught: false }))
   const lines = gsap.utils.toArray<HTMLElement>('.line-inner', title)
   const layout = () => {
     const box = field.getBoundingClientRect()
@@ -456,6 +482,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
       const box = field.getBoundingClientRect()
       const pointer = { x: event.clientX - box.left, y: event.clientY - box.top }
       wild.forEach(bug => {
+        if (bug.caught) return
         const at = { x: bug.home.x + bug.pos.x, y: bug.home.y + bug.pos.y }
         const dx = at.x - pointer.x, dy = at.y - pointer.y, distance = Math.hypot(dx, dy) || 1
         if (distance < 130) {
@@ -468,13 +495,85 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
   }
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches
   if (fine) addEventListener('pointermove', onMove, { passive: true })
+
+  // A click next to a bug (it runs, so not right on it): the kiskadee takes it. It comes back to its spot a while later.
+  const onCatch = (event: PointerEvent) => {
+    if (!onPage(event)) return
+    let nearest: Wild | null = null, best = 160
+    wild.forEach(bug => {
+      if (bug.caught) return
+      const box = bug.el.getBoundingClientRect()
+      const distance = Math.hypot(box.left + box.width / 2 - event.clientX, box.top + box.height / 2 - event.clientY)
+      if (distance < best) { best = distance; nearest = bug }
+    })
+    const bug = nearest as Wild | null
+    if (!bug) return
+    bug.caught = true
+    const sent = sally(gsap, bug.el, () => {
+      tally.page += 1
+      paintCounter()
+      bug.pos = { x: 0, y: 0 }
+      gsap.set(bug.el, { x: 0, y: 0, delay: 0.2 })
+      gsap.fromTo(bug.el, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, delay: 9, ease: 'back.out(1.8)', onComplete: () => { bug.caught = false } })
+    })
+    if (!sent) bug.caught = false
+  }
+  addEventListener('pointerdown', onCatch, { passive: true })
   return () => {
     ScrollTrigger.removeEventListener('refreshInit', layout)
     if (fine) removeEventListener('pointermove', onMove)
+    removeEventListener('pointerdown', onCatch)
     cancelAnimationFrame(frame)
     wild.forEach(bug => bug.el.remove())
   }
 }
+
+// How the kiskadee hunts: it waits on its perch (the counter in the header), sallies out to take the bug on the wing
+// and goes back to the same perch. One sally at a time; `caught` runs when the bug is in its bill.
+let flying = false
+function sally(gsap: Gsap, bug: HTMLElement, caught: () => void): boolean {
+  const perch = document.querySelector<HTMLElement>('.counter')
+  const template = document.querySelector<HTMLTemplateElement>('[data-flyer-template]')
+  if (flying || !perch || !template) return false
+  flying = true
+  const bird = template.content.firstElementChild!.cloneNode(true) as HTMLElement
+  document.body.appendChild(bird)
+  const wing = bird.querySelector('.flyer-wing')
+  const flap = wing ? gsap.to(wing, { scaleY: -0.6, transformOrigin: '50% 100%', duration: 0.08, ease: 'sine.inOut', repeat: -1, yoyo: true }) : null
+  const centre = (element: Element): Point => { const box = element.getBoundingClientRect(); return { x: box.left + box.width / 2, y: box.top + box.height / 2 } }
+  // A curved flight, read afresh every frame: the page may scroll and the bug may still be moving.
+  const flight = (from: () => Point, to: () => Point, duration: number) => {
+    const state = { t: 0 }
+    return gsap.to(state, { t: 1, duration, ease: 'power2.inOut', onUpdate: () => {
+      const a = from(), b = to(), t = state.t, u = 1 - t
+      const c = { x: (a.x + b.x) / 2, y: Math.max(16, Math.min(a.y, b.y) - 50) }
+      const x = u * u * a.x + 2 * u * t * c.x + t * t * b.x, y = u * u * a.y + 2 * u * t * c.y + t * t * b.y
+      const dx = 2 * u * (c.x - a.x) + 2 * t * (b.x - c.x), dy = 2 * u * (c.y - a.y) + 2 * t * (b.y - c.y)
+      const left = dx < 0
+      const tilt = clamp((Math.atan2(dy, Math.abs(dx) || 1) * 180) / Math.PI, -35, 35)
+      gsap.set(bird, { x: x - 26, y: y - 18, scaleX: left ? -1 : 1, rotation: left ? -tilt : tilt })
+    } })
+  }
+  const start = centre(perch)
+  gsap.set(bird, { x: start.x - 26, y: start.y - 18, scale: 0.4, opacity: 0 })
+  let taken: Point = start
+  gsap.timeline({ onComplete: () => { flap?.kill(); bird.remove(); flying = false } })
+    .to(bird, { scale: 1, opacity: 1, duration: 0.15 })
+    .add(flight(() => centre(perch), () => centre(bug), 0.8))
+    .call(() => {
+      taken = centre(bug)
+      gsap.to(bug, { scale: 0, opacity: 0, duration: 0.14, ease: 'power2.in' })
+      gsap.fromTo(perch, { scale: 1.12 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
+      caught()
+    })
+    .add(flight(() => taken, () => centre(perch), 0.8))
+    .to(bird, { scale: 0.4, opacity: 0, duration: 0.15 })
+  return true
+}
+
+// A click or a tap that is not on a link, a button or a field.
+const onPage = (event: PointerEvent) =>
+  event.button === 0 && !(event.target instanceof Element && event.target.closest('a, button, input, select, textarea, summary, label, [role="button"]'))
 
 function critter(parent: HTMLElement): HTMLElement {
   const template = document.querySelector<HTMLTemplateElement>('[data-bug-template]')

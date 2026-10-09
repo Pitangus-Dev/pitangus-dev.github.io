@@ -26,7 +26,7 @@ const en = {
   motion: { pause: 'Pause motion', play: 'Play motion' },
   theme: { label: 'Switch between day and night notebook' },
   skip: 'Skip to content',
-  counter: { label: 'bugs caught', one: 'bug caught', aria: 'Bugs caught while you read' },
+  counter: { label: 'bugs caught', one: 'bug caught', aria: 'Bugs caught while you read', hint: 'Click near a fly and the kiskadee goes after it' },
   hero: {
     plate: 'Plate I',
     species: 'Pitangus sulphuratus',
@@ -173,7 +173,7 @@ const es: typeof en = {
   motion: { pause: 'Pausar animaciones', play: 'Activar animaciones' },
   theme: { label: 'Cambiar entre el cuaderno de día y el de noche' },
   skip: 'Ir al contenido',
-  counter: { label: 'bugs atrapados', one: 'bug atrapado', aria: 'Bugs atrapados mientras lees' },
+  counter: { label: 'bugs atrapados', one: 'bug atrapado', aria: 'Bugs atrapados mientras lees', hint: 'Toca o haz click cerca de una mosca y el bichofué sale a atraparla' },
   hero: {
     plate: 'Lámina I',
     species: 'Pitangus sulphuratus',
