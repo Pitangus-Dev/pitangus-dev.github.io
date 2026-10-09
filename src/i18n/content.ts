@@ -7,7 +7,8 @@ export type Locale = 'en' | 'es'
 // product itself is renamed: the commands below must keep working as written.
 export const BRAND = 'Pitangus'
 export const REPO = 'https://github.com/Pitangus-Dev/pitangus'
-export const DOCS = `${REPO}/tree/main/docs`
+export const DOCS = 'https://docs.pitangus.dev/'
+export const DOCS_ES = `${DOCS}es/`
 export const ORG = 'https://github.com/Pitangus-Dev'
 // The product's own documents, linked from llms.txt (src/pages/llms.txt.ts).
 export const LICENSE = { spdx: 'AGPL-3.0-only', url: 'https://spdx.org/licenses/AGPL-3.0-only.html', file: `${REPO}/blob/main/LICENSE` }
@@ -389,7 +390,7 @@ const es: typeof en = {
     colophon: 'Notas de campo en el espíritu de la Real Expedición Botánica del Nuevo Reino de Granada, de José Celestino Mutis (1783–1816). El ejemplar: el bichofué, que vigila desde su rama y enfrenta sin miedo a gavilanes mucho más grandes que él.',
     made: 'Hecho en Colombia.',
     license: 'Pitangus es software libre bajo AGPL-3.0.',
-    links: [['Código', REPO], ['Documentación', DOCS], ['Seguridad', `${REPO}/blob/main/.github/SECURITY.es.md`]],
+    links: [['Código', REPO], ['Documentación', DOCS_ES], ['Seguridad', `${REPO}/blob/main/.github/SECURITY.es.md`]],
     credits: 'Animaciones con GSAP (licencia estándar «no charge»).',
   },
   notes: {

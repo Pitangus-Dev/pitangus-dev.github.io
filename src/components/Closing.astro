@@ -3,7 +3,7 @@ import type { Content } from '../i18n/content'
 import Bug from './Bug.astro'
 import Note from './Note.astro'
 import Faq from './Faq.astro'
-import { DOCS, STEWARD } from '../i18n/content'
+import { DOCS, DOCS_ES, STEWARD } from '../i18n/content'
 interface Props { t: Content }
 const { t } = Astro.props
 const y = t.yours
@@ -53,7 +53,7 @@ const f = t.footer
       </li>
     </ol>
     <p class="visually-hidden" aria-live="polite" data-copy-status></p>
-    <p class="install-foot" data-reveal><a class="button ghost" href={DOCS}>{i.docs} <span aria-hidden="true">↗</span></a>
+    <p class="install-foot" data-reveal><a class="button ghost" href={t.lang === 'es' ? DOCS_ES : DOCS}>{i.docs} <span aria-hidden="true">↗</span></a>
       <span class="muted small">{i.note}</span></p>
   </div>
 </section>
