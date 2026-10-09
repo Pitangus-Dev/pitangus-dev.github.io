@@ -23,7 +23,7 @@ const marks = [
         {h.title.map((line, index) => <span class="line"><span class:list={['line-inner', index >= h.accent && 'accent']}>{line}</span></span>)}
       </h1>
       <Note text={t.notes.hero} arrow="left" place="right: 6%; top: 29%" tilt={-5} />
-      <p class="lead" data-reveal>{h.lead}</p>
+      <p class="lead">{h.lead}</p>
       <div class="actions" data-reveal>
         <a class="button primary" href="#install">{h.primary} <span aria-hidden="true">→</span></a>
         <a class="button ghost" href={REPO}>{h.secondary}</a>

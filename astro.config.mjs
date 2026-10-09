@@ -13,6 +13,8 @@ export default defineConfig({
   output: 'static',
   integrations: [securityHeaders()],
   trailingSlash: 'ignore',
+  // The stylesheets are small: inlined, the first paint doesn't wait for three more requests.
+  build: { inlineStylesheets: 'always' },
   i18n: { locales: ['en', 'es'], defaultLocale: 'en', routing: { prefixDefaultLocale: false } },
   // Self-hosted, subset and preloaded at build time: no request to Google from the visitor's browser. Latin is enough
   // for both languages (Spanish's accents, ñ, ¿ and ¡ are all in it).
