@@ -18,7 +18,10 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx astro check
-      - run: npm run build
+      # pnpm at the exact version (and hash) of package.json's packageManager, through Node's corepack.
+      - run: corepack enable
+        env:
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec astro check
+      - run: pnpm run build

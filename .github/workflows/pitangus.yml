@@ -1,0 +1,33 @@
+name: Pitangus
+
+# The site's own supply chain, checked with Pitangus: secrets, dependencies (OSV, including OpenSSF's malicious
+# packages, MAL-*) and the workflows. On a pull request only what it introduces counts; the SARIF goes to code
+# scanning.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  scan:
+    name: Pitangus
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write   # upload the SARIF to code scanning
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0              # history is needed to compare against the base
+          persist-credentials: false
+      - id: pitangus
+        uses: Pitangus-Dev/pitangus@b9ae225b798613c84906681cc42c3cf3003a936b  # v0.12.0
+        env:
+          PITANGUS_DEFAULT_LOCALE: es
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2  # v4.38.2
+        if: always() && steps.pitangus.outputs.sarif != ''
+        with:
+          sarif_file: ${{ steps.pitangus.outputs.sarif }}
+          category: pitangus

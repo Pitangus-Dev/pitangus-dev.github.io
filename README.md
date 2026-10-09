@@ -11,9 +11,9 @@ get a lighter version of the motion.
 ## Run it
 
 ```bash
-npm install
-npm run dev        # http://127.0.0.1:4321
-npm run build      # astro check + static build in dist/
+pnpm install       # pnpm via corepack (corepack enable); see pnpm-workspace.yaml for the supply-chain settings
+pnpm run dev       # http://127.0.0.1:4321
+pnpm run build     # astro check + static build in dist/ (with dist/_headers)
 ```
 
 ## Publishing
