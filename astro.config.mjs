@@ -5,7 +5,7 @@ import securityHeaders from './integrations/security-headers.mjs'
 
 const env = loadEnv('production', '.', '')
 
-// Where it's published (Cloudflare Pages, at pitangus.dev; its security headers come from the security-headers
+// Where it's published (Cloudflare Workers static assets, wrangler.jsonc, at pitangus.dev; its security headers come from the security-headers
 // integration). Both can be overridden from the environment, e.g. to serve it under a path.
 export default defineConfig({
   site: env.SITE_URL ?? 'https://pitangus.dev',
