@@ -4,6 +4,10 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pitangus",
   "compatibility_date": "2026-10-01",
+  // Served only at pitangus.dev (a custom domain set in the dashboard): no *.workers.dev copy, which would also show the
+  // account name, and no per-version preview URLs.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
