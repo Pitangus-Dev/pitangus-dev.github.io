@@ -1,0 +1,46 @@
+---
+// The questions people ask before installing, answered on the page: the same items are the page's FAQ structured data
+// (seo.ts), never markup without visible text. Native <details>: keyboard and screen readers get them for free, no script.
+import type { Content } from '../i18n/content'
+interface Props { t: Content }
+const { t } = Astro.props
+const f = t.faq
+const numerals = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x']
+---
+<section id="faq" class="plate" aria-labelledby="faq-title">
+  <div class="wrap grid">
+    <header class="plate-head">
+      <span class="plate-num" aria-hidden="true">{f.number}</span>
+      <div>
+        <p class="kicker">{f.kicker}</p>
+        <h2 id="faq-title" class="display plate-title" data-split>{f.title}</h2>
+      </div>
+    </header>
+    <ol class="questions" role="list">
+      {f.items.map((item, index) => (
+        <li data-reveal>
+          <details open={index === 0}>
+            <summary><span class="mono q-no" aria-hidden="true">{numerals[index]}</span><span class="display q">{item.q}</span></summary>
+            <p>{item.a}</p>
+          </details>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .questions { grid-column: 2 / span 10; list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+  .questions li { border-top: 1px solid var(--rule); }
+  summary { display: flex; align-items: baseline; gap: 1rem; padding: 1.1rem 0; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .q-no { flex: none; min-width: 2.2rem; font-size: 0.8rem; color: var(--accent); }
+  .q { flex: 1; font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.9rem); line-height: 1.15; }
+  summary:hover .q { color: var(--accent); }
+  /* A pencilled plus that becomes a minus once open. */
+  summary::after { content: '+'; flex: none; font-family: var(--font-mono), monospace; font-size: 1.2rem; line-height: 1; color: var(--muted); }
+  details[open] summary::after { content: '−'; }
+  details p { margin: 0 0 1.5rem 3.2rem; max-width: 46rem; color: var(--muted); }
+  @media (max-width: 64rem) { .questions { grid-column: 1 / -1; } }
+  @media (max-width: 40rem) { .q-no { min-width: 1.6rem; } details p { margin-left: 2.6rem; } }
+</style>

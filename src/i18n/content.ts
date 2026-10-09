@@ -8,6 +8,10 @@ export type Locale = 'en' | 'es'
 export const BRAND = 'Pitangus'
 export const REPO = 'https://github.com/Pitangus-Dev/pitangus'
 export const DOCS = `${REPO}/tree/main/docs`
+export const ORG = 'https://github.com/Pitangus-Dev'
+// The product's own documents, linked from llms.txt (src/pages/llms.txt.ts).
+export const LICENSE = { spdx: 'AGPL-3.0-only', url: 'https://spdx.org/licenses/AGPL-3.0-only.html', file: `${REPO}/blob/main/LICENSE` }
+export const CHANGELOG = `${REPO}/blob/main/CHANGELOG.md`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
@@ -19,8 +23,8 @@ export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Pitangu
 const en = {
   lang: 'en',
   meta: {
-    title: 'Pitangus · Watch every change. Prove every fix.',
-    description: 'Self-hosted, open-source application security for small teams: scans your code, verifies every fix and keeps the evidence. In English and Spanish.',
+    title: 'Pitangus · Self-hosted open-source AppSec: SAST, SCA, secrets',
+    description: 'Self-hosted, open-source application security for small teams: code, dependencies, secrets, IaC and images, verified fixes and audit evidence.',
   },
   nav: { label: 'Sections', specimens: 'Specimens', change: 'Your change', ledger: 'Ledger', install: 'Install', code: 'Code', other: 'Español', otherHref: '/es/' },
   motion: { pause: 'Pause motion', play: 'Play motion' },
@@ -143,6 +147,51 @@ const en = {
     docs: 'Read the docs',
     note: 'Free and open source (AGPL-3.0). It runs on your server: no account, no telemetry.',
   },
+  faq: {
+    number: '08',
+    kicker: 'Questions',
+    title: 'What people ask before installing it.',
+    // Each answer stands on its own (it is also the page's FAQ structured data and part of /llms-full.txt): the first
+    // sentence answers the question and names Pitangus.
+    items: [
+      { q: 'What is Pitangus?',
+        a: `Pitangus is a self-hosted, open-source application security platform for small teams. It scans code, dependencies, secrets, infrastructure as code, CI workflows and container images with seven open-source engines, merges what they find without duplicates, verifies each fix with a later scan and keeps the evidence an auditor can check. It is made in Colombia by Arodium and is in beta (current release ${RELEASE}).` },
+      { q: 'Is Pitangus free and open source?',
+        a: 'Yes: Pitangus is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only), with no account and no fee. You can use, study, change and run it on your own servers; if you offer a modified version to other people over a network, you must share that version’s source code under the same license. Its SAST rules are MIT-licensed, so other tools can reuse them.' },
+      { q: 'What does Pitangus scan?',
+        a: 'Pitangus scans source code with Opengrep and 58 rules of its own for JavaScript/TypeScript, Python, Java, Go, PHP, Ruby and C#; dependencies with Trivy and OSV-Scanner, prioritized with CISA KEV and EPSS; secrets with Gitleaks; infrastructure as code and GitHub Actions workflows with Checkov and zizmor; and container images with Trivy and Grype. Your code is never executed. Findings from other scanners can be imported as SARIF 2.1.0.' },
+      { q: 'How does Pitangus run, and what does it need?',
+        a: 'Pitangus runs on your own server with Docker: it needs Docker Engine 24 or later with Compose v2.24 or later, make, git, 4 GB of memory and 8 GB of disk. Installing the published, signed images takes four commands: git clone, cd, make setup PREBUILT=1 and make up. For CI there is an official GitHub Action and the pitangus scan command, which don’t need a running Pitangus server.' },
+      { q: 'Does my code leave my server?',
+        a: 'No: with Pitangus your code is downloaded from GitHub to your server, analyzed there and never sent to any service of ours, and there is no telemetry. It only reaches out for public advisory data, for the registries of the images you scan and, if you connect them, for GitHub, Jira and your notification channels. Your dependency list goes to OSV only if you allow it for a scan. AI plays no part in the analysis.' },
+      { q: 'What does “verified fix” mean in Pitangus?',
+        a: 'In Pitangus a verified fix is one that a later scan proved: the finding was there before, it no longer appears, and the engines that look at it finished. If an engine fails, the scan says so and nothing that engine covers counts as fixed. On a pull request a fix is credited only when both scans finished and the file really changed, and Verify again rescans on demand and answers “Fixed” or “Still present”.' },
+      { q: 'What compliance evidence does Pitangus produce?',
+        a: 'Pitangus produces an SBOM (CycloneDX), VEX (OpenVEX), SARIF, JSON and Markdown exports, SLA reports, an audit trail of every triage decision and PDF audit evidence for SOC 2 Type II, ISO/IEC 27001:2022, PCI DSS 4.0.1, the EU CRA, NIS2, DORA and GDPR Art. 32, NIST SSDF, CSF 2.0 and SP 800-53, the HIPAA Security Rule, and regulations in Brazil, Chile, Colombia and Mexico. It is evidence for an audit, not a certification.' },
+      { q: 'Is Pitangus available in Spanish?',
+        a: 'Yes: Pitangus is written in English and Spanish, not machine-translated. The panel, findings, fix guides, reports, pull request comments, notifications and Jira issues come in both languages, and each person reads findings in their own language without rescanning. Advisory text from NVD, OSV or GHSA is shown as published.' },
+    ],
+  },
+  seo: {
+    // What the software does, for its structured data (featureList) and /llms.txt.
+    features: [
+      'Static analysis (SAST) with Opengrep and 58 Pitangus rules for JavaScript/TypeScript, Python, Java, Go, PHP, Ruby and C#',
+      'Dependency scanning (SCA) with Trivy and OSV-Scanner, prioritized with CISA KEV and EPSS',
+      'Secret detection with Gitleaks',
+      'Infrastructure as code and GitHub Actions checks with Checkov and zizmor',
+      'Container image scanning with Trivy and Grype',
+      'Pull request reviews and a GitHub Action that judge a change only by what it introduces',
+      'Fixes verified by a later scan, with an audit trail of every triage decision',
+      'SARIF 2.1.0 import from other scanners and AI reviewers',
+      'SBOM (CycloneDX), VEX (OpenVEX), SARIF and PDF audit evidence for SOC 2, ISO/IEC 27001 and other frameworks',
+      'Jira issues without duplicates',
+      'English and Spanish',
+    ],
+    requirements: 'Docker Engine 24+ with Compose v2.24+, make and git',
+    sections: 'Sections of the page',
+    docs: 'Documentation',
+    otherNote: 'The same page, written in Spanish',
+  },
   footer: {
     colophon: 'Field notes in the spirit of José Celestino Mutis’s Royal Botanical Expedition to New Granada (1783–1816). The specimen: the bichofué, Colombia’s great kiskadee, which keeps watch from its branch and takes on hawks far bigger than itself.',
     made: 'Made in Colombia.',
@@ -166,8 +215,8 @@ const en = {
 const es: typeof en = {
   lang: 'es',
   meta: {
-    title: 'Pitangus · Vigila cada cambio. Demuestra cada corrección.',
-    description: 'Seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños: analiza tu código, verifica cada corrección y guarda la evidencia. En español y en inglés.',
+    title: 'Pitangus · Seguridad de aplicaciones de código abierto: SAST, SCA',
+    description: 'Seguridad de aplicaciones autoalojada y de código abierto: código, dependencias, secretos, IaC e imágenes, correcciones verificadas y evidencia de auditoría.',
   },
   nav: { label: 'Secciones', specimens: 'Especímenes', change: 'Tu cambio', ledger: 'Registro', install: 'Instalar', code: 'Código', other: 'English', otherHref: '/' },
   motion: { pause: 'Pausar animaciones', play: 'Activar animaciones' },
@@ -289,6 +338,48 @@ const es: typeof en = {
     copied: 'Copiado',
     docs: 'Leer la documentación',
     note: 'Libre y de código abierto (AGPL-3.0). Corre en tu servidor: sin cuenta y sin telemetría.',
+  },
+  faq: {
+    number: '08',
+    kicker: 'Preguntas',
+    title: 'Lo que preguntan antes de instalarlo.',
+    items: [
+      { q: '¿Qué es Pitangus?',
+        a: `Pitangus es una plataforma de seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños. Analiza código, dependencias, secretos, infraestructura como código, workflows de CI e imágenes de contenedor con siete motores abiertos, junta lo que encuentran sin duplicados, verifica cada corrección con un análisis posterior y guarda la evidencia que un auditor puede comprobar. La hace Arodium en Colombia y está en beta (versión actual ${RELEASE}).` },
+      { q: '¿Pitangus es gratis y de código abierto?',
+        a: 'Sí: Pitangus es software libre bajo la GNU Affero General Public License v3.0 (AGPL-3.0-only), sin cuenta y sin pagar nada. Puedes usarlo, estudiarlo, cambiarlo y correrlo en tus servidores; si ofreces una versión modificada a otras personas a través de la red, tienes que compartir el código de esa versión con la misma licencia. Sus reglas SAST tienen licencia MIT, así que otras herramientas pueden reutilizarlas.' },
+      { q: '¿Qué analiza Pitangus?',
+        a: 'Pitangus analiza el código fuente con Opengrep y 58 reglas propias para JavaScript/TypeScript, Python, Java, Go, PHP, Ruby y C#; las dependencias con Trivy y OSV-Scanner, priorizadas con CISA KEV y EPSS; los secretos con Gitleaks; la infraestructura como código y los workflows de GitHub Actions con Checkov y zizmor; y las imágenes de contenedor con Trivy y Grype. Tu código nunca se ejecuta. Los hallazgos de otros escáneres se pueden importar en SARIF 2.1.0.' },
+      { q: '¿Cómo se instala Pitangus y qué necesita?',
+        a: 'Pitangus corre en tu propio servidor con Docker: necesita Docker Engine 24 o posterior con Compose v2.24 o posterior, make, git, 4 GB de memoria y 8 GB de disco. Instalar las imágenes publicadas y firmadas toma cuatro comandos: git clone, cd, make setup PREBUILT=1 y make up. Para CI hay una GitHub Action oficial y el comando pitangus scan, que no necesitan un servidor de Pitangus en marcha.' },
+      { q: '¿Mi código sale de mi servidor?',
+        a: 'No: con Pitangus tu código se descarga de GitHub a tu servidor, se analiza ahí y nunca se envía a ningún servicio nuestro, y no hay telemetría. Solo sale a buscar avisos de seguridad públicos, a los registros de las imágenes que analizas y, si los conectas, a GitHub, Jira y tus canales de notificación. Tu lista de dependencias va a OSV solo si lo permites en un análisis. La IA no participa en el análisis.' },
+      { q: '¿Qué quiere decir «corrección verificada» en Pitangus?',
+        a: 'En Pitangus una corrección verificada es una que un análisis posterior demostró: el hallazgo estaba, ya no aparece y los motores que lo miran terminaron. Si un motor falla, el análisis lo dice y nada de lo que cubre ese motor cuenta como corregido. En una pull request, la corrección solo se atribuye si los dos análisis terminaron y el archivo cambió de verdad, y «Reverificar» vuelve a analizar cuando quieras y responde «Corregido» o «Sigue presente».' },
+      { q: '¿Qué evidencia de cumplimiento genera Pitangus?',
+        a: 'Pitangus genera SBOM (CycloneDX), VEX (OpenVEX), exportaciones SARIF, JSON y Markdown, informes de SLA, el rastro de cada decisión de triage y evidencia de auditoría en PDF para SOC 2 Tipo II, ISO/IEC 27001:2022, PCI DSS 4.0.1, la CRA europea, NIS2, DORA y el art. 32 del RGPD, NIST SSDF, CSF 2.0 y SP 800-53, la HIPAA Security Rule y normas de Brasil, Chile, Colombia y México. Es evidencia para una auditoría, no una certificación.' },
+      { q: '¿Pitangus está en español?',
+        a: 'Sí: Pitangus está escrito en español y en inglés, no traducido a máquina. El panel, los hallazgos, las guías de corrección, los informes, los comentarios en pull requests, las notificaciones y las incidencias de Jira vienen en los dos idiomas, y cada persona lee los hallazgos en el suyo sin volver a analizar. Los textos de los avisos de NVD, OSV o GHSA se muestran tal como se publicaron.' },
+    ],
+  },
+  seo: {
+    features: [
+      'Análisis estático (SAST) con Opengrep y 58 reglas de Pitangus para JavaScript/TypeScript, Python, Java, Go, PHP, Ruby y C#',
+      'Análisis de dependencias (SCA) con Trivy y OSV-Scanner, priorizado con CISA KEV y EPSS',
+      'Detección de secretos con Gitleaks',
+      'Revisión de infraestructura como código y de GitHub Actions con Checkov y zizmor',
+      'Análisis de imágenes de contenedor con Trivy y Grype',
+      'Revisión de pull requests y una GitHub Action que juzgan un cambio solo por lo que introduce',
+      'Correcciones verificadas por un análisis posterior, con el rastro de cada decisión de triage',
+      'Importación SARIF 2.1.0 de otros escáneres y revisores con IA',
+      'SBOM (CycloneDX), VEX (OpenVEX), SARIF y evidencia de auditoría en PDF para SOC 2, ISO/IEC 27001 y otros marcos',
+      'Incidencias de Jira sin duplicados',
+      'Español e inglés',
+    ],
+    requirements: 'Docker Engine 24+ con Compose v2.24+, make y git',
+    sections: 'Secciones de la página',
+    docs: 'Documentación',
+    otherNote: 'La misma página, escrita en inglés',
   },
   footer: {
     colophon: 'Notas de campo en el espíritu de la Real Expedición Botánica del Nuevo Reino de Granada, de José Celestino Mutis (1783–1816). El ejemplar: el bichofué, que vigila desde su rama y enfrenta sin miedo a gavilanes mucho más grandes que él.',
