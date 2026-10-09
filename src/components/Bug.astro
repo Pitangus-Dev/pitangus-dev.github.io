@@ -1,38 +1,29 @@
 ---
-// A fly from the same plate as the kiskadee, which catches them on the wing: a pencil underdrawing, washes a little off
-// the line (as watercolour is), ink outlines, jointed legs, veined wings over a banded abdomen and rufous eyes.
-// Plain strokes only (no patterns, ids or filters): it is drawn many times on a page, at sizes from 16 to 64 px.
+// A house fly from the same plate as the kiskadee, which catches them on the wing, seen from above. The six drawings
+// (three wingbeats, two steps, at rest) are one sprite, src/assets/plate/flies.webp: the page sets data-state="walk"
+// or "fly" on the moving ones and the CSS below picks the frames; without it, the fly rests with its wings folded.
+// `live` is kept for the moving ones (the page's script looks for them); the drawing is the same.
 // Decorative: what it stands for is always said in text next to it.
-interface Props { class?: string; size?: number }
+interface Props { class?: string; size?: number; live?: boolean }
 const { class: className = '', size = 28 } = Astro.props
-const wing = 'M.55 -.85 C2.6 -.55 4.5 1.1 4.85 3.05 C5 3.85 4.35 4.3 3.6 3.9 C2.2 3.05 1 1.4 .55 -.85 Z'
-const abdomen = 'M0 -.4 C1.2 -.4 1.75 .9 1.7 2.1 C1.65 3.3 .95 4.4 0 4.6 C-.95 4.4 -1.65 3.3 -1.7 2.1 C-1.75 .9 -1.2 -.4 0 -.4 Z'
 ---
-<svg class={`bug ${className}`} viewBox="-6 -5.4 12 10.4" width={size} height={size * 0.87} aria-hidden="true" data-bug>
-  <g fill="none" stroke="#8E8776" stroke-width=".12" stroke-linecap="round" opacity=".5">
-    <ellipse cx=".1" cy=".4" rx="3.1" ry="4.3" stroke-dasharray=".5 .4" />
-    <path d="M0 -4.9 V5.1" />
-  </g>
-  <g fill="none" stroke="#1C1A16" stroke-width=".3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M.9 -1.7 2.3 -2.7 2.9 -3.9 M-.9 -1.7 -2.3 -2.7 -2.9 -3.9" />
-    <path d="M1.3 -.8 2.9 -.6 4 -1.3 M-1.3 -.8 -2.9 -.6 -4 -1.3" />
-    <path d="M1 .1 2.4 1.5 3 3 M-1 .1 -2.4 1.5 -3 3" />
-  </g>
-  <path d={abdomen} fill="#6B5F3E" transform="translate(.2 .15)" />
-  <path d="M-1.6 1.3 H1.6 M-1.65 2.4 H1.65 M-1.35 3.5 H1.35" stroke="#1C1A16" stroke-width=".32" opacity=".55" />
-  <path d={abdomen} fill="none" stroke="#1C1A16" stroke-width=".3" />
-  <g stroke="#1C1A16" stroke-width=".22" stroke-linejoin="round">
-    <path d={wing} fill="#FFF8E6" fill-opacity=".62" />
-    <path d={wing} fill="#FFF8E6" fill-opacity=".62" transform="scale(-1 1)" />
-  </g>
-  <path d="M1.1 -.2 C2.4 .6 3.5 1.9 4.2 3.4 M1.6 .1 C2.2 1.2 2.9 2.4 3.7 3.4 M-1.1 -.2 C-2.4 .6 -3.5 1.9 -4.2 3.4 M-1.6 .1 C-2.2 1.2 -2.9 2.4 -3.7 3.4"
-        fill="none" stroke="#1C1A16" stroke-width=".1" stroke-linecap="round" opacity=".55" />
-  <ellipse cy="-1.15" rx="1.45" ry="1.2" fill="#4A463C" transform="translate(.15 .12)" />
-  <path d="M-.45 -2 V-.4 M.45 -2 V-.4" stroke="#8E8776" stroke-width=".26" stroke-linecap="round" />
-  <ellipse cy="-1.15" rx="1.45" ry="1.2" fill="none" stroke="#1C1A16" stroke-width=".3" />
-  <ellipse cy="-2.95" rx="1.25" ry=".8" fill="#2E2B24" stroke="#1C1A16" stroke-width=".26" />
-  <ellipse cx="-.72" cy="-3.05" rx=".66" ry=".78" fill="#9C4A1E" stroke="#1C1A16" stroke-width=".22" />
-  <ellipse cx=".72" cy="-3.05" rx=".66" ry=".78" fill="#9C4A1E" stroke="#1C1A16" stroke-width=".22" />
-  <circle cx="-.88" cy="-3.32" r=".15" fill="#FFF8E6" /><circle cx=".56" cy="-3.32" r=".15" fill="#FFF8E6" />
-</svg>
-<style>.bug { overflow: visible; flex: none; }</style>
+<span class={`bug ${className}`} style={`--bug-size: ${size}px`} aria-hidden="true" data-bug></span>
+<style>
+  .bug {
+    display: inline-block; flex: none; vertical-align: middle;
+    width: var(--bug-size); height: var(--bug-size);
+    background: url('../assets/plate/flies.webp') no-repeat 100% 0 / 600% 100%;
+  }
+  /* At night the black legs would vanish on the dark desk: a faint paper-coloured edge keeps them visible. */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .bug { filter: drop-shadow(0 0 .6px rgb(251 245 230 / .55)); } }
+  :root[data-theme='dark'] .bug { filter: drop-shadow(0 0 .6px rgb(251 245 230 / .55)); }
+  .bug[data-state='walk'] { animation: walk .26s steps(1) infinite; }
+  .bug[data-state='fly'] { animation: fly .09s steps(1) infinite; }
+  @keyframes walk { 0% { background-position-x: 60%; } 50% { background-position-x: 80%; } }
+  @keyframes fly { 0% { background-position-x: 0%; } 33% { background-position-x: 20%; } 67% { background-position-x: 40%; } }
+  @media (prefers-reduced-motion: reduce) {
+    .bug[data-state] { animation: none; }
+    .bug[data-state='walk'] { background-position-x: 60%; }
+    .bug[data-state='fly'] { background-position-x: 40%; }
+  }
+</style>
