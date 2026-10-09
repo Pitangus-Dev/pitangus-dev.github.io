@@ -198,7 +198,7 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
     const box = field.getBoundingClientRect(), frameBox = frame.getBoundingClientRect()
     spots.forEach((spot, index) => {
       homes[index] = { x: frameBox.left - box.left + spot.u * frameBox.width, y: frameBox.top - box.top + spot.v * frameBox.height }
-      gsap.set(bugs[index], { left: homes[index].x - 13, top: homes[index].y - 11 })
+      gsap.set(bugs[index], { left: homes[index].x - 13, top: homes[index].y - 13 })
     })
   }
   layout()
@@ -216,14 +216,16 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
     const dx = to.x - from.x, dy = to.y - from.y
     walks[index] = gsap.timeline({ onComplete: () => walk(index) })
       .to(bug, { rotation: heading(dx, dy), duration: 0.3, ease: 'power1.inOut' })
+      .call(() => pose(bug, 'walk'))
       .to(bug, { x: to.x, y: to.y, duration: Math.max(0.6, Math.hypot(dx, dy) / 26), ease: 'none' })
+      .call(() => pose(bug, null))
       .to({}, { duration: gsap.utils.random(0.4, 1.6) })
   }
   bugs.forEach((bug, index) => {
     gsap.fromTo(bug, { opacity: 0, scale: 0.5, rotation: index * 120 },
       { opacity: 1, scale: 1, duration: 0.6, delay: 1.4 + index * 0.15, ease: 'back.out(1.8)', onComplete: () => walk(index) })
-    // The legs: a quick wobble while it walks.
-    gsap.to(bug.querySelector('.critter-body'), { rotation: 'random(-7, 7)', duration: 0.11, ease: 'none', repeat: -1, yoyo: true, repeatRefresh: true })
+    // The legs take turns (the drawing's own stride); the body only sways a little.
+    gsap.to(bug.querySelector('.critter-body'), { rotation: 'random(-3, 3)', duration: 0.12, ease: 'none', repeat: -1, yoyo: true, repeatRefresh: true })
   })
 
   // A tap right next to a bug: the kiskadee takes it, and a while later another walks in at its spot.
@@ -262,9 +264,12 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
       walks[index]?.kill()
       const to = inside(index, { x: clamp(Number(gsap.getProperty(bug, 'x')) + (dx / distance) * 70, -70, 70),
                                  y: clamp(Number(gsap.getProperty(bug, 'y')) + (dy / distance) * 70, -50, 50) })
+      // A fly that's startled takes off: a short hop on the wing, then it lands and walks again.
       walks[index] = gsap.timeline({ onComplete: () => walk(index) })
+        .call(() => pose(bug, 'fly'))
         .to(bug, { rotation: heading(dx, dy), duration: 0.08 })
         .to(bug, { x: to.x, y: to.y, duration: 0.35, ease: 'power3.out' })
+        .call(() => pose(bug, null))
         .to({}, { duration: 0.9 })
     })
   }
@@ -442,7 +447,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
   // None among the specimens (already caught) or on the plates held still while scrolling.
   const plates = gsap.utils.toArray<HTMLElement>('.plate').filter(plate => plate.id !== 'specimens' && !plate.hasAttribute('data-held'))
   const random = mulberry(11)
-  type Wild = { el: HTMLElement; home: Point; pos: Point; cover: boolean; caught: boolean }
+  type Wild = { el: HTMLElement; home: Point; pos: Point; cover: boolean; caught: boolean; landing?: ReturnType<typeof setTimeout> }
   const spots = [
     ...Array.from({ length: 3 }, () => ({ plate: -1, u: random(), v: random() })),
     ...plates.flatMap((_, index) => [{ plate: index, u: 0.55 + random() * 0.35, v: 0.08 + random() * 0.12 },
@@ -462,13 +467,14 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
         const plate = plates[spot.plate].getBoundingClientRect()
         bug.home = { x: 20 + spot.u * (field.offsetWidth - 40), y: plate.top - box.top + spot.v * plate.height }
       }
-      gsap.set(bug.el, { left: bug.home.x - 13, top: bug.home.y - 11 })
+      gsap.set(bug.el, { left: bug.home.x - 13, top: bug.home.y - 13 })
     })
   }
   layout()
   ScrollTrigger.addEventListener('refreshInit', layout)
   wild.forEach((bug, index) => {
     gsap.set(bug.el, { rotation: random() * 360 })
+    pose(bug.el, 'walk')
     gsap.fromTo(bug.el, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, delay: bug.cover ? 1.4 + index * 0.12 : 0, ease: 'back.out(1.8)' })
     gsap.to(bug.el.querySelector('.critter-body'), { x: 'random(-14, 14)', y: 'random(-10, 10)', rotation: 'random(-30, 30)',
       duration: 'random(1.6, 3)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true })
@@ -488,6 +494,10 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
         if (distance < 130) {
           const push = (130 - distance) * 0.9
           bug.pos = { x: clamp(bug.pos.x + (dx / distance) * push, -120, 120), y: clamp(bug.pos.y + (dy / distance) * push, -90, 90) }
+          // Startled: it takes off, and lands back on its feet once it's away.
+          pose(bug.el, 'fly')
+          clearTimeout(bug.landing)
+          bug.landing = setTimeout(() => pose(bug.el, 'walk'), 520)
           gsap.to(bug.el, { x: bug.pos.x, y: bug.pos.y, rotation: (Math.atan2(dy, dx) * 180) / Math.PI + 90, duration: 0.5, ease: 'power3.out', overwrite: 'auto' })
         }
       })
@@ -524,7 +534,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
     if (fine) removeEventListener('pointermove', onMove)
     removeEventListener('pointerdown', onCatch)
     cancelAnimationFrame(frame)
-    wild.forEach(bug => bug.el.remove())
+    wild.forEach(bug => { clearTimeout(bug.landing); bug.el.remove() })
   }
 }
 
@@ -574,6 +584,13 @@ function sally(gsap: Gsap, bug: HTMLElement, caught: () => void): boolean {
 // A click or a tap that is not on a link, a button or a field.
 const onPage = (event: PointerEvent) =>
   event.button === 0 && !(event.target instanceof Element && event.target.closest('a, button, input, select, textarea, summary, label, [role="button"]'))
+
+// The drawing's pose: walking (the legs take turns), flying (wings open and beating) or, with null, resting.
+function pose(critter: HTMLElement, state: 'walk' | 'fly' | null) {
+  const bug = critter.querySelector('[data-bug]')
+  if (state) bug?.setAttribute('data-state', state)
+  else bug?.removeAttribute('data-state')
+}
 
 function critter(parent: HTMLElement): HTMLElement {
   const template = document.querySelector<HTMLTemplateElement>('[data-bug-template]')

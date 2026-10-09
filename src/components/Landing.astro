@@ -13,7 +13,7 @@ interface Props { t: Content }
 const { t } = Astro.props
 ---
 <main id="content" class="field" data-field>
-  <template data-bug-template><span class="critter"><span class="critter-body"><Bug size={26} /></span></span></template>
+  <template data-bug-template><span class="critter"><span class="critter-body"><Bug size={26} live /></span></span></template>
   <template data-flyer-template><span class="flyer"><Flyer /></span></template>
   <Hero t={t} />
   <Specimens t={t} />

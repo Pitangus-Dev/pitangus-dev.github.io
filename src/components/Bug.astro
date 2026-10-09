@@ -1,38 +1,80 @@
 ---
-// A fly from the same plate as the kiskadee, which catches them on the wing: a pencil underdrawing, washes a little off
-// the line (as watercolour is), ink outlines, jointed legs, veined wings over a banded abdomen and rufous eyes.
+// A house fly from the same plate as the kiskadee, which catches them on the wing, seen from above: a pencil
+// underdrawing, ink outlines, rufous eyes, a grey thorax with four dark stripes, a banded abdomen and clear veined wings.
 // Plain strokes only (no patterns, ids or filters): it is drawn many times on a page, at sizes from 16 to 64 px.
+// `live` adds what the moving ones need (open wings, a second set of legs, legs tucked for flight); the page sets
+// data-state="walk" or "fly" on it and the CSS below does the rest. Without it, the fly rests with its wings folded.
 // Decorative: what it stands for is always said in text next to it.
-interface Props { class?: string; size?: number }
-const { class: className = '', size = 28 } = Astro.props
-const wing = 'M.55 -.85 C2.6 -.55 4.5 1.1 4.85 3.05 C5 3.85 4.35 4.3 3.6 3.9 C2.2 3.05 1 1.4 .55 -.85 Z'
-const abdomen = 'M0 -.4 C1.2 -.4 1.75 .9 1.7 2.1 C1.65 3.3 .95 4.4 0 4.6 C-.95 4.4 -1.65 3.3 -1.7 2.1 C-1.75 .9 -1.2 -.4 0 -.4 Z'
+interface Props { class?: string; size?: number; live?: boolean }
+const { class: className = '', size = 28, live = false } = Astro.props
+const ink = '#1C1A16', stripe = '#3A3630'
+const folded = 'M.45 -.95 C1.75 -.4 2.6 1.6 2.5 3.75 C2.45 4.8 1.65 5.15 1.1 4.65 C.35 3.55 .1 1.2 .45 -.95 Z'
+const open = 'M.7 -1.25 C2 -3 4.4 -4.4 5.4 -3.8 C6.2 -3.2 5.6 -1.4 4.3 -.3 C2.9 .7 1.3 .3 .7 -1.25 Z'
+const abdomen = 'M0 .4 C1.3 .4 1.75 1.5 1.7 2.7 C1.65 3.9 .9 4.9 0 5.1 C-.9 4.9 -1.65 3.9 -1.7 2.7 C-1.75 1.5 -1.3 .4 0 .4 Z'
+const thorax = 'M0 -2.9 C1.05 -2.9 1.45 -2.2 1.45 -1.2 C1.45 -.1 1 .55 0 .7 C-1 .55 -1.45 -.1 -1.45 -1.2 C-1.45 -2.2 -1.05 -2.9 0 -2.9 Z'
+// Standing legs, and the other half of the stride (three feet down at a time, as flies walk).
+const legsA = 'M.9 -2.1 2 -3 2.3 -4.5 M-.9 -2.1 -2 -3 -2.3 -4.5 M1.35 -.9 3 -.6 4.3 .1 M-1.35 -.9 -3 -.6 -4.3 .1 M1.1 .2 2.4 2.3 3 4.5 M-1.1 .2 -2.4 2.3 -3 4.5'
+const legsB = 'M.9 -2.1 1.8 -3.2 1.9 -4.7 M-.9 -2.1 -2.3 -2.6 -2.9 -3.9 M1.35 -.9 3 -.3 4.1 .7 M-1.35 -.9 -3.1 -1.1 -4.3 -1.7 M1.1 .2 2.6 2.1 3.4 4 M-1.1 .2 -2.2 2.5 -2.5 4.7'
+const tucked = 'M.6 -1.6 1.2 -2.3 M-.6 -1.6 -1.2 -2.3 M.9 -.6 1.6 -.5 M-.9 -.6 -1.6 -.5 M.8 .3 1.3 1.2 M-.8 .3 -1.3 1.2'
 ---
-<svg class={`bug ${className}`} viewBox="-6 -5.4 12 10.4" width={size} height={size * 0.87} aria-hidden="true" data-bug>
+<svg class={`bug ${className}`} viewBox="-6 -6 12 12" width={size} height={size} aria-hidden="true" data-bug>
   <g fill="none" stroke="#8E8776" stroke-width=".12" stroke-linecap="round" opacity=".5">
-    <ellipse cx=".1" cy=".4" rx="3.1" ry="4.3" stroke-dasharray=".5 .4" />
-    <path d="M0 -4.9 V5.1" />
+    <ellipse cx=".1" cy=".1" rx="2.9" ry="5.2" stroke-dasharray=".5 .4" />
+    <path d="M0 -5.6 V5.6" />
   </g>
-  <g fill="none" stroke="#1C1A16" stroke-width=".3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M.9 -1.7 2.3 -2.7 2.9 -3.9 M-.9 -1.7 -2.3 -2.7 -2.9 -3.9" />
-    <path d="M1.3 -.8 2.9 -.6 4 -1.3 M-1.3 -.8 -2.9 -.6 -4 -1.3" />
-    <path d="M1 .1 2.4 1.5 3 3 M-1 .1 -2.4 1.5 -3 3" />
+  <g fill="none" stroke={ink} stroke-width=".26" stroke-linecap="round" stroke-linejoin="round">
+    <path class="legs legs-a" d={legsA} />
+    {live && <path class="legs legs-b" d={legsB} />}
+    {live && <path class="legs-tucked" d={tucked} stroke-width=".22" />}
   </g>
-  <path d={abdomen} fill="#6B5F3E" transform="translate(.2 .15)" />
-  <path d="M-1.6 1.3 H1.6 M-1.65 2.4 H1.65 M-1.35 3.5 H1.35" stroke="#1C1A16" stroke-width=".32" opacity=".55" />
-  <path d={abdomen} fill="none" stroke="#1C1A16" stroke-width=".3" />
-  <g stroke="#1C1A16" stroke-width=".22" stroke-linejoin="round">
-    <path d={wing} fill="#FFF8E6" fill-opacity=".62" />
-    <path d={wing} fill="#FFF8E6" fill-opacity=".62" transform="scale(-1 1)" />
+  {live && <g class="wings-open" stroke={ink} stroke-width=".16" stroke-linejoin="round">
+    <g class="wing wing-right"><path d={open} fill="#E8E4D8" fill-opacity=".55" />
+      <path d="M1 -1.2 C2.3 -2.3 3.9 -3.3 5.2 -3.5 M1 -.9 C2.4 -1.1 3.7 -1.3 4.8 -1.6 M1.2 -.5 C2.4 -.3 3.4 -.2 4.2 -.4" fill="none" stroke-width=".08" opacity=".6" /></g>
+    <g class="wing wing-left" transform="scale(-1 1)"><path d={open} fill="#E8E4D8" fill-opacity=".55" />
+      <path d="M1 -1.2 C2.3 -2.3 3.9 -3.3 5.2 -3.5 M1 -.9 C2.4 -1.1 3.7 -1.3 4.8 -1.6 M1.2 -.5 C2.4 -.3 3.4 -.2 4.2 -.4" fill="none" stroke-width=".08" opacity=".6" /></g>
+  </g>}
+  <path d={abdomen} fill="#B8AA7A" />
+  <path d="M-.42 .55 C-.48 2 -.4 3.8 0 5 C.4 3.8 .48 2 .42 .55 Z" fill={stripe} opacity=".85" />
+  <path d="M-1.62 1.75 C-.8 2.05 .8 2.05 1.62 1.75 M-1.66 2.95 C-.8 3.25 .8 3.25 1.66 2.95 M-1.38 4.05 C-.7 4.3 .7 4.3 1.38 4.05"
+        fill="none" stroke={stripe} stroke-width=".34" opacity=".8" />
+  <path d={abdomen} fill="none" stroke={ink} stroke-width=".28" />
+  <g class="wings-folded" stroke={ink} stroke-width=".16" stroke-linejoin="round">
+    <path d={folded} fill="#E8E4D8" fill-opacity=".55" />
+    <path d={folded} fill="#E8E4D8" fill-opacity=".55" transform="scale(-1 1)" />
+    <path d="M.65 -.4 C1.4 1 1.9 2.6 1.95 4.4 M.55 .4 C.9 1.8 1.1 3 1.2 4.4 M-.65 -.4 C-1.4 1 -1.9 2.6 -1.95 4.4 M-.55 .4 C-.9 1.8 -1.1 3 -1.2 4.4"
+          fill="none" stroke-width=".08" opacity=".6" />
   </g>
-  <path d="M1.1 -.2 C2.4 .6 3.5 1.9 4.2 3.4 M1.6 .1 C2.2 1.2 2.9 2.4 3.7 3.4 M-1.1 -.2 C-2.4 .6 -3.5 1.9 -4.2 3.4 M-1.6 .1 C-2.2 1.2 -2.9 2.4 -3.7 3.4"
-        fill="none" stroke="#1C1A16" stroke-width=".1" stroke-linecap="round" opacity=".55" />
-  <ellipse cy="-1.15" rx="1.45" ry="1.2" fill="#4A463C" transform="translate(.15 .12)" />
-  <path d="M-.45 -2 V-.4 M.45 -2 V-.4" stroke="#8E8776" stroke-width=".26" stroke-linecap="round" />
-  <ellipse cy="-1.15" rx="1.45" ry="1.2" fill="none" stroke="#1C1A16" stroke-width=".3" />
-  <ellipse cy="-2.95" rx="1.25" ry=".8" fill="#2E2B24" stroke="#1C1A16" stroke-width=".26" />
-  <ellipse cx="-.72" cy="-3.05" rx=".66" ry=".78" fill="#9C4A1E" stroke="#1C1A16" stroke-width=".22" />
-  <ellipse cx=".72" cy="-3.05" rx=".66" ry=".78" fill="#9C4A1E" stroke="#1C1A16" stroke-width=".22" />
-  <circle cx="-.88" cy="-3.32" r=".15" fill="#FFF8E6" /><circle cx=".56" cy="-3.32" r=".15" fill="#FFF8E6" />
+  <path d={thorax} fill="#6E6A60" />
+  <path d="M-.75 -2.6 C-.86 -1.6 -.8 -.6 -.6 .2 M-.25 -2.85 V.55 M.25 -2.85 V.55 M.75 -2.6 C.86 -1.6 .8 -.6 .6 .2"
+        fill="none" stroke={stripe} stroke-width=".26" stroke-linecap="round" />
+  <path d="M-.6 .35 C-.3 .8 .3 .8 .6 .35 M1.45 -1.8 1.8 -1.95 M-1.45 -1.8 -1.8 -1.95 M1.4 -.7 1.75 -.65 M-1.4 -.7 -1.75 -.65"
+        fill="none" stroke={ink} stroke-width=".12" stroke-linecap="round" />
+  <path d={thorax} fill="none" stroke={ink} stroke-width=".28" />
+  <path d="M-.2 -4.2 -.55 -5.1 M.2 -4.2 .55 -5.1" stroke={ink} stroke-width=".14" stroke-linecap="round" />
+  <ellipse cy="-3.5" rx="1.3" ry=".72" fill="#4A463C" stroke={ink} stroke-width=".22" />
+  <ellipse cx="-.88" cy="-3.72" rx=".8" ry=".72" fill="#7A2E1E" stroke={ink} stroke-width=".2" />
+  <ellipse cx=".88" cy="-3.72" rx=".8" ry=".72" fill="#7A2E1E" stroke={ink} stroke-width=".2" />
+  <circle cx="-1.08" cy="-3.98" r=".14" fill="#FFFDF5" /><circle cx=".68" cy="-3.98" r=".14" fill="#FFFDF5" />
 </svg>
-<style>.bug { overflow: visible; flex: none; }</style>
+<style>
+  .bug { overflow: visible; flex: none; }
+  .legs-b, .legs-tucked, .wings-open { display: none; }
+  .wing { transform-box: view-box; transform-origin: .7px -1.25px; }
+  .wing-left { transform-origin: -.7px -1.25px; }
+  /* Walking: the two halves of the stride take turns. */
+  .bug[data-state='walk'] .legs-b { display: inline; }
+  .bug[data-state='walk'] .legs-a { animation: stride .24s steps(1) infinite; }
+  .bug[data-state='walk'] .legs-b { animation: stride .24s steps(1) infinite reverse; }
+  /* Flying: wings open and beating, legs tucked under the body. */
+  .bug[data-state='fly'] .legs, .bug[data-state='fly'] .wings-folded { display: none; }
+  .bug[data-state='fly'] .legs-tucked, .bug[data-state='fly'] .wings-open { display: inline; }
+  .bug[data-state='fly'] .wing-right { animation: beat-right .07s ease-in-out infinite alternate; }
+  .bug[data-state='fly'] .wing-left { animation: beat-left .07s ease-in-out infinite alternate; }
+  @keyframes stride { 0% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes beat-right { from { transform: rotate(-28deg); } to { transform: rotate(18deg); } }
+  @keyframes beat-left { from { transform: scale(-1, 1) rotate(-28deg); } to { transform: scale(-1, 1) rotate(18deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .bug[data-state] .legs-a, .bug[data-state] .legs-b, .bug[data-state] .wing { animation: none; }
+    .bug[data-state='walk'] .legs-b { display: none; }
+  }
+</style>
