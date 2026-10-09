@@ -198,7 +198,7 @@ function snack(gsap: Gsap, ScrollTrigger: Trigger) {
     const box = field.getBoundingClientRect(), frameBox = frame.getBoundingClientRect()
     spots.forEach((spot, index) => {
       homes[index] = { x: frameBox.left - box.left + spot.u * frameBox.width, y: frameBox.top - box.top + spot.v * frameBox.height }
-      gsap.set(bugs[index], { left: homes[index].x - 13, top: homes[index].y - 13 })
+      gsap.set(bugs[index], { left: homes[index].x - 17, top: homes[index].y - 17 })
     })
   }
   layout()
@@ -467,7 +467,7 @@ function swarm(gsap: Gsap, ScrollTrigger: Trigger): () => void {
         const plate = plates[spot.plate].getBoundingClientRect()
         bug.home = { x: 20 + spot.u * (field.offsetWidth - 40), y: plate.top - box.top + spot.v * plate.height }
       }
-      gsap.set(bug.el, { left: bug.home.x - 13, top: bug.home.y - 13 })
+      gsap.set(bug.el, { left: bug.home.x - 17, top: bug.home.y - 17 })
     })
   }
   layout()
