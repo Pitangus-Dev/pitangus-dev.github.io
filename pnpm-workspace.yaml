@@ -14,3 +14,12 @@ ignoredBuiltDependencies:
   - esbuild   # its binary comes from an optional platform package; the script only checks it
   - fsevents  # macOS only, optional
   - workerd   # wrangler's local runtime (wrangler dev); deploying static assets doesn't use it
+
+# Exceptions, each with its reason. Remove them once they no longer change the lockfile.
+minimumReleaseAgeExclude:
+  # 4.3.0 (2026-10-04) is the first release past GHSA-ch52-4w7c-c8xp, which covers up to 4.2.0 (the maintainer disputes
+  # it). npm's lockfile already had 4.3.0, and the week's wait would bring back 4.2.0. Has no effect from 2026-10-11.
+  - http-cache-semantics@4.3.0
+overrides:
+  # wrangler's miniflare pins sharp 0.35.4 exactly, which has GHSA-wq5f-xc86-pv6w (its bundled librsvg); 0.35.5 fixes it.
+  'sharp@<0.35.5': 0.35.5
