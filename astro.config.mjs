@@ -23,7 +23,7 @@ export default defineConfig({
       subsets: ['latin'], fallbacks: ['Georgia', 'serif'] },
     { provider: fontProviders.google(), name: 'Instrument Sans', cssVariable: '--font-body', weights: ['400 700'], styles: ['normal'],
       subsets: ['latin'], fallbacks: ['system-ui', 'sans-serif'] },
-    { provider: fontProviders.google(), name: 'Caveat', cssVariable: '--font-hand', weights: ['400 700'], styles: ['normal'],
+    { provider: fontProviders.google(), name: 'Caveat', cssVariable: '--font-hand', weights: [400], styles: ['normal'],
       subsets: ['latin'], fallbacks: ['cursive'] },
     { provider: fontProviders.google(), name: 'JetBrains Mono', cssVariable: '--font-mono', weights: [400, 600], styles: ['normal'],
       subsets: ['latin'], fallbacks: ['ui-monospace', 'monospace'] },
