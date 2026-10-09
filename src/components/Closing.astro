@@ -2,6 +2,7 @@
 import type { Content } from '../i18n/content'
 import Bug from './Bug.astro'
 import Note from './Note.astro'
+import Faq from './Faq.astro'
 import { DOCS, STEWARD } from '../i18n/content'
 interface Props { t: Content }
 const { t } = Astro.props
@@ -56,6 +57,8 @@ const f = t.footer
       <span class="muted small">{i.note}</span></p>
   </div>
 </section>
+
+<Faq t={t} />
 
 <footer class="footer">
   <div class="wrap grid">

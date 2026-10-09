@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from 'astro/config'
 import { loadEnv } from 'vite'
 import securityHeaders from './integrations/security-headers.mjs'
+import structuredData from './integrations/structured-data.mjs'
 
 const env = loadEnv('production', '.', '')
 
@@ -11,7 +12,7 @@ export default defineConfig({
   site: env.SITE_URL ?? 'https://pitangus.dev',
   base: env.BASE_PATH ?? '/',
   output: 'static',
-  integrations: [securityHeaders()],
+  integrations: [structuredData(), securityHeaders()],
   trailingSlash: 'ignore',
   // The stylesheets are small: inlined, the first paint doesn't wait for three more requests.
   build: { inlineStylesheets: 'always' },

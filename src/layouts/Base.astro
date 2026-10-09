@@ -6,6 +6,7 @@ import type { Content } from '../i18n/content'
 import { BRAND, REPO } from '../i18n/content'
 import Bug from '../components/Bug.astro'
 import { withBase } from '../paths'
+import { jsonForScript, structuredData } from '../seo'
 import paperTooth from '../assets/paper/paper-tooth.webp'
 import paperCloud from '../assets/paper/paper-cloud.webp'
 import deskTooth from '../assets/paper/desk-tooth.webp'
@@ -37,6 +38,8 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
       <link rel="alternate" hreflang="en" href={english} />
       <link rel="alternate" hreflang="es" href={spanish} />
       <link rel="alternate" hreflang="x-default" href={english} />
+      <!-- Data, not code: browsers don't run it, so the CSP needs no hash for it (integrations/security-headers.mjs). -->
+      <script type="application/ld+json" is:inline set:html={jsonForScript(structuredData(t, Astro.site!))} />
     </>}
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="color-scheme" content="light dark" />
@@ -53,7 +56,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={t.meta.title} />
+    <meta property="og:image:alt" content={`${BRAND} · ${t.hero.title.join(' ')}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={new URL(withBase(`/og-${t.lang}.jpg`), Astro.site)} />
     <Font cssVariable="--font-display" preload />
