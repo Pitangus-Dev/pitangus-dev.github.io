@@ -1,0 +1,11 @@
+// Cloudflare Workers, static assets only: no script runs, so every request is a free, unlimited asset request.
+// The security headers come from dist/_headers (written at build time by integrations/security-headers.mjs).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pitangus",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

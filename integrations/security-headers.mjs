@@ -1,4 +1,4 @@
-// Security headers for Cloudflare Pages (dist/_headers), written once the build is done. The CSP allows each inline
+// Security headers for Cloudflare (dist/_headers, read by Workers static assets and Pages alike), written once the build is done. The CSP allows each inline
 // script by its SHA-256, so it stays strict (no 'unsafe-inline' for scripts) and never needs editing by hand when one of
 // them changes. Styles keep 'unsafe-inline': the pages use style attributes, which hashes cannot cover.
 import { createHash } from 'node:crypto'
