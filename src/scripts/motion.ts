@@ -50,21 +50,28 @@ function settle() {
   paintCounter()
 }
 
+// Lets the browser paint and handle input between two pieces of the set-up: one long task would block a phone.
+const breathe = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
 async function run() {
   if (!landing) return
+  // On touch screens Lenis doesn't smooth the finger's scroll anyway: native scrolling, one script and a per-frame job less.
+  const touch = matchMedia('(hover: none)').matches
   const [{ gsap }, { ScrollTrigger }, { SplitText }, { DrawSVGPlugin }, Lenis] = await Promise.all([
     import('gsap'), import('gsap/ScrollTrigger'), import('gsap/SplitText'), import('gsap/DrawSVGPlugin'),
-    import('lenis').then(module => module.default),
+    touch ? null : import('lenis').then(module => module.default),
   ])
   gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin)
   // On phones the address bar shows and hides as you scroll, changing the viewport's height: recomputing the held
   // plates then would make the page jump under the finger.
   ScrollTrigger.config({ ignoreMobileResize: true })
-  const lenis = new Lenis({ anchors: true, lerp: 0.12 })
-  const onTick = (time: number) => lenis.raf(time * 1000)
-  lenis.on('scroll', ScrollTrigger.update)
-  gsap.ticker.add(onTick)
-  gsap.ticker.lagSmoothing(0)
+  const lenis = Lenis ? new Lenis({ anchors: true, lerp: 0.12 }) : null
+  const onTick = (time: number) => lenis?.raf(time * 1000)
+  if (lenis) {
+    lenis.on('scroll', ScrollTrigger.update)
+    gsap.ticker.add(onTick)
+    gsap.ticker.lagSmoothing(0)
+  }
   Object.assign(tally, { page: 0, specimens: 0 })
   paintCounter()
 
@@ -72,13 +79,29 @@ async function run() {
   const media = gsap.matchMedia()
   // The safety net already showed the page (the script came late): don't hide it again to animate its entrance.
   const late = !root.classList.contains('pending')
+  // The entrance first, in the same task as the first frame it animates; the rest of the page a piece at a time.
   const context = gsap.context(() => {
     ink(gsap, late)
     cleanups.push(eyes(gsap))
+    // html.pending hides the notes until they write themselves: they must be set up before it goes.
+    notes(gsap, ScrollTrigger, late)
+  })
+  root.classList.remove('pending')
+  let stopped = false
+  teardown = () => {
+    stopped = true
+    cleanups.forEach(cleanup => cleanup())
+    media.revert()
+    context.revert()
+    document.querySelectorAll('.critter, .leaf').forEach(element => element.remove())
+    gsap.ticker.remove(onTick)
+    lenis?.destroy()
+  }
+  const pieces: (() => void)[] = [
     // The big set pieces (bugs all over the page, the turning pages) are for wide screens. On phones and tablets a
     // few bugs walk beside the drawing and the specimens are stamped as they scroll in: lighter, and nothing fights
     // with touch scrolling.
-    media.add({ wide: WIDE, narrow: `not all and ${WIDE}` }, matched => {
+    () => media.add({ wide: WIDE, narrow: `not all and ${WIDE}` }, matched => {
       Object.assign(tally, { page: 0, specimens: 0 })
       paintCounter()
       stamps(gsap, ScrollTrigger)
@@ -89,23 +112,17 @@ async function run() {
         bugsOnPage()
         document.querySelectorAll('.leaf').forEach(element => element.remove())
       }
-    })
-    reveals(gsap, SplitText)
-    terminal(gsap, ScrollTrigger)
-    ledger(gsap, ScrollTrigger)
-    belt(gsap)
-    card(gsap)
-    numerals(gsap)
-    notes(gsap, ScrollTrigger, late)
-  })
-  root.classList.remove('pending')
-  teardown = () => {
-    cleanups.forEach(cleanup => cleanup())
-    media.revert()
-    context.revert()
-    document.querySelectorAll('.critter, .leaf').forEach(element => element.remove())
-    gsap.ticker.remove(onTick)
-    lenis.destroy()
+    }),
+    () => reveals(gsap, SplitText),
+    () => terminal(gsap, ScrollTrigger),
+    () => ledger(gsap, ScrollTrigger),
+    () => { belt(gsap); card(gsap) },
+    () => numerals(gsap),
+  ]
+  for (const piece of pieces) {
+    await breathe()
+    if (stopped) return
+    context.add(piece)
   }
   // Only if the fonts weren't there yet: a refresh once the reader is scrolling moves the held plates under them.
   if (document.fonts.status !== 'loaded') void document.fonts.ready.then(() => ScrollTrigger.refresh())
