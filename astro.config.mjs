@@ -1,15 +1,17 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config'
 import { loadEnv } from 'vite'
+import securityHeaders from './integrations/security-headers.mjs'
 
 const env = loadEnv('production', '.', '')
 
-// Where it's published (GitHub Pages, at the root of the organization's site). Both can be overridden from the
-// environment, e.g. to serve it under a path.
+// Where it's published (Cloudflare Pages, at pitangus.dev; its security headers come from the security-headers
+// integration). Both can be overridden from the environment, e.g. to serve it under a path.
 export default defineConfig({
   site: env.SITE_URL ?? 'https://pitangus.dev',
   base: env.BASE_PATH ?? '/',
   output: 'static',
+  integrations: [securityHeaders()],
   trailingSlash: 'ignore',
   i18n: { locales: ['en', 'es'], defaultLocale: 'en', routing: { prefixDefaultLocale: false } },
   // Self-hosted, subset and preloaded at build time: no request to Google from the visitor's browser. Latin is enough
