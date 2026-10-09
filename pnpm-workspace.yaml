@@ -1,15 +1,13 @@
 # Supply chain. The registry is the same as npm's; these settings decide what gets in:
 # - versions published less than a week ago are not installed (a hijacked release is usually caught and pulled sooner);
-# - a version that loses the trust (provenance or signature) its earlier versions had is refused;
+# - a version that loses the trust (provenance or signature) its earlier versions had is refused, while it is less than
+#   90 days old: a hijacked release is pulled long before that, and plenty of old ones were simply published by hand;
 # - dependencies of dependencies can't come from git or tarball URLs;
 # - dependencies' build scripts never run (the 2025 npm worms spread through them); a new one fails the install until
 #   it is listed below on purpose.
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
-# Exceptions, version by version, each one checked: same maintainer as the versions with provenance, published long
-# ago, no OSV advisory (malicious-package ones included).
-trustPolicyExclude:
-  - chokidar@4.0.3   # paulmillr published 4.0.2 and 4.0.3 by hand (2024-12); 4.0.1 and 5.0.0 have provenance
+trustPolicyIgnoreAfter: 129600
 blockExoticSubdeps: true
 strictDepBuilds: true
 ignoredBuiltDependencies:
