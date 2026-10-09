@@ -15,7 +15,7 @@ export const CHANGELOG = `${REPO}/blob/main/CHANGELOG.md`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
-export const RELEASE = 'v0.12.1'
+export const RELEASE = 'v0.12.2'
 export const ACTION_STEP = `- uses: Pitangus-Dev/pitangus@${RELEASE}`
 // The published release with its published images: a clone of main could ask for images not released yet.
 export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Pitangus-Dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
