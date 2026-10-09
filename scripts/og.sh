@@ -1,6 +1,6 @@
 #!/bin/sh
 # Renders the share pictures (public/og-en.jpg, public/og-es.jpg) from /og/en/ and /og/es/: build first, then run
-# `npm run preview -- --port 4322` in another terminal. Needs a headless Chromium (CHROME, e.g. Playwright's
+# `pnpm run preview -- --port 4322` in another terminal. Needs a headless Chromium (CHROME, e.g. Playwright's
 # chrome-headless-shell) and Python with Pillow for the JPEG.
 set -eu
 CHROME="${CHROME:?point CHROME at a headless Chromium binary}"
