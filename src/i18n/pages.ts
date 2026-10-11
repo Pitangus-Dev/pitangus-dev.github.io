@@ -50,7 +50,7 @@ const en = {
   about: {
     title: 'About Pitangus',
     metaTitle: 'About Pitangus: why it exists, who builds it, how to help',
-    description: 'Pitangus is a self-hosted, open-source application security tool for small teams, made in Colombia by Arodium, a small team that works in application security. Its principles and how to contribute.',
+    description: 'Pitangus is a self-hosted, open-source application security tool for small teams, made in Colombia by Arodium, a small software team that builds websites and custom software and works in application security. Its principles and how to contribute.',
     lead: 'Pitangus is a self-hosted, open-source application security tool for small teams. It finds problems in code, dependencies, secrets, infrastructure, container images and, if you turn it on, the sites you verify, and it counts a fix only when a later scan proves it.',
     why: {
       title: 'Why it exists',
@@ -62,7 +62,7 @@ const en = {
     who: {
       title: 'Who is behind it',
       body: [
-        'Pitangus is made by Arodium, a small team in Colombia that works in application security day to day.',
+        'Pitangus is made by Arodium, a small team in Colombia that builds software for others: websites, WordPress, custom applications and application security.',
         'The project is in beta: what each release changes, including what breaks, is in the changelog.',
       ],
     },
@@ -129,7 +129,7 @@ const es: typeof en = {
   about: {
     title: 'Acerca de Pitangus',
     metaTitle: 'Acerca de Pitangus: por qué existe, quién lo hace y cómo ayudar',
-    description: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños, hecha en Colombia por Arodium, un equipo pequeño que trabaja en seguridad de aplicaciones. Sus principios y cómo contribuir.',
+    description: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños, hecha en Colombia por Arodium, un equipo pequeño que hace webs y software a la medida y trabaja en seguridad de aplicaciones. Sus principios y cómo contribuir.',
     lead: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños. Encuentra problemas en el código, las dependencias, los secretos, la infraestructura, las imágenes de contenedor y, si lo activas, los sitios que verificas, y solo da algo por corregido cuando un análisis posterior lo demuestra.',
     why: {
       title: 'Por qué existe',
@@ -141,7 +141,7 @@ const es: typeof en = {
     who: {
       title: 'Quién está detrás',
       body: [
-        'Pitangus lo hace Arodium, un equipo pequeño en Colombia que trabaja a diario en seguridad de aplicaciones.',
+        'Pitangus lo hace Arodium, un equipo pequeño en Colombia que hace software para otros: sitios web, WordPress, aplicaciones a la medida y seguridad de aplicaciones.',
         'El proyecto está en beta: lo que cambia en cada versión, también lo que se rompe, queda en el changelog.',
       ],
     },
