@@ -2,10 +2,11 @@
 // A naturalist's handwritten note in the margin, with a hand-drawn arrow toward what it comments on. It writes itself
 // when it scrolls in (scripts/motion.ts). Decorative: it repeats, in a lighter voice, what the page already says.
 // `place` positions it on wide screens (CSS, relative to its positioned parent); on narrow ones it sits in the flow.
-interface Props { text: string; arrow?: 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right'; place?: string; tilt?: number }
-const { text, arrow = 'left', place = '', tilt = -4 } = Astro.props
+// `spoken`: the note carries words the page doesn't say elsewhere, so assistive technology reads it.
+interface Props { text: string; arrow?: 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right'; place?: string; tilt?: number; spoken?: boolean }
+const { text, arrow = 'left', place = '', tilt = -4, spoken = false } = Astro.props
 ---
-<p class:list={['note', `arrow-${arrow}`]} style={`${place}; --tilt: ${tilt}deg`} aria-hidden="true" data-note>
+<p class:list={['note', `arrow-${arrow}`]} style={`${place}; --tilt: ${tilt}deg`} aria-hidden={spoken ? undefined : 'true'} data-note>
   <svg class="note-arrow" viewBox="0 0 64 44" aria-hidden="true">
     <path d="M60 6 C46 2 30 6 20 18 C14 25 11 31 9 37" pathLength="1" data-note-ink />
     <path d="M3 28 L9 38 L17 30" pathLength="1" data-note-ink />

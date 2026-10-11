@@ -24,9 +24,15 @@ export default defineConfig({
       subsets: ['latin'], fallbacks: ['Georgia', 'serif'] },
     { provider: fontProviders.google(), name: 'Instrument Sans', cssVariable: '--font-body', weights: ['400 700'], styles: ['normal'],
       subsets: ['latin'], fallbacks: ['system-ui', 'sans-serif'] },
+    // The pencil notes are decoration: until Caveat arrives they stay blank rather than show a cursive stand-in.
     { provider: fontProviders.google(), name: 'Caveat', cssVariable: '--font-hand', weights: [400], styles: ['normal'],
-      subsets: ['latin'], fallbacks: ['cursive'] },
+      subsets: ['latin'], fallbacks: ['cursive'], display: 'block' },
     { provider: fontProviders.google(), name: 'JetBrains Mono', cssVariable: '--font-mono', weights: [400, 600], styles: ['normal'],
       subsets: ['latin'], fallbacks: ['ui-monospace', 'monospace'] },
+    // The blog and the about page speak like the product (the identity manual's instrument register): IBM Plex.
+    { provider: fontProviders.google(), name: 'IBM Plex Sans', cssVariable: '--font-plex', weights: [400, 600], styles: ['normal'],
+      subsets: ['latin'], fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'] },
+    { provider: fontProviders.google(), name: 'IBM Plex Mono', cssVariable: '--font-plex-mono', weights: [400], styles: ['normal'],
+      subsets: ['latin'], fallbacks: ['ui-monospace', 'SFMono-Regular', 'monospace'] },
   ],
 })

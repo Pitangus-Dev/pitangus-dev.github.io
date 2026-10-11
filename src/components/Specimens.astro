@@ -17,6 +17,8 @@ const s = t.specimens
     </header>
     <div class="intro">
       <p class="lead" data-reveal>{s.lead}</p>
+      <!-- Said in the margin, in pencil, but it is part of the text: read aloud, not aria-hidden like the other notes. -->
+      <Note text={t.notes.fixes} arrow="right" place="right: calc(100% + 1.5rem); top: 0.4rem" tilt={-5} spoken />
       <p class="engines mono muted" data-reveal>{s.engines}</p>
       <p class="engines engines-web mono muted" data-reveal><span class="engines-label">{s.webLabel}</span> {s.webEngines}</p>
     </div>
@@ -44,7 +46,7 @@ const s = t.specimens
 </section>
 
 <style>
-  .intro { grid-column: 6 / span 7; margin-bottom: clamp(3rem, 6vw, 5rem); }
+  .intro { grid-column: 6 / span 7; margin-bottom: clamp(3rem, 6vw, 5rem); position: relative; }
   .engines { font-size: 0.82rem; margin-top: 1.25rem; }
   .engines-web { margin-top: 0.4rem; }
   .engines-label { color: var(--accent); }

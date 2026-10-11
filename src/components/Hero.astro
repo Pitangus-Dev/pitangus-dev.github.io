@@ -1,6 +1,6 @@
 ---
 import type { Content } from '../i18n/content'
-import { REPO } from '../i18n/content'
+import { DOCS, DOCS_ES, REPO } from '../i18n/content'
 import Mascot from './Mascot.astro'
 import Note from './Note.astro'
 interface Props { t: Content }
@@ -27,6 +27,7 @@ const marks = [
       <div class="actions" data-reveal>
         <a class="button primary" href="#install">{h.primary} <span aria-hidden="true">→</span></a>
         <a class="button ghost" href={REPO}>{h.secondary}</a>
+        <a class="docs-link" href={t.lang === 'es' ? DOCS_ES : DOCS}>{h.docs}</a>
       </div>
       <ul class="facts mono" data-reveal>{h.facts.map(fact => <li>{fact}</li>)}</ul>
     </div>
@@ -61,6 +62,10 @@ const marks = [
   .line-inner { display: inline-block; }
   .accent { font-style: italic; color: var(--accent); }
   .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2.25rem 0 2rem; }
+  /* The third way in, quieter than the two buttons: a pencilled line under them. */
+  .docs-link { flex-basis: 100%; display: inline-flex; align-items: center; width: max-content; min-height: 44px; margin-top: -0.25rem;
+               color: var(--muted); font-size: 0.95rem; text-decoration-style: dotted; text-underline-offset: 0.25em; }
+  .docs-link:hover { color: var(--accent); }
   .facts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--muted); }
   /* The cross is decoration: where the alt-text syntax is understood, it is not read aloud. */
   .facts li::before { content: '✕ '; content: '✕ ' / ''; color: var(--accent); }

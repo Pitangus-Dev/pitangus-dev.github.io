@@ -34,6 +34,7 @@ export function start() {
   wireCopyButtons()
   wireMotionToggle()
   wireThemeToggle()
+  wireIndex()
   if (!landing) { root.classList.remove('pending'); return }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
   const wanted = !root.classList.contains('still') && !reduced.matches
@@ -690,4 +691,16 @@ function wireThemeToggle() {
     root.dataset.theme = night ? 'light' : 'dark'
     try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
   })
+}
+
+// The index slip (phones and tablets) is a native <details>: it closes after a choice, on Escape (focus back on its
+// toggle) and on a click or tap anywhere else.
+function wireIndex() {
+  const index = document.querySelector<HTMLDetailsElement>('[data-index]')
+  if (!index) return
+  index.addEventListener('click', event => { if ((event.target as Element).closest('a')) index.open = false })
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && index.open) { index.open = false; index.querySelector('summary')?.focus() }
+  })
+  document.addEventListener('click', event => { if (index.open && !index.contains(event.target as Node)) index.open = false })
 }

@@ -4,6 +4,7 @@ import Bug from './Bug.astro'
 import Note from './Note.astro'
 import Faq from './Faq.astro'
 import { DOCS, DOCS_ES, STEWARD } from '../i18n/content'
+import { ROUTES, withBase } from '../paths'
 interface Props { t: Content }
 const { t } = Astro.props
 const y = t.yours
@@ -66,7 +67,11 @@ const f = t.footer
     <div class="foot-meta">
       <p class="mono">{f.made} <Bug size={16} /></p>
       <p class="mono muted">{f.license}</p>
-      <ul class="links mono" role="list">{f.links.map(([label, href]) => <li><a href={href}>{label} <span aria-hidden="true">↗</span></a></li>)}</ul>
+      <ul class="links mono" role="list">
+        <li><a href={withBase(ROUTES[t.lang].blog)}>{t.nav.blog}</a></li>
+        <li><a href={withBase(ROUTES[t.lang].about)}>{t.nav.about}</a></li>
+        {f.links.map(([label, href]) => <li><a href={href}>{label} <span aria-hidden="true">↗</span></a></li>)}
+      </ul>
       <p class="mono muted tiny">{f.credits}</p>
       <p class="mono muted tiny">© {new Date().getFullYear()} <a href={STEWARD.url}>{STEWARD.name}</a></p>
     </div>

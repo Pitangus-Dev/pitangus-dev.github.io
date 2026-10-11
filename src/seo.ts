@@ -106,7 +106,7 @@ export function llmsFull(site: URL) {
       '',
       h.facts.map(fact => `- ${fact}`).join('\n'),
       '',
-      ...section(t.specimens.kicker, t.specimens.title, t.specimens.lead, `${t.specimens.engines}`,
+      ...section(t.specimens.kicker, t.specimens.title, `${t.specimens.lead} ${t.notes.fixes}.`, `${t.specimens.engines}`,
         t.specimens.items.map(item => `- ${item.kind} · ${item.id} · ${item.name} (${item.where}): ${item.note}`).join('\n')),
       ...section(t.change.kicker, t.change.title, t.change.lead, '```\n$ ' + t.change.command + '\n' + t.change.output.map(line => line.text).join('\n') + '\n```',
         `${t.change.action}. ${t.change.actionNote}`, '```yaml\n' + t.install.action + '\n```'),

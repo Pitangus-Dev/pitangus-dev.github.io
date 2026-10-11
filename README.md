@@ -37,7 +37,8 @@ serve the build and run `CHROME=/path/to/chrome-headless-shell scripts/og.sh`.
 - **Motion** is `src/scripts/motion.ts`: GSAP (ScrollTrigger, SplitText) and Lenis, loaded after the first paint.
   The page is complete without it: everything starts in its final, readable state in the HTML. With
   `prefers-reduced-motion`, or the "Pause motion" button (remembered per browser), nothing moves.
-- **Budget:** about 61 KB of gzipped JS, loaded lazily; about 163 KB of fonts (5 woff2 files, all preloaded).
+- **Budget:** about 61 KB of gzipped JS, loaded lazily; about 141 KB of fonts on the home (5 woff2 files; only the
+  three the hero's title and lead paint with are preloaded, Caveat uses `font-display: block`).
 
 ## License
 
