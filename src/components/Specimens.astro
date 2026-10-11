@@ -18,6 +18,7 @@ const s = t.specimens
     <div class="intro">
       <p class="lead" data-reveal>{s.lead}</p>
       <p class="engines mono muted" data-reveal>{s.engines}</p>
+      <p class="engines engines-web mono muted" data-reveal><span class="engines-label">{s.webLabel}</span> {s.webEngines}</p>
     </div>
     <div class="drawer">
     <ol class="specimens" role="list">
@@ -45,6 +46,8 @@ const s = t.specimens
 <style>
   .intro { grid-column: 6 / span 7; margin-bottom: clamp(3rem, 6vw, 5rem); }
   .engines { font-size: 0.82rem; margin-top: 1.25rem; }
+  .engines-web { margin-top: 0.4rem; }
+  .engines-label { color: var(--accent); }
   .drawer { grid-column: 1 / -1; }
   .specimens { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 2.25rem); list-style: none; padding: 0; margin: 0; }
   .specimen {
@@ -53,7 +56,7 @@ const s = t.specimens
   }
   .specimen:nth-child(even) { margin-top: clamp(2rem, 5vw, 4rem); }
   .pin { position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 0 rgb(28 26 22 / 0.3); }
-  .specimen-top { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); }
+  .specimen-top { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
   .specimen-art { display: grid; place-items: center start; padding-left: 0.75rem; height: 7.5rem; border-bottom: 1px dashed var(--rule); margin-bottom: 1rem; }
   .specimen-id { font-size: 0.78rem; color: var(--accent); margin: 0 0 0.25rem; }
   .specimen-name { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); margin-bottom: 0.4rem; }

@@ -51,8 +51,10 @@ const en = {
     number: '01',
     kicker: 'Field guide',
     title: 'Every bug, catalogued like a specimen.',
-    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Pitangus merges what they find, removes duplicates and files each finding with where it lives, how to fix it in the tool’s own words and the OWASP pages that apply. Pitangus doesn’t invent fixes. Turn on web scans and five more read your verified sites and APIs without attacking them.',
+    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Pitangus merges what they find, removes duplicates and files each finding with where it lives, how to fix it in the tool’s own words and the OWASP pages that apply. Pitangus doesn’t invent fixes.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
+    webLabel: 'Optional, passive, on verified sites and APIs:',
+    webEngines: 'ZAP · nuclei · testssl.sh · katana · httpx',
     items: [
       { id: 'CWE-89', name: 'SQL injection', where: 'app/db.py:14', kind: 'Code', note: 'Request input reaches a query built as text.' },
       { id: 'CVE-2021-23337', name: 'lodash 4.17.15', where: 'package-lock.json', kind: 'Dependency', note: 'Update to 4.18.0: it closes all six advisories.' },
@@ -249,8 +251,10 @@ const es: typeof en = {
     number: '01',
     kicker: 'Guía de campo',
     title: 'Cada bug, catalogado como un espécimen.',
-    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Pitangus junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive, cómo corregirlo en palabras de la propia herramienta y las páginas de OWASP que aplican. Pitangus no inventa correcciones. Si activas los análisis web, cinco más revisan tus sitios y APIs verificados sin atacarlos.',
+    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Pitangus junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive, cómo corregirlo en palabras de la propia herramienta y las páginas de OWASP que aplican. Pitangus no inventa correcciones.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
+    webLabel: 'Opcional, pasivo, en sitios y APIs verificados:',
+    webEngines: 'ZAP · nuclei · testssl.sh · katana · httpx',
     items: [
       { id: 'CWE-89', name: 'Inyección SQL', where: 'app/db.py:14', kind: 'Código', note: 'La entrada de la petición llega a una consulta armada con texto.' },
       { id: 'CVE-2021-23337', name: 'lodash 4.17.15', where: 'package-lock.json', kind: 'Dependencia', note: 'Actualiza a 4.18.0: cierra los seis avisos.' },

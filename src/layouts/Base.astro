@@ -143,16 +143,18 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     border-bottom: 1px solid var(--rule);
   }
   .top-row { display: flex; align-items: center; gap: 1.5rem; min-height: 4rem; }
-  .brand { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+  .brand { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; text-decoration: none; }
   .brand-word { font-family: var(--font-display), Georgia, serif; font-size: 1.7rem; line-height: 1; letter-spacing: -0.005em; }
   .brand-night { display: none; border-radius: 7px; }
   @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .brand-night { display: block; } :global(:root:not([data-theme="light"])) .brand-day { display: none; } }
   :global(:root[data-theme="dark"]) .brand-night { display: block; }
   :global(:root[data-theme="dark"]) .brand-day { display: none; }
   .nav { display: flex; gap: 1.5rem; margin-inline: auto; font-size: 0.95rem; }
-  .nav a { text-decoration: none; }
+  /* Each link is a 44px-tall target without looking any bigger. */
+  .nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
   .tools { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; }
   .tools a, .motion-toggle { text-decoration: none; }
+  .tools a { display: inline-flex; align-items: center; min-height: 44px; }
   .counter { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0; padding: 0.3rem 0.65rem; border: 1px solid var(--rule); border-radius: 999px; }
   .counter [data-counter] { font-weight: 600; min-width: 1ch; text-align: right; }
   .motion-toggle {
@@ -181,7 +183,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
   }
   @media (max-width: 64rem) { .nav { display: none; } .tools { margin-left: auto; } }
   @media (max-width: 40rem) {
-    .code { display: none; }
+    .tools .code { display: none; }
     .tools { gap: 0.5rem; }
     .brand-word { display: none; }
   }

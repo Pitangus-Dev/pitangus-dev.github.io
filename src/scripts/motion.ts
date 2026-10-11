@@ -35,9 +35,15 @@ export function start() {
   wireMotionToggle()
   wireThemeToggle()
   if (!landing) { root.classList.remove('pending'); return }
-  const wanted = !root.classList.contains('still') && !matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  const wanted = !root.classList.contains('still') && !reduced.matches
   if (wanted) void run()
   else settle()
+  // The visitor may ask for less motion with the page open: everything stops (and comes back if they change their mind).
+  reduced.addEventListener('change', () => {
+    if (reduced.matches) { teardown?.(); teardown = null; settle() }
+    else if (!root.classList.contains('still')) void run()
+  })
 }
 
 // The final state, without animation: specimens caught, nothing hidden.
