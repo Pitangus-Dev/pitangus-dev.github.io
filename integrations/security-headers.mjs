@@ -14,6 +14,8 @@ async function* pages(dir) {
   }
 }
 
+const FEEDS = ['/blog/rss.xml', '/es/blog/rss.xml']
+
 export default function securityHeaders() {
   return {
     name: 'security-headers',
@@ -56,6 +58,8 @@ export default function securityHeaders() {
           '/_astro/*',
           '  Cache-Control: public, max-age=31536000, immutable',
           '',
+          // The blog's RSS feeds: for feed readers, not search results (people are sent to /blog/subscribe/).
+          ...FEEDS.flatMap(feed => [feed, '  Content-Type: application/rss+xml; charset=utf-8', '  X-Robots-Tag: noindex', '']),
         ].join('\n')
         await writeFile(join(root, '_headers'), headers)
         await check(root, csp)

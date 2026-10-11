@@ -1,14 +1,32 @@
 // Runs inline in the <head> of every page, before paint. One script for every page, so one SHA-256 in the CSP
 // (integrations/security-headers.mjs adds it at build time and checks that every inline script is covered).
-// What it does: JS is here; the theme this visitor chose, if any, and the theme button (one click handler on the
-// document, so it works on every page without another script); and, on the notebook pages (html[data-notebook]),
+// What it does: JS is here; the theme this visitor chose, if any, the theme button and the copy buttons (one click
+// handler on the document, so it works on every page without another script); and, on the notebook pages (html[data-notebook]),
 // whether motion was turned off and whether the entrance must wait for the motion script. Storage is a convenience: it
 // may be unavailable.
 export const BOOT = `{
 const root = document.documentElement
 root.classList.replace('no-js', 'js')
 document.addEventListener('click', event => {
-  if (!(event.target instanceof Element) || !event.target.closest('[data-theme-toggle]')) return
+  if (!(event.target instanceof Element)) return
+  // A copy button (data-copy: the id of the element whose text it copies). The text is also selected, so it can be
+  // copied by hand where the clipboard is unavailable.
+  const copy = event.target.closest('[data-copy]')
+  if (copy instanceof HTMLElement) {
+    const source = document.getElementById(copy.dataset.copy || '')
+    if (!source) return
+    getSelection()?.selectAllChildren(source)
+    const done = () => {
+      const status = copy.parentElement?.querySelector('[role="status"]')
+      if (status) status.textContent = copy.dataset.copied || ''
+      copy.dataset.label ??= copy.textContent || ''
+      copy.textContent = copy.dataset.copied || ''
+      setTimeout(() => { copy.textContent = copy.dataset.label || ''; if (status) status.textContent = '' }, 2000)
+    }
+    navigator.clipboard?.writeText((source.textContent || '').trim()).then(done, () => {})
+    return
+  }
+  if (!event.target.closest('[data-theme-toggle]')) return
   const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
   root.dataset.theme = dark ? 'light' : 'dark'
   try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch {}

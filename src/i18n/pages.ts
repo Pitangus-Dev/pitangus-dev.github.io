@@ -5,6 +5,7 @@ import { REPO } from './content'
 
 export const ISSUES = `${REPO}/issues`
 export const CONTRIBUTING = { en: `${REPO}/blob/main/.github/CONTRIBUTING.md`, es: `${REPO}/blob/main/.github/CONTRIBUTING.es.md` }
+export const RELEASES_FEED = `${REPO}/releases.atom`
 export const SECURITY_POLICY = { en: `${REPO}/blob/main/.github/SECURITY.md`, es: `${REPO}/blob/main/.github/SECURITY.es.md` }
 
 // TODO(maintainer): fill in a photo (a file in public/, e.g. '/maintainer.jpg', at least 320 × 320) and a short bio in
@@ -46,6 +47,33 @@ const en = {
     release: 'Release on GitHub',
     feedTitle: 'Pitangus blog',
     feedDescription: 'Releases and news from Pitangus, in English.',
+  },
+  subscribe: {
+    title: 'Follow the blog',
+    metaTitle: 'Follow the Pitangus blog with RSS',
+    description: 'How to get new Pitangus blog posts as they come out: what an RSS feed is, the address of the feed, and a few ways to read it.',
+    lead: 'An RSS feed is a list of the latest posts that an app checks for you. Add its address to a feed reader once, and new posts show up there: no need to visit the site, and no email address to give anyone.',
+    feed: {
+      title: 'The address of the feed',
+      note: 'Paste it where your reader asks for a feed, or for a site to follow. This feed has the posts in English.',
+      label: 'Feed address',
+      copy: 'Copy',
+      copied: 'Copied',
+      other: 'The posts in Spanish have their own feed',
+    },
+    how: {
+      title: 'Ways to read it',
+      items: [
+        { term: 'A feed reader app', text: 'Apps such as NetNewsWire, Feedly or Inoreader have an option to add a feed or subscription. Paste the address there and the app checks for new posts on its own.' },
+        { term: 'An app you already use', text: 'Some browsers and email apps, Vivaldi and Thunderbird among them, can follow feeds without installing anything else.' },
+        { term: 'The blog’s own address', text: 'Most readers also accept the address of the blog page and find the feed in it by themselves.' },
+      ],
+    },
+    releases: {
+      title: 'Only new versions',
+      body: 'If you only want to know when a new version of Pitangus comes out, GitHub keeps a feed of the releases, without the rest of the blog:',
+    },
+    back: 'Back to the blog',
   },
   about: {
     title: 'About Pitangus',
@@ -125,6 +153,33 @@ const es: typeof en = {
     release: 'Versión en GitHub',
     feedTitle: 'Blog de Pitangus',
     feedDescription: 'Versiones y novedades de Pitangus, en español.',
+  },
+  subscribe: {
+    title: 'Seguir el blog',
+    metaTitle: 'Sigue el blog de Pitangus por RSS',
+    description: 'Cómo enterarte de las entradas nuevas del blog de Pitangus apenas salen: qué es un feed RSS, cuál es su dirección y algunas formas de leerlo.',
+    lead: 'Un feed RSS es una lista de las últimas entradas que una aplicación revisa por ti. Pones su dirección una sola vez en un lector de feeds y las entradas nuevas te van llegando ahí, sin entrar al sitio y sin darle tu correo a nadie.',
+    feed: {
+      title: 'La dirección del feed',
+      note: 'Pégala donde tu lector pida un feed o un sitio para seguir. Este feed trae las entradas en español.',
+      label: 'Dirección del feed',
+      copy: 'Copiar',
+      copied: 'Copiada',
+      other: 'Las entradas en inglés tienen su propio feed',
+    },
+    how: {
+      title: 'Cómo leerlo',
+      items: [
+        { term: 'Una aplicación lectora de feeds', text: 'Aplicaciones como NetNewsWire, Feedly o Inoreader tienen una opción para añadir un feed o una suscripción. Pegas ahí la dirección y la aplicación se encarga de buscar las entradas nuevas.' },
+        { term: 'Una aplicación que ya usas', text: 'Algunos navegadores y clientes de correo, como Vivaldi o Thunderbird, siguen feeds sin instalar nada más.' },
+        { term: 'La dirección del blog', text: 'La mayoría de los lectores también aceptan la dirección de la página del blog y encuentran el feed por su cuenta.' },
+      ],
+    },
+    releases: {
+      title: 'Solo las versiones nuevas',
+      body: 'Si solo quieres saber cuándo sale una versión nueva de Pitangus, GitHub tiene un feed de las versiones, sin el resto del blog:',
+    },
+    back: 'Volver al blog',
   },
   about: {
     title: 'Acerca de Pitangus',

@@ -31,7 +31,7 @@ const graph = [
     <header class="page-head">
       <h1 class="title">{b.title}</h1>
       <p class="lead">{b.lead}</p>
-      <p class="small"><a class="feed" href={withBase(routes.rss)}><Icon name="rss" size={16} />{b.subscribe}</a></p>
+      <p class="small"><a class="feed" href={withBase(routes.subscribe)}><Icon name="rss" size={16} />{b.subscribe}</a></p>
     </header>
     {categories.map(category => {
       const items = list.filter(post => post.data.category === category)
