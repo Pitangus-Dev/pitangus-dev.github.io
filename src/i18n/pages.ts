@@ -62,7 +62,7 @@ const en = {
     who: {
       title: 'Who is behind it',
       body: [
-        'Pitangus is made by Arodium, a small team in Colombia. We build software for clients (websites, WordPress, custom applications and application security) and we develop our own products. Pitangus is our own product.',
+        'Pitangus is made by Arodium, a small team in Colombia. For clients we build software (custom, mobile, web and e-commerce), integrate data, AI and business systems, run cloud and DevSecOps work, and do security testing: pentesting, application and code security, and cloud security reviews. We also develop our own products, and Pitangus is one of them: it comes from that security practice.',
         'The project is in beta: what each release changes, including what breaks, is in the changelog.',
       ],
     },
@@ -141,7 +141,7 @@ const es: typeof en = {
     who: {
       title: 'Quién está detrás',
       body: [
-        'Pitangus lo hace Arodium, un equipo pequeño en Colombia. Hacemos software para clientes (sitios web, WordPress, aplicaciones a la medida y seguridad de aplicaciones) y desarrollamos productos propios. Pitangus es nuestro producto.',
+        'Pitangus lo hace Arodium, un equipo pequeño en Colombia. Para clientes hacemos software (a la medida, móvil, web y comercio electrónico), integramos datos, IA y sistemas empresariales, trabajamos en cloud y DevSecOps, y hacemos pruebas de seguridad: pentesting, seguridad de aplicaciones y de código, y revisiones de seguridad en la nube. También desarrollamos productos propios, y Pitangus es uno de ellos: sale de esa práctica de seguridad.',
         'El proyecto está en beta: lo que cambia en cada versión, también lo que se rompe, queda en el changelog.',
       ],
     },
