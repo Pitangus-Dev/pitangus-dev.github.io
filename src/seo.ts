@@ -89,6 +89,7 @@ export function llmsIndex(site: URL, posts: LlmsPost[] = []) {
     '',
     link(pages.en.about.title, new URL(withBase(ROUTES.en.about), site).href, pages.en.about.description),
     link(pages.en.blog.title, new URL(withBase(ROUTES.en.blog), site).href, `${pages.en.blog.description} RSS: ${new URL(withBase(ROUTES.en.rss), site).href}`),
+    link(pages.en.subscribe.title, new URL(withBase(ROUTES.en.subscribe), site).href, pages.en.subscribe.description),
     ...posts.filter(post => post.lang === 'en').map(post => link(post.title, post.url, `${post.date}. ${post.description}`)),
     link(`Release ${RELEASE}`, `${REPO}/releases/tag/${RELEASE}`, 'the release the landing installs'),
     '',
@@ -98,6 +99,7 @@ export function llmsIndex(site: URL, posts: LlmsPost[] = []) {
     link('Español', pageUrl(content.es, site), content.en.seo.otherNote),
     link('README en español', `${REPO}/blob/main/README.es.md`, 'the README written in Spanish'),
     link(pages.es.about.title, new URL(withBase(ROUTES.es.about), site).href, 'the about page, written in Spanish'),
+    link(pages.es.subscribe.title, new URL(withBase(ROUTES.es.subscribe), site).href, 'how to follow the Spanish blog by RSS, written in Spanish'),
     ...posts.filter(post => post.lang === 'es').map(post => link(post.title, post.url, `${post.date}. ${post.description}`)),
     '',
   ].join('\n')

@@ -9,7 +9,7 @@ import { absolute } from '../seo-pages'
 export const GET: APIRoute = async ({ site }) => {
   const built = new Date().toISOString().slice(0, 10)
   const pairs: { en?: string; es?: string; lastmod: string }[] =
-    (['home', 'about', 'blog'] as const).map(page => ({ en: ROUTES.en[page], es: ROUTES.es[page], lastmod: built }))
+    (['home', 'about', 'blog', 'subscribe'] as const).map(page => ({ en: ROUTES.en[page], es: ROUTES.es[page], lastmod: built }))
   const all = await posts()
   const keys = [...new Set(all.map(post => post.data.translationKey))]
   for (const key of keys) {

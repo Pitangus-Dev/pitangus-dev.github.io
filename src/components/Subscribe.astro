@@ -1,0 +1,79 @@
+---
+// Where the blog's RSS links lead: the feed itself is XML for apps, so people land here first, read what a feed is and
+// take its address. The copy button is handled by the page's one inline script (boot.ts); without it, the address is
+// still there to select.
+import Page from '../layouts/Page.astro'
+import { BRAND, type Locale } from '../i18n/content'
+import { RELEASES_FEED, pages } from '../i18n/pages'
+import { ROUTES, withBase } from '../paths'
+import { absolute, breadcrumbs, ids, siteNodes } from '../seo-pages'
+interface Props { lang: Locale }
+const { lang } = Astro.props
+const b = pages[lang].blog
+const s = pages[lang].subscribe
+const routes = ROUTES[lang]
+const other: Locale = lang === 'es' ? 'en' : 'es'
+const site = Astro.site!
+const page = absolute(routes.subscribe, site)
+const feed = absolute(routes.rss, site)
+const graph = [
+  ...siteNodes(site, lang),
+  {
+    '@type': 'WebPage', '@id': page, url: page, name: s.metaTitle, description: s.description, inLanguage: lang,
+    isPartOf: { '@id': ids(site).website }, about: { '@type': 'Blog', '@id': absolute(routes.blog, site) },
+    breadcrumb: { '@id': `${page}#breadcrumb` },
+  },
+  breadcrumbs(site, page, [[BRAND, routes.home], [b.title, routes.blog], [s.title, routes.subscribe]]),
+]
+---
+<Page lang={lang} title={s.metaTitle} description={s.description} path={routes.subscribe}
+      alternates={{ en: ROUTES.en.subscribe, es: ROUTES.es.subscribe }} graph={graph} current="blog">
+  <article class="wrap page">
+    <nav class="crumbs caption" aria-label={b.breadcrumb}>
+      <a href={withBase(routes.blog)}>{b.title}</a><span aria-hidden="true">/</span><span>{s.title}</span>
+    </nav>
+    <header class="page-head">
+      <h1 class="title">{s.title}</h1>
+      <p class="lead">{s.lead}</p>
+    </header>
+
+    <section class="section" aria-labelledby="address">
+      <h2 id="address" class="h2">{s.feed.title}</h2>
+      <div class="field">
+        <code id="feed-url" class="address" aria-label={s.feed.label}>{feed}</code>
+        <button class="button outline copy" type="button" data-copy="feed-url" data-copied={s.feed.copied}>{s.feed.copy}</button>
+        <span class="visually-hidden" role="status"></span>
+      </div>
+      <p class="note small">{s.feed.note} <a href={withBase(ROUTES[other].subscribe)} hreflang={other}>{s.feed.other}</a>.</p>
+    </section>
+
+    <section class="section" aria-labelledby="how">
+      <h2 id="how" class="h2">{s.how.title}</h2>
+      <dl class="rows">{s.how.items.map(item => <div><dt>{item.term}</dt><dd>{item.text}</dd></div>)}</dl>
+    </section>
+
+    <section class="section" aria-labelledby="releases">
+      <h2 id="releases" class="h2">{s.releases.title}</h2>
+      <p class="prose-width">{s.releases.body}</p>
+      <p class="releases mono small"><a href={RELEASES_FEED}>{RELEASES_FEED}</a></p>
+    </section>
+
+    <p class="back small"><a href={withBase(routes.blog)}>{s.back}</a></p>
+  </article>
+</Page>
+
+<style>
+  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+  .crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
+  .field { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.5rem; max-width: var(--measure); }
+  .address {
+    flex: 1 1 18rem; min-width: 0; display: flex; align-items: center; min-height: 44px; padding: 0.5rem 0.85rem;
+    border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--sunken);
+    font-size: 0.9375rem; line-height: 1.4; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all;
+  }
+  :global(html.no-js) .copy { display: none; }
+  .note { margin-top: 0.75rem; max-width: var(--measure); color: var(--ink-2); }
+  .releases { margin-top: 0.75rem; overflow-wrap: anywhere; }
+  .back { margin-top: 2rem; }
+  .back a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>
