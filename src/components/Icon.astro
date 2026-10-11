@@ -1,0 +1,13 @@
+---
+// The few icons the blog and the about page use, drawn like Phosphor's regular weight (256 grid, 16 stroke, round
+// ends), in the colour of the text beside them. Decorative: the link or button around them carries the name.
+interface Props { name: 'sun' | 'moon' | 'out' | 'rss'; size?: number }
+const { name, size = 16 } = Astro.props
+---
+<svg viewBox="0 0 256 256" width={size} height={size} aria-hidden="true" fill="none" stroke="currentColor" stroke-width="16"
+     stroke-linecap="round" stroke-linejoin="round" class={`icon icon-${name}`}>
+  {name === 'sun' && <><circle cx="128" cy="128" r="56" /><path d="M128 40V16M65.8 65.8 48.8 48.8M40 128H16M65.8 190.2l-17 17M128 216v24M190.2 190.2l17 17M216 128h24M190.2 65.8l17-17" /></>}
+  {name === 'moon' && <path d="M108.1 28.1a96 96 0 0 0 119.8 119.8A96 96 0 1 1 108.1 28.1Z" />}
+  {name === 'out' && <path d="M216 100V40h-60M144 112l72-72M184 144v64a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V80a8 8 0 0 1 8-8h64" />}
+  {name === 'rss' && <><path d="M64 136a56 56 0 0 1 56 56M64 88a104 104 0 0 1 104 104M64 40a152 152 0 0 1 152 152" /><circle cx="68" cy="188" r="10" fill="currentColor" stroke="none" /></>}
+</svg>

@@ -7,6 +7,7 @@ import { BRAND, DOCS, DOCS_ES, REPO } from '../i18n/content'
 import Bug from '../components/Bug.astro'
 import { ROUTES, withBase } from '../paths'
 import { jsonForScript, structuredData } from '../seo'
+import { BOOT } from '../boot'
 import paperTooth from '../assets/paper/paper-tooth.webp'
 import paperCloud from '../assets/paper/paper-cloud.webp'
 import deskTooth from '../assets/paper/desk-tooth.webp'
@@ -31,7 +32,7 @@ const plates = [t.specimens, t.change, t.ledger, t.sources, t.ticket, t.yours, t
 const plateIds = ['specimens', 'change', 'ledger', 'sources', 'ticket', 'yours', 'install', 'faq']
 ---
 <!doctype html>
-<html lang={t.lang} class="no-js">
+<html lang={t.lang} class="no-js" data-notebook>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -77,23 +78,7 @@ const plateIds = ['specimens', 'change', 'ledger', 'sources', 'ticket', 'yours',
     <link rel="preload" as="image" href={paperCloud.src} type="image/webp" />
     <link rel="preload" as="image" href={deskTooth.src} type="image/webp" media="(prefers-color-scheme: dark)" />
     <link rel="preload" as="image" href={deskCloud.src} type="image/webp" media="(prefers-color-scheme: dark)" />
-    <script is:inline>
-      // Before paint: JS is here, and whether this visitor turned motion off (a convenience; it may be unavailable).
-      document.documentElement.classList.replace('no-js', 'js')
-      try {
-        if (localStorage.getItem('pitangus-motion') === 'off') document.documentElement.classList.add('still')
-        // Arriving from the other language, the page turns (a view transition): it must already be complete, not blank
-        // waiting for its entrance, or the turn shows an empty page that then fills in.
-        const turned = sessionStorage.getItem('pitangus-turn') === '1'
-        sessionStorage.removeItem('pitangus-turn')
-        if (!turned && !document.documentElement.classList.contains('still') && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-          document.documentElement.classList.add('pending')
-          setTimeout(() => document.documentElement.classList.remove('pending'), 1500)  // the script never came: show everything
-        }
-        const theme = localStorage.getItem('pitangus-theme')
-        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
-      } catch {}
-    </script>
+    <script is:inline set:html={BOOT} />
   </head>
   <body>
     <a class="skip" href="#content">{t.skip}</a>
