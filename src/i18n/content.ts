@@ -16,7 +16,7 @@ export const CHANGELOG = `${REPO}/blob/main/CHANGELOG.md`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
-export const RELEASE = 'v0.12.2'
+export const RELEASE = 'v0.13.0'
 export const ACTION_STEP = `- uses: Pitangus-Dev/pitangus@${RELEASE}`
 // The published release with its published images: a clone of main could ask for images not released yet.
 export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Pitangus-Dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
@@ -51,7 +51,7 @@ const en = {
     number: '01',
     kicker: 'Field guide',
     title: 'Every bug, catalogued like a specimen.',
-    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Pitangus merges what they find, removes duplicates and files each finding with where it lives and how to fix it.',
+    lead: 'Seven open engines you already trust look at your code, dependencies, secrets, infrastructure and images. Pitangus merges what they find, removes duplicates and files each finding with where it lives, how to fix it in the tool’s own words and the OWASP pages that apply. Pitangus doesn’t invent fixes. Turn on web scans and five more read your verified sites and APIs without attacking them.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
     items: [
       { id: 'CWE-89', name: 'SQL injection', where: 'app/db.py:14', kind: 'Code', note: 'Request input reaches a query built as text.' },
@@ -131,7 +131,7 @@ const en = {
       { title: 'Self-hosted', body: 'One server with Docker and 4 GB of memory. Your code and findings stay with you.' },
       { title: 'Open source', body: 'AGPL-3.0. Read every line, change it, run it without asking.' },
       { title: 'English and Spanish', body: 'Written for each language, not machine-translated. Reports, PR comments and tickets included.' },
-      { title: 'No telemetry', body: 'Nothing phones home. It only reaches out for public advisory data and, if you connect them, GitHub and Jira.' },
+      { title: 'No telemetry', body: 'Nothing phones home. It only reaches out for public advisory data, the domains you verified if you turn on web scans and, if you connect them, GitHub and Jira.' },
     ],
   },
   install: {
@@ -146,7 +146,7 @@ const en = {
     copyAction: 'Copy the workflow step',
     copied: 'Copied',
     docs: 'Read the docs',
-    note: 'Free and open source (AGPL-3.0). It runs on your server: no account, no telemetry.',
+    note: 'Free and open source (AGPL-3.0). It runs on your server: no account, no telemetry. Web scans are optional: set PITANGUS_DAST_ENABLED=1 and run make engines.',
   },
   faq: {
     number: '08',
@@ -156,17 +156,19 @@ const en = {
     // sentence answers the question and names Pitangus.
     items: [
       { q: 'What is Pitangus?',
-        a: `Pitangus is a self-hosted, open-source application security platform for small teams. It scans code, dependencies, secrets, infrastructure as code, CI workflows and container images with seven open-source engines, merges what they find without duplicates, verifies each fix with a later scan and keeps the evidence an auditor can check. It is made in Colombia by Arodium and is in beta (current release ${RELEASE}).` },
+        a: `Pitangus is a self-hosted, open-source application security platform for small teams. It scans code, dependencies, secrets, infrastructure as code, CI workflows and container images with seven open-source engines, can run passive web scans of domains you verify, merges what they find without duplicates, verifies each fix with a later scan and keeps the evidence an auditor can check. It is made in Colombia by Arodium and is in beta (current release ${RELEASE}).` },
       { q: 'Is Pitangus free and open source?',
         a: 'Yes: Pitangus is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only), with no account and no fee. You can use, study, change and run it on your own servers; if you offer a modified version to other people over a network, you must share that version’s source code under the same license. Its SAST rules are MIT-licensed, so other tools can reuse them.' },
       { q: 'What does Pitangus scan?',
-        a: 'Pitangus scans source code with Opengrep and 58 rules of its own for JavaScript/TypeScript, Python, Java, Go, PHP, Ruby and C#; dependencies with Trivy and OSV-Scanner, prioritized with CISA KEV and EPSS; secrets with Gitleaks; infrastructure as code and GitHub Actions workflows with Checkov and zizmor; and container images with Trivy and Grype. Your code is never executed. Findings from other scanners can be imported as SARIF 2.1.0.' },
+        a: 'Pitangus scans source code with Opengrep and 58 rules of its own for JavaScript/TypeScript, Python, Java, Go, PHP, Ruby and C#; dependencies with Trivy and OSV-Scanner, prioritized with CISA KEV and EPSS; secrets with Gitleaks; infrastructure as code and GitHub Actions workflows with Checkov and zizmor; container images with Trivy and Grype; and, when web scans are enabled, verified domains and APIs with ZAP, nuclei (detection-only templates), testssl.sh, katana and httpx. Your code is never executed. Findings from other scanners can be imported as SARIF 2.1.0.' },
+      { q: 'Does Pitangus attack my site?',
+        a: 'No: Pitangus’s web scans are passive, and they are off until you turn them on. They only run on domains you prove you control (a DNS record, a file or a meta tag) and the hosts of the scope you saved, browse them like a visitor and read the responses: no injections, no fuzzing, no form submissions other than a test user’s sign-in, and only GET and HEAD requests to an API. Each tool sends at most 10 requests a second and stops at a hard time limit. Active testing is not part of Pitangus today, and a Pitangus scan is not a pentest.' },
       { q: 'What doesn’t Pitangus do?',
-        a: 'Pitangus does not run or attack your applications (no dynamic testing, DAST), does not follow data flows across files the way CodeQL or a commercial engine like Snyk Code does, and does not tell you whether a vulnerable dependency is actually reachable from your code. For the first two, run ZAP, Nuclei, CodeQL or Semgrep yourself and import their SARIF: imported findings get the same triage, evidence and verified-fix lifecycle as its own. Scanning scales by adding workers, on one machine or several; one worker runs one scan at a time.' },
+        a: 'Pitangus does not attack your applications (its web scans are passive: no active DAST, no pentest), does not follow data flows across files the way CodeQL or a commercial engine like Snyk Code does, and does not tell you whether a vulnerable dependency is actually reachable from your code. For the first two, run an active scanner, CodeQL or Semgrep yourself and import their SARIF: imported findings get the same triage, evidence and verified-fix lifecycle as its own. Scanning scales by adding workers, on one machine or several; one worker runs one scan at a time.' },
       { q: 'How does Pitangus run, and what does it need?',
         a: 'Pitangus runs on your own server with Docker: it needs Docker Engine 24 or later with Compose v2.24 or later, make, git, 4 GB of memory and 8 GB of disk. Installing the published, signed images takes four commands: git clone, cd, make setup PREBUILT=1 and make up. For CI there is an official GitHub Action and the pitangus scan command, which don’t need a running Pitangus server.' },
       { q: 'Does my code leave my server?',
-        a: 'No: with Pitangus your code is downloaded from GitHub to your server, analyzed there and never sent to any service of ours, and there is no telemetry. It only reaches out for public advisory data, for the registries of the images you scan and, if you connect them, for GitHub, Jira and your notification channels. Your dependency list goes to OSV only if you allow it for a scan. AI plays no part in the analysis.' },
+        a: 'No: with Pitangus your code is downloaded from GitHub to your server, analyzed there and never sent to any service of ours, and there is no telemetry. It only reaches out for public advisory data, for the registries of the images you scan, for the domains you verified if you turn on web scans and, if you connect them, for GitHub, Jira and your notification channels. Your dependency list goes to OSV only if you allow it for a scan. AI plays no part in the analysis.' },
       { q: 'What does “verified fix” mean in Pitangus?',
         a: 'In Pitangus a verified fix is one that a later scan proved: the finding was there before, it no longer appears, and the engines that look at it finished. If an engine fails, the scan says so and nothing that engine covers counts as fixed. On a pull request a fix is credited only when both scans finished and the file really changed, and Verify again rescans on demand and answers “Fixed” or “Still present”.' },
       { q: 'What compliance evidence does Pitangus produce?',
@@ -183,8 +185,10 @@ const en = {
       'Secret detection with Gitleaks',
       'Infrastructure as code and GitHub Actions checks with Checkov and zizmor',
       'Container image scanning with Trivy and Grype',
+      'Passive DAST of verified domains and APIs with ZAP, nuclei (detection-only templates), testssl.sh, katana and httpx, with test users and a saved scope',
       'Pull request reviews and a GitHub Action that judge a change only by what it introduces',
       'Fixes verified by a later scan, with an audit trail of every triage decision',
+      'Fix guidance from each tool plus OWASP Cheat Sheet, Top 10, API Security Top 10 and WSTG links',
       'SARIF 2.1.0 import from other scanners and AI reviewers',
       'SBOM (CycloneDX), VEX (OpenVEX), SARIF and PDF audit evidence for SOC 2, ISO/IEC 27001 and other frameworks',
       'Jira issues without duplicates',
@@ -245,7 +249,7 @@ const es: typeof en = {
     number: '01',
     kicker: 'Guía de campo',
     title: 'Cada bug, catalogado como un espécimen.',
-    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Pitangus junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive y cómo corregirlo.',
+    lead: 'Siete motores abiertos en los que ya confías revisan tu código, dependencias, secretos, infraestructura e imágenes. Pitangus junta lo que encuentran, quita los duplicados y archiva cada hallazgo con dónde vive, cómo corregirlo en palabras de la propia herramienta y las páginas de OWASP que aplican. Pitangus no inventa correcciones. Si activas los análisis web, cinco más revisan tus sitios y APIs verificados sin atacarlos.',
     engines: 'Opengrep · Gitleaks · Trivy · OSV-Scanner · Grype · Checkov · zizmor',
     items: [
       { id: 'CWE-89', name: 'Inyección SQL', where: 'app/db.py:14', kind: 'Código', note: 'La entrada de la petición llega a una consulta armada con texto.' },
@@ -325,7 +329,7 @@ const es: typeof en = {
       { title: 'Autoalojado', body: 'Un servidor con Docker y 4 GB de memoria. Tu código y tus hallazgos se quedan contigo.' },
       { title: 'Código abierto', body: 'AGPL-3.0. Lee cada línea, cámbiala y úsala sin pedir permiso.' },
       { title: 'Español e inglés', body: 'Escrito para cada idioma, no traducido a máquina. Informes, comentarios de PR e incidencias incluidos.' },
-      { title: 'Sin telemetría', body: 'No llama a casa. Solo sale a buscar avisos públicos y, si los conectas, a GitHub y Jira.' },
+      { title: 'Sin telemetría', body: 'No llama a casa. Solo sale a buscar avisos públicos, a los dominios que verificaste si activas los análisis web y, si los conectas, a GitHub y Jira.' },
     ],
   },
   install: {
@@ -340,7 +344,7 @@ const es: typeof en = {
     copyAction: 'Copiar el paso del workflow',
     copied: 'Copiado',
     docs: 'Leer la documentación',
-    note: 'Libre y de código abierto (AGPL-3.0). Corre en tu servidor: sin cuenta y sin telemetría.',
+    note: 'Libre y de código abierto (AGPL-3.0). Corre en tu servidor: sin cuenta y sin telemetría. Los análisis web son opcionales: define PITANGUS_DAST_ENABLED=1 y corre make engines.',
   },
   faq: {
     number: '08',
@@ -348,17 +352,19 @@ const es: typeof en = {
     title: 'Lo que preguntan antes de instalarlo.',
     items: [
       { q: '¿Qué es Pitangus?',
-        a: `Pitangus es una plataforma de seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños. Analiza código, dependencias, secretos, infraestructura como código, workflows de CI e imágenes de contenedor con siete motores abiertos, junta lo que encuentran sin duplicados, verifica cada corrección con un análisis posterior y guarda la evidencia que un auditor puede comprobar. La hace Arodium en Colombia y está en beta (versión actual ${RELEASE}).` },
+        a: `Pitangus es una plataforma de seguridad de aplicaciones autoalojada y de código abierto para equipos pequeños. Analiza código, dependencias, secretos, infraestructura como código, workflows de CI e imágenes de contenedor con siete motores abiertos, puede hacer análisis web pasivos de los dominios que verificas, junta lo que encuentran sin duplicados, verifica cada corrección con un análisis posterior y guarda la evidencia que un auditor puede comprobar. La hace Arodium en Colombia y está en beta (versión actual ${RELEASE}).` },
       { q: '¿Pitangus es gratis y de código abierto?',
         a: 'Sí: Pitangus es software libre bajo la GNU Affero General Public License v3.0 (AGPL-3.0-only), sin cuenta y sin pagar nada. Puedes usarlo, estudiarlo, cambiarlo y correrlo en tus servidores; si ofreces una versión modificada a otras personas a través de la red, tienes que compartir el código de esa versión con la misma licencia. Sus reglas SAST tienen licencia MIT, así que otras herramientas pueden reutilizarlas.' },
       { q: '¿Qué analiza Pitangus?',
-        a: 'Pitangus analiza el código fuente con Opengrep y 58 reglas propias para JavaScript/TypeScript, Python, Java, Go, PHP, Ruby y C#; las dependencias con Trivy y OSV-Scanner, priorizadas con CISA KEV y EPSS; los secretos con Gitleaks; la infraestructura como código y los workflows de GitHub Actions con Checkov y zizmor; y las imágenes de contenedor con Trivy y Grype. Tu código nunca se ejecuta. Los hallazgos de otros escáneres se pueden importar en SARIF 2.1.0.' },
+        a: 'Pitangus analiza el código fuente con Opengrep y 58 reglas propias para JavaScript/TypeScript, Python, Java, Go, PHP, Ruby y C#; las dependencias con Trivy y OSV-Scanner, priorizadas con CISA KEV y EPSS; los secretos con Gitleaks; la infraestructura como código y los workflows de GitHub Actions con Checkov y zizmor; las imágenes de contenedor con Trivy y Grype; y, si activas los análisis web, los dominios y APIs verificados con ZAP, nuclei (plantillas solo de detección), testssl.sh, katana y httpx. Tu código nunca se ejecuta. Los hallazgos de otros escáneres se pueden importar en SARIF 2.1.0.' },
+      { q: '¿Pitangus ataca mi sitio?',
+        a: 'No: los análisis web de Pitangus son pasivos y están apagados hasta que los activas. Solo corren en dominios que demuestras que controlas (con un registro DNS, un archivo o una etiqueta meta) y en los hosts del alcance que guardaste, los recorren como un visitante y leen las respuestas: sin inyecciones, sin fuzzing, sin enviar formularios salvo el inicio de sesión de un usuario de prueba, y con solo peticiones GET y HEAD a una API. Cada herramienta envía como mucho 10 peticiones por segundo y se detiene en un tiempo máximo estricto. Las pruebas activas no son parte de Pitangus hoy, y un análisis de Pitangus no es un pentest.' },
       { q: '¿Qué no hace Pitangus?',
-        a: 'Pitangus no ejecuta ni ataca tus aplicaciones (no hace pruebas dinámicas, DAST), no sigue el flujo de datos entre archivos como lo hacen CodeQL o un motor comercial como Snyk Code, y no te dice si una dependencia vulnerable es alcanzable de verdad desde tu código. Para lo primero y lo segundo, corre ZAP, Nuclei, CodeQL o Semgrep por tu cuenta e importa su SARIF: los hallazgos importados tienen el mismo triage, la misma evidencia y el mismo ciclo de corrección verificada que los propios. El análisis escala añadiendo workers, en una máquina o en varias; un worker corre un análisis a la vez.' },
+        a: 'Pitangus no ataca tus aplicaciones (sus análisis web son pasivos: no hace DAST activo ni pentest), no sigue el flujo de datos entre archivos como lo hacen CodeQL o un motor comercial como Snyk Code, y no te dice si una dependencia vulnerable es alcanzable de verdad desde tu código. Para lo primero y lo segundo, corre por tu cuenta un escáner activo, CodeQL o Semgrep e importa su SARIF: los hallazgos importados tienen el mismo triage, la misma evidencia y el mismo ciclo de corrección verificada que los propios. El análisis escala añadiendo workers, en una máquina o en varias; un worker corre un análisis a la vez.' },
       { q: '¿Cómo se instala Pitangus y qué necesita?',
         a: 'Pitangus corre en tu propio servidor con Docker: necesita Docker Engine 24 o posterior con Compose v2.24 o posterior, make, git, 4 GB de memoria y 8 GB de disco. Instalar las imágenes publicadas y firmadas toma cuatro comandos: git clone, cd, make setup PREBUILT=1 y make up. Para CI hay una GitHub Action oficial y el comando pitangus scan, que no necesitan un servidor de Pitangus en marcha.' },
       { q: '¿Mi código sale de mi servidor?',
-        a: 'No: con Pitangus tu código se descarga de GitHub a tu servidor, se analiza ahí y nunca se envía a ningún servicio nuestro, y no hay telemetría. Solo sale a buscar avisos de seguridad públicos, a los registros de las imágenes que analizas y, si los conectas, a GitHub, Jira y tus canales de notificación. Tu lista de dependencias va a OSV solo si lo permites en un análisis. La IA no participa en el análisis.' },
+        a: 'No: con Pitangus tu código se descarga de GitHub a tu servidor, se analiza ahí y nunca se envía a ningún servicio nuestro, y no hay telemetría. Solo sale a buscar avisos de seguridad públicos, a los registros de las imágenes que analizas, a los dominios que verificaste si activas los análisis web y, si los conectas, a GitHub, Jira y tus canales de notificación. Tu lista de dependencias va a OSV solo si lo permites en un análisis. La IA no participa en el análisis.' },
       { q: '¿Qué quiere decir «corrección verificada» en Pitangus?',
         a: 'En Pitangus una corrección verificada es una que un análisis posterior demostró: el hallazgo estaba, ya no aparece y los motores que lo miran terminaron. Si un motor falla, el análisis lo dice y nada de lo que cubre ese motor cuenta como corregido. En una pull request, la corrección solo se atribuye si los dos análisis terminaron y el archivo cambió de verdad, y «Reverificar» vuelve a analizar cuando quieras y responde «Corregido» o «Sigue presente».' },
       { q: '¿Qué evidencia de cumplimiento genera Pitangus?',
@@ -374,8 +380,10 @@ const es: typeof en = {
       'Detección de secretos con Gitleaks',
       'Revisión de infraestructura como código y de GitHub Actions con Checkov y zizmor',
       'Análisis de imágenes de contenedor con Trivy y Grype',
+      'DAST pasivo de dominios y APIs verificados con ZAP, nuclei (plantillas solo de detección), testssl.sh, katana y httpx, con usuarios de prueba y alcance guardado',
       'Revisión de pull requests y una GitHub Action que juzgan un cambio solo por lo que introduce',
       'Correcciones verificadas por un análisis posterior, con el rastro de cada decisión de triage',
+      'Guía de corrección de cada herramienta más enlaces a OWASP Cheat Sheet, Top 10, API Security Top 10 y WSTG',
       'Importación SARIF 2.1.0 de otros escáneres y revisores con IA',
       'SBOM (CycloneDX), VEX (OpenVEX), SARIF y evidencia de auditoría en PDF para SOC 2, ISO/IEC 27001 y otros marcos',
       'Incidencias de Jira sin duplicados',
