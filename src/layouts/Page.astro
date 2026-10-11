@@ -127,15 +127,6 @@ const marks = `--mark-day: url(${withBase('/logo.svg')}); --mark-night: url(${wi
         <p class="caption">© {new Date().getFullYear()} <a href={STEWARD.url}>{STEWARD.name}</a></p>
       </div>
     </footer>
-    <script>
-      // The theme toggle, shared with the landing (the same remembered choice). Nothing else runs on these pages.
-      const root = document.documentElement
-      document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
-        const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
-        root.dataset.theme = dark ? 'light' : 'dark'
-        try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
-      })
-    </script>
   </body>
 </html>
 

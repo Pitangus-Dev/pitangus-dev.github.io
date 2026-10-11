@@ -33,7 +33,6 @@ export function start() {
   }))
   wireCopyButtons()
   wireMotionToggle()
-  wireThemeToggle()
   wireIndex()
   if (!landing) { root.classList.remove('pending'); return }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
@@ -682,16 +681,7 @@ function wireMotionToggle() {
   })
 }
 
-// Day or night notebook: follows the system until the visitor chooses (remembered per browser).
-function wireThemeToggle() {
-  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')
-  if (!button) return
-  button.addEventListener('click', () => {
-    const night = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
-    root.dataset.theme = night ? 'light' : 'dark'
-    try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
-  })
-}
+// Day or night notebook: the theme button is handled by the inline script in the head (src/boot.ts), on every page.
 
 // The index slip (phones and tablets) is a native <details>: it closes after a choice, on Escape (focus back on its
 // toggle) and on a click or tap anywhere else.
