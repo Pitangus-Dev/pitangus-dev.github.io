@@ -1,0 +1,72 @@
+---
+import Page from '../layouts/Page.astro'
+import Icon from './Icon.astro'
+import { BRAND, type Locale } from '../i18n/content'
+import { pages, type Category } from '../i18n/pages'
+import { ROUTES, withBase } from '../paths'
+import { dateLabel, modified, postPath, posts } from '../blog'
+import { absolute, breadcrumbs, ids, readingMinutes, siteNodes } from '../seo-pages'
+interface Props { lang: Locale }
+const { lang } = Astro.props
+const b = pages[lang].blog
+const routes = ROUTES[lang]
+const site = Astro.site!
+const page = absolute(routes.blog, site)
+const list = await posts(lang)
+const categories: Category[] = ['news', 'security']
+const graph = [
+  ...siteNodes(site, lang),
+  {
+    '@type': 'Blog', '@id': page, url: page, name: b.metaTitle, description: b.description, inLanguage: lang,
+    isPartOf: { '@id': ids(site).website }, publisher: { '@id': ids(site).org }, breadcrumb: { '@id': `${page}#breadcrumb` },
+    blogPost: list.map(post => ({ '@type': 'BlogPosting', '@id': absolute(postPath(post), site), url: absolute(postPath(post), site),
+      headline: post.data.title, datePublished: post.data.published.toISOString(), dateModified: modified(post).toISOString() })),
+  },
+  breadcrumbs(site, page, [[BRAND, routes.home], [b.title, routes.blog]]),
+]
+---
+<Page lang={lang} title={b.metaTitle} description={b.description} path={routes.blog}
+      alternates={{ en: ROUTES.en.blog, es: ROUTES.es.blog }} graph={graph} current="blog">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1 class="title">{b.title}</h1>
+      <p class="lead">{b.lead}</p>
+      <p class="small"><a class="feed" href={withBase(routes.rss)}><Icon name="rss" size={16} />{b.subscribe}</a></p>
+    </header>
+    {categories.map(category => {
+      const items = list.filter(post => post.data.category === category)
+      return (
+        <section class="section" aria-labelledby={`category-${category}`}>
+          <h2 id={`category-${category}`} class="h2">{b.categories[category]}</h2>
+          <p class="caption category-note">{b.categoryNotes[category]}</p>
+          {items.length === 0
+            ? <p class="empty muted">{b.empty}</p>
+            : <ol class="posts" role="list">
+                {items.map(post => (
+                  <li>
+                    <article>
+                      <h3 class="h3"><a href={withBase(postPath(post))}>{post.data.title}</a></h3>
+                      <p class="caption"><time datetime={post.data.published.toISOString().slice(0, 10)}>{dateLabel(post.data.published, lang)}</time> · {b.readingTime(readingMinutes(post.body ?? '', lang).minutes)}</p>
+                      <p class="summary">{post.data.description}</p>
+                      {post.data.tags.length > 0 && <ul class="badges" aria-label={b.tags}>{post.data.tags.map(tag => <li class="badge">{tag}</li>)}</ul>}
+                    </article>
+                  </li>
+                ))}
+              </ol>}
+        </section>
+      )
+    })}
+  </div>
+</Page>
+
+<style>
+  .feed { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; }
+  .category-note { margin: -0.5rem 0 1rem; }
+  .posts { list-style: none; margin: 0; padding: 0; }
+  .posts > li { padding: 1.25rem 0; border-top: 1px solid var(--line); }
+  .posts article { display: grid; gap: 0.4rem; max-width: var(--measure); }
+  .posts h3 a { text-decoration: none; }
+  .posts h3 a:hover { text-decoration: underline; }
+  .summary { color: var(--ink-2); }
+  .empty { padding: 1.25rem 0; border-top: 1px solid var(--line); }
+</style>

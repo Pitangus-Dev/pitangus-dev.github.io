@@ -1,0 +1,72 @@
+---
+import { render } from 'astro:content'
+import Page from '../layouts/Page.astro'
+import { BRAND, CHANGELOG } from '../i18n/content'
+import { pages } from '../i18n/pages'
+import { ROUTES, withBase } from '../paths'
+import { dateLabel, modified, postPath, translations, type Post } from '../blog'
+import { absolute, breadcrumbs, ids, readingMinutes, siteNodes } from '../seo-pages'
+interface Props { post: Post }
+const { post } = Astro.props
+const { lang, title, description, category, tags, published, image } = post.data
+const b = pages[lang].blog
+const routes = ROUTES[lang]
+const site = Astro.site!
+const path = postPath(post)
+const page = absolute(path, site)
+const alternates = await translations(post)
+const other = lang === 'es' ? 'en' : 'es'
+const { Content } = await render(post)
+const reading = readingMinutes(post.body ?? '', lang)
+const updated = modified(post)
+const changed = updated.getTime() !== published.getTime()
+const ogImage = image ?? { src: `/og-${lang}.jpg`, alt: title, width: 1200, height: 630 }
+const graph = [
+  ...siteNodes(site, lang),
+  {
+    '@type': 'BlogPosting', '@id': page, url: page, mainEntityOfPage: page, headline: title, description, inLanguage: lang,
+    datePublished: published.toISOString(), dateModified: updated.toISOString(),
+    author: { '@id': ids(site).org }, publisher: { '@id': ids(site).org },
+    image: { '@type': 'ImageObject', url: absolute(ogImage.src, site), width: ogImage.width, height: ogImage.height },
+    articleSection: b.categories[category], keywords: tags, wordCount: reading.words,
+    isPartOf: { '@type': 'Blog', '@id': absolute(routes.blog, site) }, about: { '@id': ids(site).software },
+    breadcrumb: { '@id': `${page}#breadcrumb` },
+    ...(alternates[other] ? { workTranslation: { '@id': absolute(alternates[other]!, site) } } : {}),
+  },
+  breadcrumbs(site, page, [[BRAND, routes.home], [b.title, routes.blog], [title, path]]),
+]
+---
+<Page lang={lang} title={`${title} · ${BRAND}`} description={description} path={path} alternates={alternates} graph={graph}
+      image={image ?? undefined} current="blog"
+      article={{ published, modified: updated, section: b.categories[category], tags }}>
+  <article class="wrap page">
+    <nav class="crumbs caption" aria-label={b.breadcrumb}>
+      <a href={withBase(routes.blog)}>{b.title}</a><span aria-hidden="true">/</span><span>{b.categories[category]}</span>
+    </nav>
+    <header class="page-head">
+      <h1 class="title">{title}</h1>
+      <p class="lead">{description}</p>
+      <p class="caption meta">
+        <span>{b.published} <time datetime={published.toISOString().slice(0, 10)}>{dateLabel(published, lang)}</time></span>
+        {changed && <span>{b.updated} <time datetime={updated.toISOString().slice(0, 10)}>{dateLabel(updated, lang)}</time></span>}
+        <span>{b.readingTime(reading.minutes)}</span>
+        <span>{BRAND}</span>
+      </p>
+      {tags.length > 0 && <ul class="badges" aria-label={b.tags}>{tags.map(tag => <li class="badge">{tag}</li>)}</ul>}
+    </header>
+    <div class="prose"><Content /></div>
+    <footer class="post-foot small">
+      {alternates[other] && <a href={withBase(alternates[other]!)} hreflang={other} lang={other}>{b.otherLanguage}</a>}
+      <a href={CHANGELOG}>{b.changelog}</a>
+      <a href={withBase(routes.blog)}>{b.title}</a>
+    </footer>
+  </article>
+</Page>
+
+<style>
+  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+  .crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+  .post-foot { display: flex; flex-wrap: wrap; gap: 0 1.5rem; max-width: var(--measure); margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .post-foot a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>
