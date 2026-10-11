@@ -46,6 +46,7 @@ const plateIds = ['specimens', 'change', 'ledger', 'sources', 'ticket', 'yours',
       <!-- Data, not code: browsers don't run it, so the CSP needs no hash for it (integrations/security-headers.mjs). -->
       <script type="application/ld+json" is:inline set:html={jsonForScript(structuredData(t, Astro.site!))} />
     </>}
+    <link rel="alternate" type="application/rss+xml" title={t.lang === 'es' ? 'Blog de Pitangus' : 'Pitangus blog'} href={new URL(withBase(routes.rss), Astro.site)} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#fbf5e6" media="(prefers-color-scheme: light)" />
