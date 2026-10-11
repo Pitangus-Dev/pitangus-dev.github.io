@@ -33,11 +33,17 @@ export function start() {
   }))
   wireCopyButtons()
   wireMotionToggle()
-  wireThemeToggle()
+  wireIndex()
   if (!landing) { root.classList.remove('pending'); return }
-  const wanted = !root.classList.contains('still') && !matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  const wanted = !root.classList.contains('still') && !reduced.matches
   if (wanted) void run()
   else settle()
+  // The visitor may ask for less motion with the page open: everything stops (and comes back if they change their mind).
+  reduced.addEventListener('change', () => {
+    if (reduced.matches) { teardown?.(); teardown = null; settle() }
+    else if (!root.classList.contains('still')) void run()
+  })
 }
 
 // The final state, without animation: specimens caught, nothing hidden.
@@ -675,13 +681,16 @@ function wireMotionToggle() {
   })
 }
 
-// Day or night notebook: follows the system until the visitor chooses (remembered per browser).
-function wireThemeToggle() {
-  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')
-  if (!button) return
-  button.addEventListener('click', () => {
-    const night = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
-    root.dataset.theme = night ? 'light' : 'dark'
-    try { localStorage.setItem('pitangus-theme', root.dataset.theme) } catch { /* a convenience only */ }
+// Day or night notebook: the theme button is handled by the inline script in the head (src/boot.ts), on every page.
+
+// The index slip (phones and tablets) is a native <details>: it closes after a choice, on Escape (focus back on its
+// toggle) and on a click or tap anywhere else.
+function wireIndex() {
+  const index = document.querySelector<HTMLDetailsElement>('[data-index]')
+  if (!index) return
+  index.addEventListener('click', event => { if ((event.target as Element).closest('a')) index.open = false })
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && index.open) { index.open = false; index.querySelector('summary')?.focus() }
   })
+  document.addEventListener('click', event => { if (index.open && !index.contains(event.target as Node)) index.open = false })
 }

@@ -58,8 +58,39 @@ export default function securityHeaders() {
           '',
         ].join('\n')
         await writeFile(join(root, '_headers'), headers)
-        logger.info(`_headers written (${hashes.size} inline script hash${hashes.size === 1 ? '' : 'es'} in the CSP)`)
+        await check(root, csp)
+        logger.info(`_headers written (${hashes.size} inline script hash${hashes.size === 1 ? '' : 'es'} in the CSP); every page checked against it`)
       },
     },
   }
+}
+
+// The build fails if any page would break the CSP it ships with (or need it loosened): an inline script whose hash is
+// missing, a script, stylesheet, font or image from another host, an inline event handler or a javascript: URL.
+const ALLOWED_SCRIPT_HOSTS = ['https://static.cloudflareinsights.com']
+async function check(root, csp) {
+  const allowed = new Set(csp.match(/'sha256-[^']+'/g))
+  const problems = []
+  const external = url => /^(https?:)?\/\//i.test(url)
+  for await (const page of pages(root)) {
+    const html = await readFile(page, 'utf8')
+    const name = page.slice(root.length)
+    for (const [, attributes = '', body] of html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
+      const src = attributes.match(/\ssrc="([^"]*)"/)?.[1]
+      if (src !== undefined) {
+        if (external(src) && !ALLOWED_SCRIPT_HOSTS.some(host => src.startsWith(host))) problems.push(`${name}: script from another host: ${src}`)
+        continue
+      }
+      if (/type="application\/(ld\+)?json"/.test(attributes)) continue
+      const hash = `'sha256-${createHash('sha256').update(body).digest('base64')}'`
+      if (!allowed.has(hash)) problems.push(`${name}: inline script not covered by the CSP (${hash})`)
+    }
+    for (const [tag, url] of html.matchAll(/<(?:link|img|source|iframe|object|embed)\b[^>]*\s(?:href|src|srcset)="([^"]*)"/g)) {
+      if (!external(url) || /^<link\b/.test(tag) && /\srel="(canonical|alternate)"/.test(tag)) continue
+      problems.push(`${name}: resource from another host: ${url}`)
+    }
+    for (const [handler] of html.matchAll(/<[a-z][^>]*\son[a-z]+="[^"]*"/gi)) problems.push(`${name}: inline event handler: ${handler.slice(0, 80)}`)
+    if (/\shref="javascript:/i.test(html)) problems.push(`${name}: javascript: URL`)
+  }
+  if (problems.length) throw new Error(`Content-Security-Policy:\n${problems.join('\n')}`)
 }

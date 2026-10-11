@@ -3,7 +3,8 @@
 // say what the page doesn't.
 import type { Content } from './i18n/content'
 import { BRAND, CHANGELOG, DOCS, INSTALL, LICENSE, ORG, RELEASE, REPO, STEWARD, content } from './i18n/content'
-import { withBase } from './paths'
+import { ROUTES, withBase } from './paths'
+import { pages } from './i18n/pages'
 
 const home = (lang: Content['lang']) => withBase(lang === 'es' ? '/es/' : '/')
 export const pageUrl = (t: Content, site: URL, hash = '') => new URL(`${home(t.lang)}${hash}`, site).href
@@ -45,8 +46,11 @@ export function structuredData(t: Content, site: URL) {
 // Inside a <script>, "</" would end it early: escape "<" (still valid JSON).
 export const jsonForScript = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c')
 
-// /llms.txt (llmstxt.org): what Pitangus is, then links to the page's sections and the product's documents.
-export function llmsIndex(site: URL) {
+// A blog post as /llms.txt and /llms-full.txt list it (built by pages/llms*.txt.ts from the content collection).
+export interface LlmsPost { lang: Content['lang']; title: string; description: string; url: string; date: string; body: string }
+
+// /llms.txt (llmstxt.org): what Pitangus is, then links to the page's sections, the other pages and the product's documents.
+export function llmsIndex(site: URL, posts: LlmsPost[] = []) {
   const t = content.en
   const link = (label: string, href: string, note: string) => `- [${label}](${href}): ${note}`
   const sections: [string, string, string][] = [
@@ -80,19 +84,27 @@ export function llmsIndex(site: URL) {
     link('Terminal and CI', `${DOCS}cli/`, 'pitangus scan, SARIF output, exit codes and the GitHub Action'),
     link('Changelog', CHANGELOG, 'notable changes in each release'),
     link('License', LICENSE.file, `${LICENSE.spdx}`),
+    '',
+    '## About and blog',
+    '',
+    link(pages.en.about.title, new URL(withBase(ROUTES.en.about), site).href, pages.en.about.description),
+    link(pages.en.blog.title, new URL(withBase(ROUTES.en.blog), site).href, `${pages.en.blog.description} RSS: ${new URL(withBase(ROUTES.en.rss), site).href}`),
+    ...posts.filter(post => post.lang === 'en').map(post => link(post.title, post.url, `${post.date}. ${post.description}`)),
     link(`Release ${RELEASE}`, `${REPO}/releases/tag/${RELEASE}`, 'the release the landing installs'),
     '',
     '## Optional',
     '',
-    link('Full text', new URL(withBase('/llms-full.txt'), site).href, 'the whole landing in Markdown, in English and Spanish'),
+    link('Full text', new URL(withBase('/llms-full.txt'), site).href, 'the whole site (landing, about page and blog posts) in Markdown, in English and Spanish'),
     link('Español', pageUrl(content.es, site), content.en.seo.otherNote),
     link('README en español', `${REPO}/blob/main/README.es.md`, 'the README written in Spanish'),
+    link(pages.es.about.title, new URL(withBase(ROUTES.es.about), site).href, 'the about page, written in Spanish'),
+    ...posts.filter(post => post.lang === 'es').map(post => link(post.title, post.url, `${post.date}. ${post.description}`)),
     '',
   ].join('\n')
 }
 
-// /llms-full.txt: every word of the landing, as Markdown, one language after the other.
-export function llmsFull(site: URL) {
+// /llms-full.txt: every word of the landing, the about page and the blog, as Markdown, one language after the other.
+export function llmsFull(site: URL, posts: LlmsPost[] = []) {
   const page = (t: Content) => {
     const h = t.hero
     const section = (kicker: string, title: string, ...body: string[]) => [`## ${kicker}: ${title}`, '', ...body.flatMap(part => [part, ''])]
@@ -106,7 +118,7 @@ export function llmsFull(site: URL) {
       '',
       h.facts.map(fact => `- ${fact}`).join('\n'),
       '',
-      ...section(t.specimens.kicker, t.specimens.title, t.specimens.lead, `${t.specimens.engines}`,
+      ...section(t.specimens.kicker, t.specimens.title, `${t.specimens.lead} ${t.notes.fixes}.`, `${t.specimens.engines}`,
         t.specimens.items.map(item => `- ${item.kind} · ${item.id} · ${item.name} (${item.where}): ${item.note}`).join('\n')),
       ...section(t.change.kicker, t.change.title, t.change.lead, '```\n$ ' + t.change.command + '\n' + t.change.output.map(line => line.text).join('\n') + '\n```',
         `${t.change.action}. ${t.change.actionNote}`, '```yaml\n' + t.install.action + '\n```'),
@@ -121,5 +133,20 @@ export function llmsFull(site: URL) {
       '',
     ].join('\n')
   }
-  return `${page(content.en)}\n---\n\n${page(content.es)}`
+  const about = (t: Content) => {
+    const a = pages[t.lang].about
+    const rows = (items: { term: string; text: string }[]) => items.map(item => `- **${item.term}.** ${item.text}`).join('\n')
+    return [
+      `# ${a.title}`, '', `URL: ${new URL(withBase(ROUTES[t.lang].about), site).href}`, '', a.lead, '',
+      `## ${a.why.title}`, '', ...a.why.body.flatMap(text => [text, '']),
+      `## ${a.who.title}`, '', ...a.who.body.flatMap(text => [text, '']),
+      `## ${a.principles.title}`, '', rows(a.principles.items), '',
+      `## ${a.contribute.title}`, '', rows(a.contribute.items), '',
+      `## ${a.contact.title}`, '', a.contact.body, '',
+    ].join('\n')
+  }
+  const blog = (t: Content) => posts.filter(post => post.lang === t.lang)
+    .map(post => [`# ${post.title}`, '', `URL: ${post.url}`, `Published: ${post.date}`, '', post.description, '', post.body.trim(), ''].join('\n'))
+  const language = (t: Content) => [page(t), about(t), ...blog(t)].join('\n---\n\n')
+  return `${language(content.en)}\n---\n\n${language(content.es)}`
 }

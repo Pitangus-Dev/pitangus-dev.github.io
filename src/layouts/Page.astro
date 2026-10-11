@@ -1,0 +1,170 @@
+---
+// The pages beside the landing (blog, about), in the product's instrument register (styles/instrument.css). Same
+// brand as the landing: its logo, the kiskadee's colours, the same links in the header and the footer, and the theme
+// the visitor chose there. Each page passes its own title, description, addresses in both languages and structured
+// data; the layout writes the head (canonical, hreflang, Open Graph, the RSS feed) around them.
+import { Font } from 'astro:assets'
+import '../styles/instrument.css'
+import { BRAND, DOCS, DOCS_ES, REPO, STEWARD, content, type Locale } from '../i18n/content'
+import { pages } from '../i18n/pages'
+import Icon from '../components/Icon.astro'
+import { ROUTES, withBase } from '../paths'
+import { jsonForScript } from '../seo'
+import { BOOT } from '../boot'
+
+interface Article { published: Date; modified: Date; section: string; tags: string[] }
+interface Props {
+  lang: Locale
+  title: string
+  description: string
+  path: string
+  // The same page in each language, when it exists in both (hreflang and the language link).
+  alternates: Partial<Record<Locale, string>>
+  graph: object[]
+  article?: Article
+  image?: { src: string; alt: string; width: number; height: number }
+  current?: 'blog' | 'about'
+}
+const { lang, title, description, path, alternates, graph, article, image, current } = Astro.props
+const t = content[lang]
+const p = pages[lang]
+const routes = ROUTES[lang]
+const other: Locale = lang === 'es' ? 'en' : 'es'
+const url = (route: string) => new URL(withBase(route), Astro.site).href
+const canonical = url(path)
+const otherPath = alternates[other] ?? ROUTES[other].home
+const locale: Record<Locale, string> = { en: 'en_US', es: 'es_LA' }
+const og = image ?? { src: `/og-${lang}.jpg`, alt: `${BRAND} · ${t.hero.title.join(' ')}`, width: 1200, height: 630 }
+const docs = lang === 'es' ? DOCS_ES : DOCS
+const marks = `--mark-day: url(${withBase('/logo.svg')}); --mark-night: url(${withBase('/icon-stone.svg')})`
+---
+<!doctype html>
+<html lang={lang} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates.en && <link rel="alternate" hreflang="en" href={url(alternates.en)} />}
+    {alternates.es && <link rel="alternate" hreflang="es" href={url(alternates.es)} />}
+    {alternates.en && <link rel="alternate" hreflang="x-default" href={url(alternates.en)} />}
+    <link rel="alternate" type="application/rss+xml" title={p.blog.feedTitle} href={url(routes.rss)} />
+    <!-- Data, not code: browsers don't run it, so the CSP needs no hash for it (integrations/security-headers.mjs). -->
+    <script type="application/ld+json" is:inline set:html={jsonForScript({ '@context': 'https://schema.org', '@graph': graph })} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F5F6F7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={BRAND} />
+    <meta property="og:locale" content={locale[lang]} />
+    {alternates[other] && <meta property="og:locale:alternate" content={locale[other]} />}
+    <meta property="og:image" content={url(og.src)} />
+    <meta property="og:image:width" content={String(og.width)} />
+    <meta property="og:image:height" content={String(og.height)} />
+    <meta property="og:image:alt" content={og.alt} />
+    {article && <>
+      <meta property="article:published_time" content={article.published.toISOString()} />
+      <meta property="article:modified_time" content={article.modified.toISOString()} />
+      <meta property="article:section" content={article.section} />
+      {article.tags.map(tag => <meta property="article:tag" content={tag} />)}
+    </>}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={url(og.src)} />
+    <meta name="twitter:image:alt" content={og.alt} />
+    <Font cssVariable="--font-plex" preload />
+    <Font cssVariable="--font-plex-mono" />
+    <script is:inline set:html={BOOT} />
+  </head>
+  <body>
+    <a class="skip" href="#content">{t.skip}</a>
+    <header class="top">
+      <div class="wrap top-row">
+        <a class="brand" href={withBase(routes.home)}>
+          <!-- The logo on light grounds; on dark ones, the icon on its stone tile (the logo's ink outline would vanish).
+               A background, not two <img>: only the one the theme shows is downloaded. -->
+          <span class="brand-mark" aria-hidden="true" style={marks}></span>
+          <span>{BRAND}</span>
+        </a>
+        <nav class="nav" aria-label={p.chrome.menu}>
+          <a href={withBase(routes.home)}>{p.chrome.home}</a>
+          <a href={withBase(routes.blog)} aria-current={current === 'blog' ? 'page' : undefined}>{t.nav.blog}</a>
+          <a href={withBase(routes.about)} aria-current={current === 'about' ? 'page' : undefined}>{t.nav.about}</a>
+          <a href={docs}>{t.nav.docs}<Icon name="out" size={14} /></a>
+          <a href={REPO}>{t.nav.code}<Icon name="out" size={14} /></a>
+        </nav>
+        <div class="tools">
+          <a class="lang" href={withBase(otherPath)} hreflang={other} lang={other}>{t.nav.other}</a>
+          <button class="theme" type="button" data-theme-toggle aria-label={p.chrome.theme} title={p.chrome.theme}>
+            <span class="to-dark"><Icon name="moon" size={20} /></span><span class="to-light"><Icon name="sun" size={20} /></span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="content">
+      <slot />
+    </main>
+    <footer class="foot">
+      <div class="wrap foot-grid">
+        <div class="foot-brand">
+          <span class="brand-mark" aria-hidden="true" style={marks}></span>
+          <p class="small muted">{t.footer.made} {t.footer.license}</p>
+        </div>
+        <ul class="foot-links small" role="list">
+          <li><a href={withBase(routes.blog)}>{t.nav.blog}</a></li>
+          <li><a href={withBase(routes.about)}>{t.nav.about}</a></li>
+          <li><a href={docs}>{t.nav.docs}</a></li>
+          <li><a href={REPO}>{t.nav.code}</a></li>
+          {t.footer.links.slice(2).map(([label, href]) => <li><a href={href}>{label}</a></li>)}
+          <li><a href={withBase(routes.rss)}>{p.chrome.rss}</a></li>
+        </ul>
+        <p class="caption">© {new Date().getFullYear()} <a href={STEWARD.url}>{STEWARD.name}</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .top { border-bottom: 1px solid var(--line); background: var(--bg); }
+  .top-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.5rem; min-height: 4rem; }
+  .brand { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; text-decoration: none; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.01em; }
+  .brand-mark { display: block; flex: none; width: 32px; height: 32px; background: var(--mark-day) center / contain no-repeat; }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .brand-mark { width: 30px; height: 30px; margin: 1px; border-radius: var(--radius-md); background-image: var(--mark-night); } }
+  :global(:root[data-theme="dark"]) .brand-mark { width: 30px; height: 30px; margin: 1px; border-radius: var(--radius-md); background-image: var(--mark-night); }
+  .nav { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin-inline: auto; font-size: 0.9375rem; }
+  .nav a { display: inline-flex; align-items: center; gap: 0.3rem; min-height: 44px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+  .nav a:hover { color: var(--ink); text-decoration: underline; }
+  .nav a[aria-current="page"] { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.45em; }
+  .tools { display: flex; align-items: center; gap: 0.25rem; }
+  .lang { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.5rem; color: var(--ink-2); font-size: 0.9375rem; }
+  .theme { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-md); background: none; color: var(--ink); cursor: pointer; }
+  .theme:hover { background: var(--sunken); }
+  .to-light { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .to-light { display: block; }
+    :global(:root:not([data-theme="light"])) .to-dark { display: none; }
+  }
+  :global(:root[data-theme="dark"]) .to-light { display: block; }
+  :global(:root[data-theme="dark"]) .to-dark { display: none; }
+  /* Narrow screens: the links take a row of their own under the brand. */
+  @media (max-width: 52rem) {
+    .tools { margin-left: auto; }
+    .nav { order: 3; flex-basis: 100%; margin-inline: 0; gap: 0 1rem; border-top: 1px solid var(--line); }
+  }
+
+  .foot { border-top: 1px solid var(--line); padding-block: 2.5rem 3rem; margin-top: auto; }
+  .foot-grid { display: grid; gap: 1.25rem; }
+  .foot-brand { display: flex; align-items: center; gap: 0.75rem; }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin: 0; padding: 0; list-style: none; }
+  .foot-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-2); }
+  @media (min-width: 56rem) {
+    .foot-grid { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+    .foot-grid .caption { grid-column: 1 / -1; }
+  }
+</style>

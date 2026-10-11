@@ -3,10 +3,11 @@ import { Font } from 'astro:assets'
 import 'lenis/dist/lenis.css'
 import '../styles/global.css'
 import type { Content } from '../i18n/content'
-import { BRAND, REPO } from '../i18n/content'
+import { BRAND, DOCS, DOCS_ES, REPO } from '../i18n/content'
 import Bug from '../components/Bug.astro'
-import { withBase } from '../paths'
+import { ROUTES, withBase } from '../paths'
 import { jsonForScript, structuredData } from '../seo'
+import { BOOT } from '../boot'
 import paperTooth from '../assets/paper/paper-tooth.webp'
 import paperCloud from '../assets/paper/paper-cloud.webp'
 import deskTooth from '../assets/paper/desk-tooth.webp'
@@ -25,9 +26,13 @@ const home = withBase(t.lang === 'es' ? '/es/' : '/')
 const section = (id: string) => notFound ? `${home}#${id}` : `#${id}`
 const other = t.lang === 'es' ? 'en' : 'es'
 const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
+const routes = ROUTES[t.lang]
+// The index (phones and tablets, where the section links don't fit): the plates of the notebook, then the other pages.
+const plates = [t.specimens, t.change, t.ledger, t.sources, t.ticket, t.yours, t.install, t.faq]
+const plateIds = ['specimens', 'change', 'ledger', 'sources', 'ticket', 'yours', 'install', 'faq']
 ---
 <!doctype html>
-<html lang={t.lang} class="no-js">
+<html lang={t.lang} class="no-js" data-notebook>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,6 +46,7 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
       <!-- Data, not code: browsers don't run it, so the CSP needs no hash for it (integrations/security-headers.mjs). -->
       <script type="application/ld+json" is:inline set:html={jsonForScript(structuredData(t, Astro.site!))} />
     </>}
+    <link rel="alternate" type="application/rss+xml" title={t.lang === 'es' ? 'Blog de Pitangus' : 'Pitangus blog'} href={new URL(withBase(routes.rss), Astro.site)} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#fbf5e6" media="(prefers-color-scheme: light)" />
@@ -59,43 +65,30 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     <meta property="og:image:alt" content={`${BRAND} · ${t.hero.title.join(' ')}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={new URL(withBase(`/og-${t.lang}.jpg`), Astro.site)} />
+    <!-- Preloaded: what the hero's title and lead paint with (the largest paint). The mono (small labels, with a
+         metric-matched fallback) and Caveat (the pencil notes, display: block, so never a cursive stand-in) load as soon
+         as the page uses them, without competing with the title. Both languages share the files: the page turned to
+         the other language finds them cached. -->
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-body" preload />
-    <Font cssVariable="--font-mono" preload />
-    <Font cssVariable="--font-hand" preload />
-    <!-- Every font and the paper are asked for up front: a page (above all one reached by changing language, mid page
-         turn) must not paint first with a fallback font or flat paper and then swap them in, which reads as a flicker.
-         The cards are paper in both themes (the 404's drawing is on one too); the desk tiles only matter at night. -->
+    <Font cssVariable="--font-mono" />
+    <Font cssVariable="--font-hand" />
+    <!-- The paper is asked for up front: a page must not paint flat paper and then swap the texture in. The cards are
+         paper in both themes (the 404's drawing is on one too); the desk tiles only matter at night. -->
     <link rel="preload" as="image" href={paperTooth.src} type="image/webp" />
     <link rel="preload" as="image" href={paperCloud.src} type="image/webp" />
     <link rel="preload" as="image" href={deskTooth.src} type="image/webp" media="(prefers-color-scheme: dark)" />
     <link rel="preload" as="image" href={deskCloud.src} type="image/webp" media="(prefers-color-scheme: dark)" />
-    <script is:inline>
-      // Before paint: JS is here, and whether this visitor turned motion off (a convenience; it may be unavailable).
-      document.documentElement.classList.replace('no-js', 'js')
-      try {
-        if (localStorage.getItem('pitangus-motion') === 'off') document.documentElement.classList.add('still')
-        // Arriving from the other language, the page turns (a view transition): it must already be complete, not blank
-        // waiting for its entrance, or the turn shows an empty page that then fills in.
-        const turned = sessionStorage.getItem('pitangus-turn') === '1'
-        sessionStorage.removeItem('pitangus-turn')
-        if (!turned && !document.documentElement.classList.contains('still') && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-          document.documentElement.classList.add('pending')
-          setTimeout(() => document.documentElement.classList.remove('pending'), 1500)  // the script never came: show everything
-        }
-        const theme = localStorage.getItem('pitangus-theme')
-        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
-      } catch {}
-    </script>
+    <script is:inline set:html={BOOT} />
   </head>
   <body>
     <a class="skip" href="#content">{t.skip}</a>
     <header class="top">
       <div class="wrap top-row">
-        <!-- The logo on paper; at night, the icon (the same head on its paper tile): a black head would sink into the desk. -->
+        <!-- The logo on paper; at night, the icon (the same head on its paper tile): a black head would sink into the desk.
+             A background, not two <img>: only the one the theme shows is downloaded. -->
         <a class="brand" href={home} aria-label={BRAND}>
-          <img class="brand-day" src={withBase('/logo.svg')} alt="" width="34" height="34" />
-          <img class="brand-night" src={withBase('/favicon.svg')} alt="" width="32" height="32" />
+          <span class="brand-mark" aria-hidden="true" style={`--mark-day: url(${withBase('/logo.svg')}); --mark-night: url(${withBase('/favicon.svg')})`}></span>
           <span class="brand-word">{BRAND}</span>
         </a>
         <nav aria-label={t.nav.label} class="nav">
@@ -103,6 +96,9 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
           <a href={section('change')}>{t.nav.change}</a>
           <a href={section('ledger')}>{t.nav.ledger}</a>
           <a href={section('install')}>{t.nav.install}</a>
+          <span class="nav-rule" aria-hidden="true"></span>
+          <a href={withBase(routes.blog)}>{t.nav.blog}</a>
+          <a href={withBase(routes.about)}>{t.nav.about}</a>
         </nav>
         <div class="tools">
           <p class="counter mono" title={t.counter.hint}>
@@ -124,6 +120,29 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
           </button>
           <a class="lang mono" href={withBase(t.nav.otherHref)} data-turn hreflang={other} lang={other}>{t.nav.other}</a>
           <a class="code mono" href={REPO}>{t.nav.code} <span aria-hidden="true">↗</span></a>
+          <!-- Phones and tablets: the notebook's index, a slip of paper with its plates. Native <details>: it opens
+               without JavaScript; the script only closes it after a choice, on Escape or a click elsewhere. -->
+          <details class="index" data-index>
+            <summary class="index-toggle mono">
+              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M4 3.5h11.5v13H4z" /><path d="M7 3.5v13" /><path d="M9.5 7.5h3.5M9.5 10.5h3.5" />
+              </svg>
+              <span class="index-word">{t.nav.index}</span>
+            </summary>
+            <nav class="index-sheet card-paper" aria-label={t.nav.indexLabel}>
+              <ol role="list" class="index-plates">
+                {plates.map((plate, index) => (
+                  <li><a href={section(plateIds[index])}><span class="index-no mono" aria-hidden="true">{plate.number}</span><span class="display">{plate.kicker}</span></a></li>
+                ))}
+              </ol>
+              <ul role="list" class="index-pages mono">
+                <li><a href={withBase(routes.blog)}>{t.nav.blog}</a></li>
+                <li><a href={withBase(routes.about)}>{t.nav.about}</a></li>
+                <li><a href={t.lang === 'es' ? DOCS_ES : DOCS}>{t.nav.docs} <span aria-hidden="true">↗</span></a></li>
+                <li><a href={REPO}>{t.nav.code} <span aria-hidden="true">↗</span></a></li>
+              </ul>
+            </nav>
+          </details>
         </div>
       </div>
     </header>
@@ -143,16 +162,19 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     border-bottom: 1px solid var(--rule);
   }
   .top-row { display: flex; align-items: center; gap: 1.5rem; min-height: 4rem; }
-  .brand { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+  .brand { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; text-decoration: none; }
   .brand-word { font-family: var(--font-display), Georgia, serif; font-size: 1.7rem; line-height: 1; letter-spacing: -0.005em; }
-  .brand-night { display: none; border-radius: 7px; }
-  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .brand-night { display: block; } :global(:root:not([data-theme="light"])) .brand-day { display: none; } }
-  :global(:root[data-theme="dark"]) .brand-night { display: block; }
-  :global(:root[data-theme="dark"]) .brand-day { display: none; }
-  .nav { display: flex; gap: 1.5rem; margin-inline: auto; font-size: 0.95rem; }
-  .nav a { text-decoration: none; }
+  .brand-mark { display: block; flex: none; width: 34px; height: 34px; background: var(--mark-day) center / contain no-repeat; }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme="light"])) .brand-mark { width: 32px; height: 32px; margin: 1px; background-image: var(--mark-night); } }
+  :global(:root[data-theme="dark"]) .brand-mark { width: 32px; height: 32px; margin: 1px; background-image: var(--mark-night); }
+  .nav { display: flex; align-items: center; gap: 1.5rem; margin-inline: auto; font-size: 0.95rem; }
+  /* The plates on one side, the other pages of the site on the other: a pencil stroke between them. */
+  .nav-rule { width: 1px; height: 1.1rem; background: var(--rule); }
+  /* Each link is a 44px-tall target without looking any bigger. */
+  .nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
   .tools { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; }
   .tools a, .motion-toggle { text-decoration: none; }
+  .tools a { display: inline-flex; align-items: center; min-height: 44px; }
   .counter { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0; padding: 0.3rem 0.65rem; border: 1px solid var(--rule); border-radius: 999px; }
   .counter [data-counter] { font-weight: 600; min-width: 1ch; text-align: right; }
   .motion-toggle {
@@ -179,10 +201,32 @@ const locale: Record<string, string> = { en: 'en_US', es: 'es_LA' }
     .motion-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .motion-toggle { justify-content: center; min-width: 44px; text-decoration: none; }
   }
-  @media (max-width: 64rem) { .nav { display: none; } .tools { margin-left: auto; } }
+  @media (max-width: 72rem) { .nav { display: none; } .tools { margin-left: auto; } }
+  .index { display: none; position: relative; }
+  @media (max-width: 72rem) { .index { display: block; } }
+  .index-toggle {
+    display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 0.7rem;
+    border: 1px solid var(--rule); border-radius: 999px; cursor: pointer; list-style: none; font-size: 0.8rem;
+  }
+  .index-toggle::-webkit-details-marker { display: none; }
+  .index-toggle:hover, .index[open] .index-toggle { color: var(--accent); border-color: var(--accent); }
+  /* A slip of the notebook's paper, pinned under the header. */
+  .index-sheet {
+    position: absolute; right: 0; top: calc(100% + 0.6rem); width: min(19rem, calc(100vw - 2 * var(--gutter))); padding: 0.6rem 1.1rem 0.9rem;
+    border: 1px solid var(--rule); transform: rotate(-0.4deg); transform-origin: top right; box-shadow: 0 18px 30px -20px rgb(28 26 22 / 0.5);
+    background-color: color-mix(in oklab, var(--card-deep) 45%, var(--card));
+  }
+  .index-plates, .index-pages { list-style: none; margin: 0; padding: 0; }
+  .index-plates a { display: flex; align-items: baseline; gap: 0.8rem; min-height: 44px; padding-block: 0.35rem; text-decoration: none; white-space: normal; border-bottom: 1px dashed var(--rule); }
+  .index-plates .display { font-size: 1.35rem; line-height: 1.1; }
+  .index-no { min-width: 1.6rem; font-size: 0.75rem; color: var(--accent); }
+  .index-pages { display: flex; flex-wrap: wrap; gap: 0 1.2rem; margin-top: 0.4rem; font-size: 0.8rem; }
+  .index-pages a { display: inline-flex; align-items: center; min-height: 44px; }
   @media (max-width: 40rem) {
-    .code { display: none; }
+    .tools .code { display: none; }
     .tools { gap: 0.5rem; }
     .brand-word { display: none; }
+    .index-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .index-toggle { padding: 0; }
   }
 </style>

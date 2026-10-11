@@ -1,0 +1,80 @@
+---
+import Page from '../layouts/Page.astro'
+import { BRAND, CHANGELOG, REPO, type Locale } from '../i18n/content'
+import { CONTRIBUTING, ISSUES, MAINTAINER, SECURITY_POLICY, pages } from '../i18n/pages'
+import { ROUTES, withBase } from '../paths'
+import { absolute, breadcrumbs, ids, siteNodes } from '../seo-pages'
+interface Props { lang: Locale }
+const { lang } = Astro.props
+const a = pages[lang].about
+const routes = ROUTES[lang]
+const site = Astro.site!
+const page = absolute(routes.about, site)
+const graph = [
+  ...siteNodes(site, lang),
+  {
+    '@type': 'AboutPage', '@id': page, url: page, name: a.metaTitle, description: a.description, inLanguage: lang,
+    isPartOf: { '@id': ids(site).website }, about: { '@id': ids(site).org }, breadcrumb: { '@id': `${page}#breadcrumb` },
+    mainEntity: {
+      '@type': 'SoftwareApplication', '@id': ids(site).software, name: BRAND, url: absolute('/', site), sameAs: [REPO],
+      applicationCategory: 'SecurityApplication', operatingSystem: 'Linux (Docker)', license: 'https://spdx.org/licenses/AGPL-3.0-only.html',
+      isAccessibleForFree: true, publisher: { '@id': ids(site).org }, description: a.lead,
+    },
+  },
+  breadcrumbs(site, page, [[BRAND, routes.home], [a.title, routes.about]]),
+]
+---
+<Page lang={lang} title={a.metaTitle} description={a.description} path={routes.about}
+      alternates={{ en: ROUTES.en.about, es: ROUTES.es.about }} graph={graph} current="about">
+  <article class="wrap page">
+    <header class="page-head">
+      <h1 class="title">{a.title}</h1>
+      <p class="lead">{a.lead}</p>
+    </header>
+
+    <section class="section" aria-labelledby="why">
+      <h2 id="why" class="h2">{a.why.title}</h2>
+      <div class="stack prose-width">{a.why.body.map(text => <p>{text}</p>)}</div>
+    </section>
+
+    <section class="section" aria-labelledby="who">
+      <h2 id="who" class="h2">{a.who.title}</h2>
+      <!-- TODO(maintainer): photo and bio go in MAINTAINER (src/i18n/pages.ts); this block shows once they're filled. -->
+      {(MAINTAINER.photo || MAINTAINER.bio[lang]) && (
+        <figure class="maintainer">
+          {MAINTAINER.photo && <img src={withBase(MAINTAINER.photo)} alt={MAINTAINER.photoAlt[lang]} width="160" height="160" loading="lazy" decoding="async" />}
+          {MAINTAINER.bio[lang] && <figcaption>{MAINTAINER.bio[lang]}</figcaption>}
+        </figure>
+      )}
+      <div class="stack prose-width">
+        {a.who.body.map(text => <p>{text}</p>)}
+        <p><a href={CHANGELOG}>Changelog</a></p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="principles">
+      <h2 id="principles" class="h2">{a.principles.title}</h2>
+      <dl class="rows">{a.principles.items.map(item => <div><dt>{item.term}</dt><dd>{item.text}</dd></div>)}</dl>
+    </section>
+
+    <section class="section" aria-labelledby="contribute">
+      <h2 id="contribute" class="h2">{a.contribute.title}</h2>
+      <dl class="rows">{a.contribute.items.map(item => <div><dt>{item.term}</dt><dd>{item.text}</dd></div>)}</dl>
+      <div class="actions">
+        <a class="button outline" href={CONTRIBUTING[lang]}>{a.contribute.guide}</a>
+        <a class="button outline" href={SECURITY_POLICY[lang]}>{a.contribute.security}</a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact" class="h2">{a.contact.title}</h2>
+      <p class="prose-width">{a.contact.body}</p>
+      <div class="actions"><a class="button primary" href={ISSUES}>{a.contribute.issues}</a></div>
+    </section>
+  </article>
+</Page>
+
+<style>
+  .maintainer { display: flex; gap: 1.25rem; align-items: center; margin: 0 0 1.25rem; max-width: var(--measure); }
+  .maintainer img { width: 96px; height: 96px; object-fit: cover; border-radius: var(--radius-lg); border: 1px solid var(--line); }
+</style>
