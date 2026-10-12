@@ -22,7 +22,7 @@ Que un hallazgo desaparezca de un análisis no quiere decir que esté corregido:
 - **Una herramienta que no terminó no abre ni cierra hallazgos**, y un SARIF de una ejecución fallida no corrige nada.
 - **Solo donde el análisis miró.** Un hallazgo en un archivo que el motor se saltó (demasiado grande, sin tiempo) sigue abierto, y un hallazgo web solo se corrige si esta vez se llegó de verdad a su página.
 
-Con `PITANGUS_COVERAGE_MODE=on`, además, cada ejecución de un motor pasa por un mismo contrato (código de salida, la salida que siempre escribe, una marca de que corrió) y declara qué archivos o páginas examinó y cuáles no, y por qué. Así, un hallazgo solo se corrige cuando el motor al que pertenece demostró que miró donde estaba; un hallazgo abierto que un análisis no pudo revisar aparece como sin verificar desde ese análisis, y un análisis que corregiría demasiado de golpe retiene esas correcciones hasta que el siguiente análisis completo las confirme.
+El contrato de cobertura, activo por defecto, hace que cada ejecución de un motor pase por un mismo contrato (código de salida, la salida que siempre escribe, una marca de que corrió) y declara qué archivos o páginas examinó y cuáles no, y por qué. Así, un hallazgo solo se corrige cuando el motor al que pertenece demostró que miró donde estaba; un hallazgo abierto que un análisis no pudo revisar aparece como sin verificar desde ese análisis, y un análisis que corregiría demasiado de golpe retiene esas correcciones hasta que el siguiente análisis completo las confirme.
 
 ## Una identidad por problema
 
@@ -30,7 +30,7 @@ La identidad de un hallazgo sale ahora de su contenido, nunca de su línea ni de
 
 El triage sigue a la familia con prudencia. Si las copias tenían decisiones distintas, o alguna no tenía, la familia vuelve a quedar pendiente con el historial de todas, y se conservan las fechas de caducidad y los tickets.
 
-El contrato de cobertura y la identidad nueva vienen **activos por defecto** (`PITANGUS_COVERAGE_MODE=on`, `PITANGUS_IDENTITY_MODE=v2`). Antes de publicarlos así analizamos dos veces el mismo commit en cinco repositorios reales: no se abrió ni se remedió nada. En el primer análisis después de actualizar, el cambio de identidad no abre ni remedia nada por sí mismo, y un análisis que remediaría demasiado de golpe retiene esos remedios hasta que un segundo análisis los confirma. Si prefieres comprobarlo antes, pon los dos en `shadow`: cada análisis registra entonces lo que cambiarían, y `pitangus identity-gate` te dice cuándo activarlos no cambia nada en tus repositorios. La guía para actualizar explica el primer análisis.
+El contrato de cobertura y la identidad nueva vienen **activos por defecto** (`PITANGUS_COVERAGE_MODE=on`, `PITANGUS_IDENTITY_MODE=v2`). Antes de publicarlos así analizamos dos veces el mismo commit en cinco repositorios reales: no se abrió ni se corrigió nada. En el primer análisis después de actualizar, el cambio de identidad no abre ni corrige nada por sí mismo, y un análisis que corregiría demasiado de golpe retiene esas correcciones hasta que un segundo análisis los confirma. Si prefieres comprobarlo antes, pon los dos en `shadow`: cada análisis registra entonces lo que cambiarían, y `pitangus identity-gate` te dice cuándo activarlos no cambia nada en tus repositorios. La guía para actualizar explica el primer análisis.
 
 ## Un control de pull requests que cuenta copias
 
@@ -44,11 +44,11 @@ Los archivos de credenciales (`.env*`, `.npmrc`, `.pypirc`, `.netrc`, claves SSH
 
 El valor de un secreto nunca aparece en lo que Pitangus guarda o muestra: ni en el hallazgo, ni en el prompt para tu IA, ni en el SARIF, los informes o una incidencia de Jira. Los hallazgos de versiones anteriores se limpian al actualizar.
 
-Comprobar si un secreto todavía funciona es opcional (`PITANGUS_SECRET_VALIDATION=1`): para preguntarlo, se envía cada secreto a su propio proveedor. Un secreto activo pasa primero y uno revocado queda en seguimiento; ninguno se oculta.
+Comprobar si un secreto todavía funciona es opcional (`PITANGUS_SECRET_VALIDATION=1`): para preguntarlo, se envía cada secreto a su propio proveedor. Un secreto activo se atiende primero y uno revocado queda en seguimiento; ninguno se oculta.
 
 ## Comprobación de exposición para dominios verificados
 
-Un dominio verificado tiene una **comprobación de exposición** incluida: la raíz de cada host y una lista de rutas conocidas (archivos expuestos como `.git` o `.env`, paneles de administración, TLS, cabeceras de respuesta) con httpx, testssl.sh y las plantillas solo de detección de nuclei. No rastrea el sitio, y ninguna herramienta envía más de 10 peticiones por segundo. Las rutas donde estaban hallazgos anteriores se vuelven a pedir, así que un 404 ahí demuestra que el archivo ya no está; un 401, 403, 429 o un error del servidor nunca cuenta como revisado, y un host que rechaza casi todo (un WAF) deja la comprobación incompleta.
+Un dominio verificado tiene una **comprobación de exposición** incluida: la raíz de cada host y una lista de rutas conocidas (archivos expuestos como `.git` o `.env`, consolas de depuración y de estado, TLS, cabeceras de respuesta) con httpx, testssl.sh y las plantillas solo de detección de nuclei. No rastrea el sitio, y ninguna herramienta envía más de 10 peticiones por segundo. Las rutas donde estaban hallazgos anteriores se vuelven a pedir, así que un 404 ahí demuestra que el archivo ya no está; un 401, 403, 429 o un error del servidor nunca cuenta como revisado, y un host que rechaza casi todo (un WAF) deja la comprobación incompleta.
 
 ## Reglas para lo que el código escrito con IA suele hacer mal
 
@@ -66,7 +66,7 @@ docker run --rm -v "$PWD":/src:ro -v pitangus-cache:/data \
   python -m pitangus --data-dir /data scan /src
 ```
 
-Agrega `--base origin/main` para ver solo lo que añade tu cambio. La misma imagen corre como hook de pre-commit en pre-push (`id: pitangus`, `rev: v0.14.0`) y en la GitHub Action.
+Agrega `--base origin/main` para ver solo lo que añade tu cambio. La misma imagen corre como hook de pre-commit en pre-push (`id: pitangus`, `rev: v0.14.0`; se instala con `pre-commit install --hook-type pre-push`) y en la GitHub Action. El hook analiza el commit que subes, no tu carpeta de trabajo: un archivo que no confirmaste no puede bloquear el push. La [guía rápida para desarrolladores](https://docs.pitangus.dev/es/quickstart-developer/) tiene las tres opciones.
 
 La primera vez descarga las bases de datos de avisos de los motores en el volumen `pitangus-cache`, y las siguientes las reutiliza. En un repositorio pequeño con el hook de pre-commit, una ejecución pasó de unos 35 segundos a unos 20. En la Action, las bases se guardan durante el día con `actions/cache`.
 
@@ -79,7 +79,7 @@ La primera vez descarga las bases de datos de avisos de los motores en el volume
 
 ## Otros cambios
 
-- Los paquetes maliciosos se reconocen por el veredicto de cualquier base de datos, no solo por los avisos `MAL-` de OpenSSF: son críticos y se quitan en vez de actualizarse.
+- Los paquetes maliciosos se reconocen por el tipo de aviso (un id `MAL-`, un tipo malware, una CWE de código malicioso o un título de informe de malware), en Trivy, OSV-Scanner y Grype: son críticos y se quitan en vez de actualizarse.
 - La corrección de una dependencia transitiva dice qué paquete la trae y qué actualizar si se queda por debajo, en cada ecosistema que resuelve Trivy.
 - Las incidencias de Jira dicen en el título qué hacer y dónde, y reciben una etiqueta cuando un análisis verifica la corrección.
 - Un dominio puede tener una página de comprobación de sesión: un análisis con cabeceras guardadas cuya sesión venció queda incompleto, en vez de dar por corregido lo que había detrás del inicio de sesión.
@@ -93,4 +93,4 @@ git checkout v0.14.0
 make update
 ```
 
-`make update` hace una copia de seguridad, descarga las imágenes nuevas (entre ellas Betterleaks) y al arrancar aplica las migraciones de base de datos (0015 y 0016) y las conversiones de datos. Es normal ver algunos hallazgos de secretos nuevos en el primer análisis, por las reglas adicionales de Betterleaks y los archivos de credenciales. Si usas Checkov o Grype, vuelve a encenderlos en `.env`. La [guía para actualizar](https://docs.pitangus.dev/es/upgrading/) explica el cambio de identidad y qué esperar del primer análisis. La lista completa de cambios está en el [changelog](https://github.com/Pitangus-Dev/pitangus/blob/main/CHANGELOG.md), y la versión está en [GitHub](https://github.com/Pitangus-Dev/pitangus/releases/tag/v0.14.0).
+`make update` hace una copia de seguridad, descarga las imágenes nuevas (entre ellas Betterleaks) y al arrancar aplica las migraciones de base de datos (0015 y 0016) y las conversiones de datos. Es normal ver algunos hallazgos de secretos nuevos en el primer análisis, por las reglas adicionales de Betterleaks y los archivos de credenciales. Si usas Checkov o Grype, vuelve a encenderlos en `.env`. Un hallazgo cuya regla cambió en la 0.14 y que desaparece en el primer análisis aparece como sin verificar (configuración) en vez de corregido: márcalo como corregido a mano si de verdad ya no está. Si subes SARIF al code scanning de GitHub, las alertas existentes aparecen una vez como nuevas, porque sus huellas ahora llevan la identidad. La [guía para actualizar](https://docs.pitangus.dev/es/upgrading/) explica el cambio de identidad y qué esperar del primer análisis. La lista completa de cambios está en el [changelog](https://github.com/Pitangus-Dev/pitangus/blob/main/CHANGELOG.md), y la versión está en [GitHub](https://github.com/Pitangus-Dev/pitangus/releases/tag/v0.14.0).

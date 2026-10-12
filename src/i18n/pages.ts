@@ -99,7 +99,7 @@ const en = {
       items: [
         { term: 'Self-hosted', text: 'It runs on your server with Docker. Your code and your findings stay there.' },
         { term: 'No telemetry', text: 'Nothing is sent to us. It only reaches public advisory data, the image registries you scan, the domains you verify, the services you connect and, if you turn them on, OSV and your secrets’ own providers.' },
-        { term: 'Proves fixes', text: 'A finding is fixed when a later scan, whose engines finished, no longer finds it. If an engine fails, the scan says so and nothing it covers counts as fixed.' },
+        { term: 'Proves fixes', text: 'A finding is fixed when a later scan, whose engines finished, no longer finds it. If an engine fails or is turned off, the scan says so and nothing it covers counts as fixed.' },
         { term: 'Never invents fixes', text: 'The fix shown is the tool’s own text, followed by links to the OWASP pages that apply. Pitangus doesn’t write remediation of its own.' },
         { term: 'Open source', text: 'GNU AGPL-3.0. Read every line, change it and run it without asking. Its SAST rules are MIT, so other tools can reuse them.' },
       ],
@@ -204,8 +204,8 @@ const es: typeof en = {
       title: 'Principios',
       items: [
         { term: 'Autoalojado', text: 'Corre en tu servidor con Docker. Tu código y tus hallazgos se quedan ahí.' },
-        { term: 'Sin telemetría', text: 'No nos envía nada. Solo sale a buscar avisos públicos, a los registros de las imágenes que analizas, a los dominios que verificas, a los servicios que conectas y, si lo activas, a OSV y a los proveedores de tus secretos.' },
-        { term: 'Demuestra las correcciones', text: 'Un hallazgo está corregido cuando un análisis posterior, con sus motores terminados, ya no lo encuentra. Si un motor falla, el análisis lo dice y nada de lo que cubre cuenta como corregido.' },
+        { term: 'Sin telemetría', text: 'No nos envía nada. Solo sale a buscar avisos públicos, a los registros de las imágenes que analizas, a los dominios que verificas, a los servicios que conectas y, si los activas, a OSV y a los proveedores de tus secretos.' },
+        { term: 'Demuestra las correcciones', text: 'Un hallazgo está corregido cuando un análisis posterior, con sus motores terminados, ya no lo encuentra. Si un motor falla o está apagado, el análisis lo dice y nada de lo que cubre cuenta como corregido.' },
         { term: 'Nunca inventa correcciones', text: 'La corrección que muestra es el texto de la propia herramienta, seguido de los enlaces a las páginas de OWASP que aplican. Pitangus no redacta correcciones propias.' },
         { term: 'Código abierto', text: 'GNU AGPL-3.0. Lee cada línea, cámbiala y úsala sin pedir permiso. Sus reglas SAST son MIT, así que otras herramientas pueden reutilizarlas.' },
       ],

@@ -22,7 +22,7 @@ A finding that disappears from a scan is not necessarily fixed: the engine may h
 - **A tool that didn't finish neither opens nor closes findings**, and a SARIF from a failed run fixes nothing.
 - **Only where the scan looked.** A finding in a file an engine skipped (too large, out of time) stays open, and a web finding is only fixed if its page was really reached this time.
 
-With `PITANGUS_COVERAGE_MODE=on`, every engine run also goes through one contract (exit code, the output it always writes, a mark that it ran) and declares which files or pages it examined and which not, and why. A finding is then fixed only when the engine that owns it proved it looked where the finding was, an open finding a scan couldn't check shows as unverified since that scan, and a scan that would fix too much at once holds those fixes until the next complete scan confirms them.
+The coverage contract, on by default, makes every engine run go through one contract (exit code, the output it always writes, a mark that it ran) and declares which files or pages it examined and which not, and why. A finding is then fixed only when the engine that owns it proved it looked where the finding was, an open finding a scan couldn't check shows as unverified since that scan, and a scan that would fix too much at once holds those fixes until the next complete scan confirms them.
 
 ## One identity per problem
 
@@ -44,11 +44,11 @@ Credential files (`.env*`, `.npmrc`, `.pypirc`, `.netrc`, `id_*` SSH keys, `cred
 
 A secret's value never appears in what Pitangus stores or shows: not in the finding, the AI prompt, SARIF, the reports or a Jira issue. Findings from earlier versions are cleaned on upgrade.
 
-Checking whether a secret still works is opt-in (`PITANGUS_SECRET_VALIDATION=1`): it sends each secret to its own provider to ask. An active secret goes first and a revoked one is tracked; none is hidden.
+Checking whether a secret still works is opt-in (`PITANGUS_SECRET_VALIDATION=1`): it sends each secret to its own provider to ask. An active secret is handled first and a revoked one is tracked; none is hidden.
 
 ## An exposure check for verified domains
 
-A verified domain gets an **exposure check**, built in: each host's root and a list of known paths (exposed files such as `.git` or `.env`, admin panels, TLS, response headers) with httpx, testssl.sh and nuclei's detection-only templates. It doesn't crawl, and no tool sends more than 10 requests a second. The paths earlier findings were on are checked again, so a 404 there proves the file gone; a 401, 403, 429 or server error never counts as checked, and a host that refuses almost everything (a WAF) leaves the check incomplete.
+A verified domain gets an **exposure check**, built in: each host's root and a list of known paths (exposed files such as `.git` or `.env`, debug and status consoles, TLS, response headers) with httpx, testssl.sh and nuclei's detection-only templates. It doesn't crawl, and no tool sends more than 10 requests a second. The paths earlier findings were on are checked again, so a 404 there proves the file gone; a 401, 403, 429 or server error never counts as checked, and a host that refuses almost everything (a WAF) leaves the check incomplete.
 
 ## Rules for what AI-written code gets wrong
 
@@ -66,7 +66,7 @@ docker run --rm -v "$PWD":/src:ro -v pitangus-cache:/data \
   python -m pitangus --data-dir /data scan /src
 ```
 
-Append `--base origin/main` to see only what your change adds. The same image runs as a pre-commit hook at pre-push (`id: pitangus`, `rev: v0.14.0`) and in the GitHub Action.
+Append `--base origin/main` to see only what your change adds. The same image runs as a pre-commit hook at pre-push (`id: pitangus`, `rev: v0.14.0`; install it with `pre-commit install --hook-type pre-push`) and in the GitHub Action. The hook scans the commit you push, not your working folder: a file you haven't committed can't block the push. The [developer quickstart](https://docs.pitangus.dev/quickstart-developer/) has all three.
 
 The first run downloads the engines' advisory databases into the `pitangus-cache` volume, and later runs reuse them. On a small repository with the pre-commit hook, a run went from about 35 seconds to about 20. In the Action, the databases are kept for the day with `actions/cache`.
 
@@ -79,7 +79,7 @@ The first run downloads the engines' advisory databases into the `pitangus-cache
 
 ## Other changes
 
-- Malicious packages are recognized by any database's verdict, not only OpenSSF `MAL-` advisories: critical, removed rather than upgraded.
+- Malicious packages are recognized by the kind of advisory (a `MAL-` id, a malware type, a malicious-code CWE or a malware report title), in Trivy, OSV-Scanner and Grype: critical, removed rather than upgraded.
 - A transitive dependency's fix says which package brings it in and what to update if it stays below, in every ecosystem Trivy resolves.
 - Jira issues say what to do and where in the title, and get a label when a scan verifies the fix.
 - A domain can have a session check page: a scan with saved headers whose session expired is incomplete instead of fixing what was behind the login.
@@ -93,4 +93,4 @@ git checkout v0.14.0
 make update
 ```
 
-`make update` takes a backup, pulls the new images (Betterleaks among them) and applies the database migrations (0015 and 0016) and data conversions on start. Expect some new secret findings on the first scan, from Betterleaks' larger rule set and credential files. If you rely on Checkov or Grype, turn them back on in `.env`. The [upgrade guide](https://docs.pitangus.dev/upgrading/) covers the identity switch and what to expect from the first scan. The full list of changes is in the [changelog](https://github.com/Pitangus-Dev/pitangus/blob/main/CHANGELOG.md), and the release is on [GitHub](https://github.com/Pitangus-Dev/pitangus/releases/tag/v0.14.0).
+`make update` takes a backup, pulls the new images (Betterleaks among them) and applies the database migrations (0015 and 0016) and data conversions on start. Expect some new secret findings on the first scan, from Betterleaks' larger rule set and credential files. If you rely on Checkov or Grype, turn them back on in `.env`. A finding whose rule changed in 0.14 and that disappears on the first scan shows as unverified (configuration) rather than fixed: mark it fixed by hand if it's really gone. If you upload SARIF to GitHub code scanning, existing alerts show once as new, because their fingerprints now carry the identity. The [upgrade guide](https://docs.pitangus.dev/upgrading/) covers the identity switch and what to expect from the first scan. The full list of changes is in the [changelog](https://github.com/Pitangus-Dev/pitangus/blob/main/CHANGELOG.md), and the release is on [GitHub](https://github.com/Pitangus-Dev/pitangus/releases/tag/v0.14.0).
