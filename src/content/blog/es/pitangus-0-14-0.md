@@ -11,7 +11,7 @@ draft: false
 
 Pitangus 0.14.0 se publicó el 13 de octubre de 2026. Pitangus es una herramienta autoalojada y de código abierto (AGPL-3.0) de seguridad de aplicaciones para equipos pequeños: analiza código, dependencias, secretos, infraestructura como código e imágenes de contenedor con motores abiertos en tu propia máquina, y solo da algo por corregido cuando un análisis posterior lo demuestra.
 
-El foco de esta versión es poder confiar en los resultados. Un hallazgo ya no se da por corregido solo porque desapareció: un motor apagado o que no corrió, o un cambio de configuración, nunca corrige nada, y una pull request se juzga contando copias. También llegan la prueba por motor y una identidad que sobrevive al código que se mueve, en sombra hasta que las activas. Además, los secretos pasan a Betterleaks, se revisan los archivos de credenciales, llegan la comprobación de exposición de dominios verificados y reglas para lo que el código escrito con IA suele hacer mal, y para empezar basta un `docker run`. Las notas para actualizar están al final.
+El foco de esta versión es poder confiar en los resultados. Un hallazgo ya no se da por corregido solo porque desapareció: un motor apagado o que no corrió, o un cambio de configuración, nunca corrige nada, y una pull request se juzga contando copias. La prueba por motor y una identidad que sobrevive al código que se mueve vienen activas por defecto. Además, los secretos pasan a Betterleaks, se revisan los archivos de credenciales, llegan la comprobación de exposición de dominios verificados y reglas para lo que el código escrito con IA suele hacer mal, y para empezar basta un `docker run`. Las notas para actualizar están al final.
 
 ## Nada se da por corregido sin prueba
 
@@ -30,7 +30,7 @@ La identidad de un hallazgo sale ahora de su contenido, nunca de su línea ni de
 
 El triage sigue a la familia con prudencia. Si las copias tenían decisiones distintas, o alguna no tenía, la familia vuelve a quedar pendiente con el historial de todas, y se conservan las fechas de caducidad y los tickets.
 
-El contrato de cobertura y la identidad nueva arrancan **en sombra**: cada análisis registra lo que cambiarían sin cambiar nada. `pitangus identity-gate` compara en los dos sentidos los dos últimos análisis completos de cada repositorio, y cuando pasa en tus repositorios los activas con `PITANGUS_IDENTITY_MODE=v2` y `PITANGUS_COVERAGE_MODE=on`. La guía para actualizar explica el primer análisis después del cambio.
+El contrato de cobertura y la identidad nueva vienen **activos por defecto** (`PITANGUS_COVERAGE_MODE=on`, `PITANGUS_IDENTITY_MODE=v2`). Antes de publicarlos así analizamos dos veces el mismo commit en cinco repositorios reales: no se abrió ni se remedió nada. En el primer análisis después de actualizar, el cambio de identidad no abre ni remedia nada por sí mismo, y un análisis que remediaría demasiado de golpe retiene esos remedios hasta que un segundo análisis los confirma. Si prefieres comprobarlo antes, pon los dos en `shadow`: cada análisis registra entonces lo que cambiarían, y `pitangus identity-gate` te dice cuándo activarlos no cambia nada en tus repositorios. La guía para actualizar explica el primer análisis.
 
 ## Un control de pull requests que cuenta copias
 

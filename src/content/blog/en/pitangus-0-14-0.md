@@ -11,7 +11,7 @@ draft: false
 
 Pitangus 0.14.0 was released on October 13, 2026. Pitangus is a self-hosted, open-source (AGPL-3.0) application security tool for small teams: it scans code, dependencies, secrets, infrastructure as code and container images with open-source engines on your own machine, and counts a fix only when a later scan proves it.
 
-This release is about trusting the results. A finding is no longer marked fixed just because it disappeared: an engine that is off or didn't run, or a change of configuration, never fixes anything, and a pull request is judged by counting copies. Proof per engine and an identity that survives moved code come too, in shadow until you switch them on. It also switches secret detection to Betterleaks, scans credential files, adds an exposure check for verified domains and rules for what AI-written code gets wrong, and starts with one `docker run`. The upgrade notes are at the end.
+This release is about trusting the results. A finding is no longer marked fixed just because it disappeared: an engine that is off or didn't run, or a change of configuration, never fixes anything, and a pull request is judged by counting copies. Proof per engine and an identity that survives moved code are on by default. It also switches secret detection to Betterleaks, scans credential files, adds an exposure check for verified domains and rules for what AI-written code gets wrong, and starts with one `docker run`. The upgrade notes are at the end.
 
 ## Nothing is marked fixed without proof
 
@@ -30,7 +30,7 @@ A finding's identity now comes from its content, never from its line or the orde
 
 Triage follows the family conservatively. When copies had different decisions, or one had none, the family goes back to pending with the history of all of them, keeping expiry dates and tickets.
 
-The coverage contract and the new identity start in **shadow**: each scan records what they would change without changing anything. `pitangus identity-gate` compares the last two full scans of each repository both ways, and once it passes on your repositories you switch them on with `PITANGUS_IDENTITY_MODE=v2` and `PITANGUS_COVERAGE_MODE=on`. The upgrade guide explains the first scan after the switch.
+The coverage contract and the new identity are **on by default** (`PITANGUS_COVERAGE_MODE=on`, `PITANGUS_IDENTITY_MODE=v2`). Before shipping them that way we scanned the same commit twice on five real repositories: nothing opened, nothing fixed. On the first scan after upgrading, the identity change itself opens and fixes nothing, and a scan that would fix too much at once holds those fixes until a second scan confirms them. If you'd rather check first, set both to `shadow`: each scan then records what they would change, and `pitangus identity-gate` tells you when switching changes nothing on your repositories. The upgrade guide explains the first scan.
 
 ## A pull request gate that counts copies
 
