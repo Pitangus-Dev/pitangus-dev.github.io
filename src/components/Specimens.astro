@@ -20,7 +20,8 @@ const s = t.specimens
       <!-- Said in the margin, in pencil, but it is part of the text: read aloud, not aria-hidden like the other notes. -->
       <Note text={t.notes.fixes} arrow="right" place="right: calc(100% + 1.5rem); top: 0.4rem" tilt={-5} spoken />
       <p class="engines mono muted" data-reveal>{s.engines}</p>
-      <p class="engines engines-web mono muted" data-reveal><span class="engines-label">{s.webLabel}</span> {s.webEngines}</p>
+      <p class="engines engines-more mono muted" data-reveal><span class="engines-label">{s.optLabel}</span> {s.optEngines}</p>
+      <p class="engines engines-more mono muted" data-reveal><span class="engines-label">{s.webLabel}</span> {s.webEngines}</p>
     </div>
     <div class="drawer">
     <ol class="specimens" role="list">
@@ -48,7 +49,7 @@ const s = t.specimens
 <style>
   .intro { grid-column: 6 / span 7; margin-bottom: clamp(3rem, 6vw, 5rem); position: relative; }
   .engines { font-size: 0.82rem; margin-top: 1.25rem; }
-  .engines-web { margin-top: 0.4rem; }
+  .engines-more { margin-top: 0.4rem; }
   .engines-label { color: var(--accent); }
   .drawer { grid-column: 1 / -1; }
   .specimens { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 2.25rem); list-style: none; padding: 0; margin: 0; }

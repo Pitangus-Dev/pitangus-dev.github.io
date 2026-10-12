@@ -79,7 +79,7 @@ const en = {
     title: 'About Pitangus',
     metaTitle: 'About Pitangus: why it exists, who builds it, how to help',
     description: 'Pitangus is a self-hosted, open-source application security tool for small teams, made in Colombia by Arodium, a small team that builds software for clients and develops its own products. Its principles and how to contribute.',
-    lead: 'Pitangus is a self-hosted, open-source application security tool for small teams. It finds problems in code, dependencies, secrets, infrastructure, container images and, if you turn it on, the sites you verify, and it counts a fix only when a later scan proves it.',
+    lead: 'Pitangus is a self-hosted, open-source application security tool for small teams. It finds problems in code, dependencies, secrets, infrastructure, container images and the sites you verify, and it counts a fix only when a later scan proves it.',
     why: {
       title: 'Why it exists',
       body: [
@@ -98,7 +98,7 @@ const en = {
       title: 'Principles',
       items: [
         { term: 'Self-hosted', text: 'It runs on your server with Docker. Your code and your findings stay there.' },
-        { term: 'No telemetry', text: 'Nothing is sent to us. It only reaches public advisory data, the image registries you scan, the domains you verify if you turn on web scans, and the services you connect.' },
+        { term: 'No telemetry', text: 'Nothing is sent to us. It only reaches public advisory data, the image registries you scan, the domains you verify, the services you connect and, if you turn them on, OSV and your secrets’ own providers.' },
         { term: 'Proves fixes', text: 'A finding is fixed when a later scan, whose engines finished, no longer finds it. If an engine fails, the scan says so and nothing it covers counts as fixed.' },
         { term: 'Never invents fixes', text: 'The fix shown is the tool’s own text, followed by links to the OWASP pages that apply. Pitangus doesn’t write remediation of its own.' },
         { term: 'Open source', text: 'GNU AGPL-3.0. Read every line, change it and run it without asking. Its SAST rules are MIT, so other tools can reuse them.' },
@@ -185,7 +185,7 @@ const es: typeof en = {
     title: 'Acerca de Pitangus',
     metaTitle: 'Acerca de Pitangus: por qué existe, quién lo hace y cómo ayudar',
     description: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños, hecha en Colombia por Arodium, un equipo pequeño que hace software para clientes y desarrolla productos propios. Sus principios y cómo contribuir.',
-    lead: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños. Encuentra problemas en el código, las dependencias, los secretos, la infraestructura, las imágenes de contenedor y, si lo activas, los sitios que verificas, y solo da algo por corregido cuando un análisis posterior lo demuestra.',
+    lead: 'Pitangus es una herramienta autoalojada y de código abierto de seguridad de aplicaciones para equipos pequeños. Encuentra problemas en el código, las dependencias, los secretos, la infraestructura, las imágenes de contenedor y los sitios que verificas, y solo da algo por corregido cuando un análisis posterior lo demuestra.',
     why: {
       title: 'Por qué existe',
       body: [
@@ -204,7 +204,7 @@ const es: typeof en = {
       title: 'Principios',
       items: [
         { term: 'Autoalojado', text: 'Corre en tu servidor con Docker. Tu código y tus hallazgos se quedan ahí.' },
-        { term: 'Sin telemetría', text: 'No nos envía nada. Solo sale a buscar avisos públicos, a los registros de las imágenes que analizas, a los dominios que verificas si activas los análisis web y a los servicios que conectas.' },
+        { term: 'Sin telemetría', text: 'No nos envía nada. Solo sale a buscar avisos públicos, a los registros de las imágenes que analizas, a los dominios que verificas, a los servicios que conectas y, si lo activas, a OSV y a los proveedores de tus secretos.' },
         { term: 'Demuestra las correcciones', text: 'Un hallazgo está corregido cuando un análisis posterior, con sus motores terminados, ya no lo encuentra. Si un motor falla, el análisis lo dice y nada de lo que cubre cuenta como corregido.' },
         { term: 'Nunca inventa correcciones', text: 'La corrección que muestra es el texto de la propia herramienta, seguido de los enlaces a las páginas de OWASP que aplican. Pitangus no redacta correcciones propias.' },
         { term: 'Código abierto', text: 'GNU AGPL-3.0. Lee cada línea, cámbiala y úsala sin pedir permiso. Sus reglas SAST son MIT, así que otras herramientas pueden reutilizarlas.' },

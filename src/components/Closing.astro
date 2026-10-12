@@ -40,6 +40,8 @@ const f = t.footer
     <ol class="steps" role="list">
       <li data-reveal>
         <p><span class="mono step-no">1</span>{i.steps[0]}</p>
+        <div class="snippet"><pre class="mono"><code>{i.scan}</code></pre>
+          <button type="button" class="copy mono" data-copy={i.scan} data-copied={i.copied} aria-label={i.copyScan}>{i.copy}</button></div>
       </li>
       <li data-reveal class="step-two">
         <Note text={t.notes.install} arrow="down-left" place="right: 4%; top: -1.6rem" tilt={-4} />
