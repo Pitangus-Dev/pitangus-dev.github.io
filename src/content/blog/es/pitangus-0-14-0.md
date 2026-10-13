@@ -42,7 +42,7 @@ Los secretos ahora los encuentra [Betterleaks](https://github.com/betterleaks/be
 
 Los archivos de credenciales (`.env*`, `.npmrc`, `.pypirc`, `.netrc`, claves SSH `id_*`, `credentials`, `.git-credentials`, `.dockercfg`, `.s3cfg`, `.boto`, `.htpasswd`) quedaban fuera de todos los análisis. Ahora los leen Betterleaks y el escáner de secretos de Trivy, desde una copia aparte que ningún otro motor ve y que se borra en cuanto terminan.
 
-El valor de un secreto nunca aparece en lo que Pitangus guarda o muestra: ni en el hallazgo, ni en el prompt para tu IA, ni en el SARIF, los informes o una incidencia de Jira. Los hallazgos de versiones anteriores se limpian al actualizar.
+El valor de un secreto o de una contraseña nunca aparece en lo que Pitangus guarda o muestra, se escriba como se escriba (con comillas o sin ellas, en un archivo de configuración, en una llamada de conexión o en una URL): ni en el hallazgo, ni en el prompt para tu IA, ni en el SARIF, los informes o una incidencia de Jira. Los hallazgos de versiones anteriores se limpian al actualizar.
 
 Comprobar si un secreto todavía funciona es opcional (`PITANGUS_SECRET_VALIDATION=1`): para preguntarlo, se envía cada secreto a su propio proveedor. Un secreto activo se atiende primero y uno revocado queda en seguimiento; ninguno se oculta.
 
@@ -74,12 +74,12 @@ La primera vez descarga las bases de datos de avisos de los motores en el volume
 
 - **El análisis web completo es experimental** y sigue apagado salvo con `PITANGUS_DAST_ENABLED=1`: ZAP, katana y subfinder rastreando el sitio. La comprobación de exposición no lo necesita. Apagar el análisis completo no corrige nada de lo que encontró antes.
 - **Las sast-rules de GitLab siguen apagadas.** Las 259 reglas opcionales (`PITANGUS_THIRD_PARTY_RULES`) se midieron en un corpus público de repositorios vulnerables a propósito y de aplicaciones reales, y ninguna llegó al 85 % de precisión con al menos tres aciertos.
-- **`generic-credential-uri` sigue apagada.** La regla genérica de Betterleaks para credenciales dentro de URLs marca documentación y ejemplos mucho más que secretos reales. `generic-password` viene encendida, detrás de un filtro que descarta archivos de pruebas, documentación y traducciones, plantillas y referencias, marcadores de posición y valores débiles.
+- **`generic-credential-uri` sigue apagada.** La regla genérica de Betterleaks para credenciales dentro de URLs marca documentación y ejemplos mucho más que secretos reales. `generic-password` viene encendida, detrás de un filtro que descarta archivos de pruebas, documentación y traducciones, plantillas y referencias, marcadores de posición y valores débiles. En 18 repositorios públicos conservó 23 de 1.525 coincidencias, entre ellas las 12 que una revisión independiente marcó como reales.
 - **Checkov y Grype son opcionales y vienen apagados.** Trivy y zizmor ya cubren la infraestructura, los pipelines y las imágenes; vuelve a encenderlos con `PITANGUS_CHECKOV_ENABLED=1` y `PITANGUS_GRYPE_ENABLED=1`.
 
 ## Otros cambios
 
-- Los paquetes maliciosos se reconocen por el tipo de aviso (un id `MAL-`, un tipo malware, una CWE de código malicioso o un título de informe de malware), en Trivy, OSV-Scanner y Grype: son críticos y se quitan en vez de actualizarse.
+- Los paquetes maliciosos se reconocen por el tipo de aviso (un id `MAL-` o el tipo malware de una base de datos) o por dos señales que coinciden entre una CWE de código malicioso, el título y la descripción, nunca por una sola, en Trivy, OSV-Scanner y Grype: son críticos y se quitan en vez de actualizarse.
 - La corrección de una dependencia transitiva dice qué paquete la trae y qué actualizar si se queda por debajo, en cada ecosistema que resuelve Trivy.
 - Las incidencias de Jira dicen en el título qué hacer y dónde, y reciben una etiqueta cuando un análisis verifica la corrección.
 - Un dominio puede tener una página de comprobación de sesión: un análisis con cabeceras guardadas cuya sesión venció queda incompleto, en vez de dar por corregido lo que había detrás del inicio de sesión.

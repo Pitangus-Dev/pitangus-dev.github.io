@@ -42,7 +42,7 @@ Secrets are now found by [Betterleaks](https://github.com/betterleaks/betterleak
 
 Credential files (`.env*`, `.npmrc`, `.pypirc`, `.netrc`, `id_*` SSH keys, `credentials`, `.git-credentials`, `.dockercfg`, `.s3cfg`, `.boto`, `.htpasswd`) were left out of every scan. Now Betterleaks and Trivy's secret scanner read them, from a separate copy no other engine sees, deleted as soon as they finish.
 
-A secret's value never appears in what Pitangus stores or shows: not in the finding, the AI prompt, SARIF, the reports or a Jira issue. Findings from earlier versions are cleaned on upgrade.
+A secret's or a password's value never appears in what Pitangus stores or shows, however it's written (quoted or not, in a config file, a connection call or a URL): not in the finding, the AI prompt, SARIF, the reports or a Jira issue. Findings from earlier versions are cleaned on upgrade.
 
 Checking whether a secret still works is opt-in (`PITANGUS_SECRET_VALIDATION=1`): it sends each secret to its own provider to ask. An active secret is handled first and a revoked one is tracked; none is hidden.
 
@@ -74,12 +74,12 @@ The first run downloads the engines' advisory databases into the `pitangus-cache
 
 - **The full web scan is experimental** and stays off unless `PITANGUS_DAST_ENABLED=1`: ZAP, katana and subfinder crawling the site. The exposure check doesn't need it. Turning the full scan off fixes nothing it found before.
 - **GitLab's sast-rules stay off.** The 259 optional rules (`PITANGUS_THIRD_PARTY_RULES`) were measured on a public corpus of intentionally vulnerable and real-world repositories, and none reached 85% precision with at least three hits.
-- **`generic-credential-uri` stays off.** Betterleaks' generic rule for credentials in URLs flags documentation and examples far more often than real secrets. `generic-password` is on, behind a filter that drops test, documentation and translation files, templates and references, placeholders and weak values.
+- **`generic-credential-uri` stays off.** Betterleaks' generic rule for credentials in URLs flags documentation and examples far more often than real secrets. `generic-password` is on, behind a filter that drops test, documentation and translation files, templates and references, placeholders and weak values. On 18 public repositories it kept 23 of 1,525 matches, including all 12 an independent review labeled real.
 - **Checkov and Grype are optional and off by default.** Trivy and zizmor already cover infrastructure, pipelines and images; turn them back on with `PITANGUS_CHECKOV_ENABLED=1` and `PITANGUS_GRYPE_ENABLED=1`.
 
 ## Other changes
 
-- Malicious packages are recognized by the kind of advisory (a `MAL-` id, a malware type, a malicious-code CWE or a malware report title), in Trivy, OSV-Scanner and Grype: critical, removed rather than upgraded.
+- Malicious packages are recognized by the kind of advisory (a `MAL-` id or a database's malware type) or by two agreeing signals among a malicious-code CWE, the title and the description, never one alone, in Trivy, OSV-Scanner and Grype: critical, removed rather than upgraded.
 - A transitive dependency's fix says which package brings it in and what to update if it stays below, in every ecosystem Trivy resolves.
 - Jira issues say what to do and where in the title, and get a label when a scan verifies the fix.
 - A domain can have a session check page: a scan with saved headers whose session expired is incomplete instead of fixing what was behind the login.
