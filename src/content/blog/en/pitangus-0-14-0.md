@@ -1,15 +1,15 @@
 ---
 title: 'Pitangus 0.14.0: nothing marked fixed without proof, Betterleaks and one command to start'
-description: 'Pitangus 0.14.0, released on October 13, 2026: an engine that is off or a configuration change never marks a finding fixed, the pull request gate counts copies, secrets move to Betterleaks, and it adds an exposure check, rules for AI-written code and a one-command start.'
+description: 'Pitangus 0.14.0, released on October 15, 2026: an engine that is off or a configuration change never marks a finding fixed, the pull request gate counts copies, secrets move to Betterleaks, and it adds an exposure check, rules for AI-written code and a one-command start.'
 lang: en
 translationKey: release-0-14-0
 category: news
 tags: ['release', 'secrets', 'AI-written code']
-published: 2026-10-13
+published: 2026-10-15
 draft: false
 ---
 
-Pitangus 0.14.0 was released on October 13, 2026. Pitangus is a self-hosted, open-source (AGPL-3.0) application security tool for small teams: it scans code, dependencies, secrets, infrastructure as code and container images with open-source engines on your own machine, and counts a fix only when a later scan proves it.
+Pitangus 0.14.0 was released on October 15, 2026. Pitangus is a self-hosted, open-source (AGPL-3.0) application security tool for small teams: it scans code, dependencies, secrets, infrastructure as code and container images with open-source engines on your own machine, and counts a fix only when a later scan proves it.
 
 This release is about trusting the results. A finding is no longer marked fixed just because it disappeared: an engine that is off or didn't run, or a change of configuration, never fixes anything, and a pull request is judged by counting copies. Proof per engine and an identity that survives moved code are on by default. It also switches secret detection to Betterleaks, scans credential files, adds an exposure check for verified domains and rules for what AI-written code gets wrong, and starts with one `docker run`. The upgrade notes are at the end.
 

@@ -1,15 +1,15 @@
 ---
 title: 'Pitangus 0.14.0: nada se da por corregido sin prueba, Betterleaks y un comando para empezar'
-description: 'Pitangus 0.14.0, publicado el 13 de octubre de 2026: un motor apagado o un cambio de configuración no da nada por corregido, el control de pull requests cuenta copias, los secretos pasan a Betterleaks y llegan la comprobación de exposición, reglas para código con IA y un comando para empezar.'
+description: 'Pitangus 0.14.0, publicado el 15 de octubre de 2026: un motor apagado o un cambio de configuración no da nada por corregido, el control de pull requests cuenta copias, los secretos pasan a Betterleaks y llegan la comprobación de exposición, reglas para código con IA y un comando para empezar.'
 lang: es
 translationKey: release-0-14-0
 category: news
 tags: ['versión', 'secretos', 'código con IA']
-published: 2026-10-13
+published: 2026-10-15
 draft: false
 ---
 
-Pitangus 0.14.0 se publicó el 13 de octubre de 2026. Pitangus es una herramienta autoalojada y de código abierto (AGPL-3.0) de seguridad de aplicaciones para equipos pequeños: analiza código, dependencias, secretos, infraestructura como código e imágenes de contenedor con motores abiertos en tu propia máquina, y solo da algo por corregido cuando un análisis posterior lo demuestra.
+Pitangus 0.14.0 se publicó el 15 de octubre de 2026. Pitangus es una herramienta autoalojada y de código abierto (AGPL-3.0) de seguridad de aplicaciones para equipos pequeños: analiza código, dependencias, secretos, infraestructura como código e imágenes de contenedor con motores abiertos en tu propia máquina, y solo da algo por corregido cuando un análisis posterior lo demuestra.
 
 El foco de esta versión es poder confiar en los resultados. Un hallazgo ya no se da por corregido solo porque desapareció: un motor apagado o que no corrió, o un cambio de configuración, nunca corrige nada, y una pull request se juzga contando copias. La prueba por motor y una identidad que sobrevive al código que se mueve vienen activas por defecto. Además, los secretos pasan a Betterleaks, se revisan los archivos de credenciales, llegan la comprobación de exposición de dominios verificados y reglas para lo que el código escrito con IA suele hacer mal, y para empezar basta un `docker run`. Las notas para actualizar están al final.
 
