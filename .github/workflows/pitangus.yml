@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0              # history is needed to compare against the base
           persist-credentials: false
       - id: pitangus
-        uses: Pitangus-Dev/pitangus@c1674ca9c1a53421e921ff68523d7c8509e703ac  # v0.14.3
+        uses: Pitangus-Dev/pitangus@8afdd24f164381c8bdd14e55bf3e750d0df66fd8  # v0.15.0
         env:
           PITANGUS_DEFAULT_LOCALE: es
       - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2  # v4.38.2
