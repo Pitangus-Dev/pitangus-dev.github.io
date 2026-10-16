@@ -16,12 +16,12 @@ export const CHANGELOG = `${REPO}/blob/main/CHANGELOG.md`
 // Who stands behind Pitangus, named once at the foot of the page.
 export const STEWARD = { name: 'Arodium', url: 'https://arodium.com' }
 // The release the landing installs and shows in its workflow snippets.
-export const RELEASE = 'v0.14.3'
+export const RELEASE = 'v0.15.0'
 export const ACTION_STEP = `- uses: Pitangus-Dev/pitangus@${RELEASE}`
 // The published release with its published images: a clone of main could ask for images not released yet.
 export const INSTALL = `git clone --branch ${RELEASE} https://github.com/Pitangus-Dev/pitangus.git\ncd pitangus\nmake setup PREBUILT=1\nmake up`
 // One project, no server: the published worker image, as docs/quickstart-developer.md gives it. The volume keeps the
-// engines' databases between runs. The image is tagged by minor version (0.14), the repository by release (v0.14.0).
+// engines' databases between runs. The image is tagged by minor version (0.15), the repository by release (v0.15.0).
 export const WORKER_IMAGE = `ghcr.io/pitangus-dev/pitangus-worker:${RELEASE.slice(1).split('.').slice(0, 2).join('.')}`
 export const SCAN = `docker run --rm -v "$PWD":/src:ro -v pitangus-cache:/data \\\n  ${WORKER_IMAGE} \\\n  python -m pitangus --data-dir /data scan /src`
 
